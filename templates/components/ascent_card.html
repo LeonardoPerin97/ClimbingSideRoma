@@ -20,11 +20,13 @@
     </div>
     <div class="ascent-side">
         <span class="grade-chip">{{ ascent.display_proposed_grade }}</span>
-        {% if perms.climbs.change_ascent and ascent.user_id == request.user.id %}
-            <div class="compact-actions">
-                <a href="{% url 'climbs:ascent_edit' ascent.pk %}">{% translate "Edit" %}</a>
-                <a class="danger-text" href="{% url 'climbs:ascent_delete' ascent.pk %}">{% translate "Delete" %}</a>
-            </div>
+        {% if ascent.user_id == request.user.id %}
+            {% if perms.climbs.change_ascent or perms.climbs.delete_ascent %}
+                <div class="compact-actions">
+                    {% if perms.climbs.change_ascent %}<a href="{% url 'climbs:ascent_edit' ascent.pk %}">{% translate "Edit" %}</a>{% endif %}
+                    {% if perms.climbs.delete_ascent %}<a class="danger-text" href="{% url 'climbs:ascent_delete' ascent.pk %}">{% translate "Delete" %}</a>{% endif %}
+                </div>
+            {% endif %}
         {% endif %}
     </div>
 </article>

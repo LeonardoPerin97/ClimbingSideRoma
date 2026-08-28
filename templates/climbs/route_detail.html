@@ -48,7 +48,10 @@
         <div class="route-action-bar">
             <div class="route-user-actions">
                 {% if user_ascent %}
-                    <a class="button button-primary" href="{% url 'climbs:ascent_edit' user_ascent.pk %}">{% translate "Edit my ascent" %}</a>
+                    <div class="button-row route-ascent-buttons">
+                        <a class="button button-primary" href="{% url 'climbs:ascent_edit' user_ascent.pk %}">{% translate "Edit my ascent" %}</a>
+                        <a class="button button-danger" href="{% url 'climbs:ascent_delete' user_ascent.pk %}">{% translate "Delete my ascent" %}</a>
+                    </div>
                     <dl class="my-ascent-summary" aria-label="{% translate 'My ascent details' %}">
                         <div><dt>{% translate "Date" %}</dt><dd>{{ user_ascent.date|date:"SHORT_DATE_FORMAT" }}</dd></div>
                         <div><dt>{% translate "Proposed grade" %}</dt><dd>{{ user_ascent.display_proposed_grade }}</dd></div>

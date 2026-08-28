@@ -113,6 +113,23 @@ def test_profile_requires_authentication(client: Client) -> None:
 
 
 @pytest.mark.django_db
+def test_account_information_is_at_the_end_of_personal_profile(
+    client: Client,
+    user_factory: Callable[..., User],
+) -> None:
+    user = user_factory()
+    client.force_login(user)
+
+    response = client.get(reverse("accounts:profile"))
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert content.index('id="climbing-statistics-heading"') < content.index(
+        'id="account-information-heading"'
+    )
+
+
+@pytest.mark.django_db
 def test_public_profile_is_visible_but_does_not_expose_email(
     client: Client,
     user_factory: Callable[..., User],

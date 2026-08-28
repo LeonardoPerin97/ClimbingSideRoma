@@ -231,6 +231,40 @@ def test_route_detail_places_current_user_ascent_data_next_to_edit_action(
     assert "6a.3" in content
     assert "★ 4/5" in content
     assert "Flash" in content
+    assert reverse("climbs:ascent_edit", args=[ascent.pk]) in content
+    assert reverse("climbs:ascent_delete", args=[ascent.pk]) in content
+
+
+@pytest.mark.django_db
+def test_route_detail_lists_ascents_from_newest_to_oldest(
+    client: Client,
+    user_factory: Callable[..., User],
+    route_factory: Callable[..., ClimbingRoute],
+    ascent_factory: Callable[..., Ascent],
+) -> None:
+    climbing_route = route_factory(name="Chronological Route")
+    oldest_user = user_factory(username="oldest-user", email="oldest@example.com")
+    newest_user = user_factory(username="newest-user", email="newest@example.com")
+    middle_user = user_factory(username="middle-user", email="middle@example.com")
+    oldest = ascent_factory(
+        user=oldest_user,
+        climbing_route=climbing_route,
+        date=date(2026, 1, 5),
+    )
+    newest = ascent_factory(
+        user=newest_user,
+        climbing_route=climbing_route,
+        date=date(2026, 3, 5),
+    )
+    middle = ascent_factory(
+        user=middle_user,
+        climbing_route=climbing_route,
+        date=date(2026, 2, 5),
+    )
+
+    response = client.get(reverse("climbs:route_detail", args=[climbing_route.pk]))
+
+    assert list(response.context["ascents"]) == [newest, middle, oldest]
 
 
 @pytest.mark.django_db

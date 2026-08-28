@@ -13,8 +13,9 @@
             <p>{% translate "Manage your account and personal climbing logbook." %}</p>
             </div>
         </header>
-        <div class="profile-card account-card">
-            <h2>{% translate "Account information" %}</h2>
+        {% include "components/climbing_profile_stats.html" %}
+        <div class="profile-card account-card profile-account-footer" aria-labelledby="account-information-heading">
+            <h2 id="account-information-heading">{% translate "Account information" %}</h2>
             <dl class="profile-data">
                 <div><dt>{% translate "Email" %}</dt><dd>{{ profile_user.email }}</dd></div>
                 <div>
@@ -36,7 +37,6 @@
                 <a class="text-link" href="{% url 'accounts:public_profile' profile_user.username %}">{% translate "View public profile" %}</a>
             </div>
         </div>
-        {% include "components/climbing_profile_stats.html" %}
     </div>
 </section>
 {% endblock %}

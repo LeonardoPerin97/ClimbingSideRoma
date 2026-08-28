@@ -298,9 +298,7 @@ def route_detail(request: HttpRequest, pk: int) -> HttpResponse:
         ),
         pk=pk,
     )
-    ascents = climbing_route.ascents.select_related("user").order_by(
-        "-date", Lower("user__username")
-    )
+    ascents = climbing_route.ascents.select_related("user").order_by("-date", "-created_at")
     proposed_grade_counts = {
         row["proposed_grade"]: row["count"]
         for row in climbing_route.ascents.order_by()

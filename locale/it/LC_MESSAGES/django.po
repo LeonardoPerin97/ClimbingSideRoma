@@ -1097,6 +1097,10 @@ msgstr "Valutazione media"
 msgid "Edit my ascent"
 msgstr "Modifica la mia ripetizione"
 
+#: templates/climbs/route_detail.html:53
+msgid "Delete my ascent"
+msgstr "Elimina la mia ripetizione"
+
 #: templates/climbs/route_detail.html:52
 msgid "My ascent details"
 msgstr "Dettagli della mia ripetizione"
