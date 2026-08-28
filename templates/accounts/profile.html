@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "My profile" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <header class="catalog-header profile-heading">
+            <div>
+            <p class="eyebrow">{% translate "Personal area" %}</p>
+            <h1>{{ profile_user.username }}</h1>
+            <p>{% translate "Manage your account and personal climbing logbook." %}</p>
+            </div>
+        </header>
+        <div class="profile-card account-card">
+            <h2>{% translate "Account information" %}</h2>
+            <dl class="profile-data">
+                <div><dt>{% translate "Email" %}</dt><dd>{{ profile_user.email }}</dd></div>
+                <div>
+                    <dt>{% translate "Email status" %}</dt>
+                    <dd>
+                        {% if profile_user.email_is_verified %}
+                            {% translate "Verified" %}
+                        {% else %}
+                            {% translate "Not verified" %}
+                        {% endif %}
+                    </dd>
+                </div>
+                <div><dt>{% translate "Role" %}</dt><dd>{{ role }}</dd></div>
+                <div><dt>{% translate "Language" %}</dt><dd>{{ profile_user.get_preferred_language_display }}</dd></div>
+            </dl>
+            <div class="button-row">
+                <a class="button button-primary" href="{% url 'accounts:profile_edit' %}">{% translate "Edit profile" %}</a>
+                <a class="button button-secondary" href="{% url 'accounts:password_change' %}">{% translate "Change password" %}</a>
+                <a class="text-link" href="{% url 'accounts:public_profile' profile_user.username %}">{% translate "View public profile" %}</a>
+            </div>
+        </div>
+        {% include "components/climbing_profile_stats.html" %}
+    </div>
+</section>
+{% endblock %}

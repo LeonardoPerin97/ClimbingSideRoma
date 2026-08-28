@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Log in" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container narrow-container">
+        <div class="form-card">
+            <p class="eyebrow">ClimbingSide</p>
+            <h1>{% translate "Welcome back" %}</h1>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% include "components/form.html" %}
+                {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+                <button class="button button-primary button-block" type="submit">
+                    {% translate "Log in" %}
+                </button>
+            </form>
+            <div class="form-footer form-footer-stack">
+                <a href="{% url 'accounts:password_reset' %}">{% translate "Forgot your password?" %}</a>
+                <a href="{% url 'accounts:resend_verification' %}">{% translate "Resend verification email" %}</a>
+                <span>
+                    {% translate "No account yet?" %}
+                    <a href="{% url 'accounts:register' %}">{% translate "Register" %}</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

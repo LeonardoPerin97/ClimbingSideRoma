@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ profile_user.username }} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <header class="catalog-header profile-heading">
+            <div>
+            <p class="eyebrow">{% translate "Climber profile" %}</p>
+            <h1>{{ profile_user.username }}</h1>
+            {% if profile_user.first_name or profile_user.last_name %}
+                <p>{{ profile_user.get_full_name }}</p>
+            {% endif %}
+            </div>
+        </header>
+        <div class="profile-card account-card compact-account-card">
+            <dl class="profile-data">
+                <div><dt>{% translate "Role" %}</dt><dd>{{ role }}</dd></div>
+                <div><dt>{% translate "Member since" %}</dt><dd>{{ profile_user.date_joined|date:"DATE_FORMAT" }}</dd></div>
+            </dl>
+        </div>
+        {% include "components/climbing_profile_stats.html" %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Edit profile" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container narrow-container">
+        <div class="form-card">
+            <h1>{% translate "Edit profile" %}</h1>
+            <p>{% translate "Your verified email cannot be changed from this form." %}</p>
+            <p class="read-only-value"><strong>{% translate "Email" %}:</strong> {{ request.user.email }}</p>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% include "components/form.html" %}
+                <div class="button-row">
+                    <button class="button button-primary" type="submit">{% translate "Save changes" %}</button>
+                    <a class="button button-secondary" href="{% url 'accounts:profile' %}">{% translate "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

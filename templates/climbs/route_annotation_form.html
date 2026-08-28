@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate "Edit route annotation" %} · {{ climbing_route.name }} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section"><div class="container annotation-container">
+    <header class="page-header annotation-header">
+        <p class="eyebrow">{{ climbing_route.name }}</p>
+        <h1>{% translate "Edit route annotation" %}</h1>
+        <p>{% translate "Choose a marker, tap the corresponding hold, and drag an existing marker to reposition it." %}</p>
+    </header>
+
+    <form method="post" novalidate data-annotation-form>
+        {% csrf_token %}
+        {{ form.annotations }}
+        {% if form.annotations.errors %}
+            <div class="form-errors" role="alert">
+                {% for error in form.annotations.errors %}<p>{{ error }}</p>{% endfor %}
+            </div>
+        {% endif %}
+
+        <div
+            class="annotation-editor"
+            data-annotation-editor
+            data-annotation-source="route-annotation-data"
+            data-label-left="{% translate 'L' %}"
+            data-label-right="{% translate 'R' %}"
+            data-label-top="{% translate 'TOP' %}"
+            data-limit-message="{% translate 'The maximum number of markers has been reached.' %}"
+        >
+            <div class="annotation-toolbar" role="toolbar" aria-label="{% translate 'Annotation tools' %}">
+                <div class="annotation-tool-group">
+                    <button class="button button-secondary is-active" type="button" data-marker-tool="start-left" aria-pressed="true">{% translate "Left start" %}</button>
+                    <button class="button button-secondary" type="button" data-marker-tool="start-right" aria-pressed="false">{% translate "Right start" %}</button>
+                    <button class="button button-secondary" type="button" data-marker-tool="move" aria-pressed="false">{% translate "Numbered move" %}</button>
+                    <button class="button button-secondary" type="button" data-marker-tool="top" aria-pressed="false">{% translate "Top" %}</button>
+                </div>
+                <div class="annotation-tool-group">
+                    <button class="button button-secondary" type="button" data-annotation-undo>{% translate "Undo" %}</button>
+                    <button class="button button-secondary" type="button" data-annotation-delete disabled>{% translate "Delete selected" %}</button>
+                    <button class="button button-secondary" type="button" data-annotation-clear>{% translate "Clear" %}</button>
+                </div>
+            </div>
+
+            <p class="annotation-status muted-text" data-annotation-status role="status" aria-live="polite"></p>
+            <div class="route-image-stage annotation-stage">
+                <img
+                    src="{{ route_image.image.url }}"
+                    alt="{% blocktranslate with route=climbing_route.name %}Route {{ route }}{% endblocktranslate %}"
+                    data-route-image
+                >
+                <canvas
+                    data-annotation-canvas
+                    tabindex="0"
+                    aria-label="{% translate 'Interactive route annotation canvas' %}"
+                ></canvas>
+            </div>
+        </div>
+        {{ route_image.annotations|json_script:"route-annotation-data" }}
+
+        <div class="button-row annotation-save-actions">
+            <button class="button button-primary" type="submit">{% translate "Save annotation" %}</button>
+            <a class="button button-secondary" href="{% url 'climbs:route_detail' climbing_route.pk %}">{% translate "Cancel" %}</a>
+        </div>
+    </form>
+</div></section>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/route-annotation.js' %}" defer></script>{% endblock %}

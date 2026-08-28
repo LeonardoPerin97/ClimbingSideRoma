@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Collective statistics" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <header class="catalog-header">
+            <p class="eyebrow">{% translate "Gym overview" %}</p>
+            <h1>{% translate "Collective statistics" %}</h1>
+            <p>{% translate "A concise view of the active catalogue and the community's ascents." %}</p>
+        </header>
+
+        <dl class="summary-grid" aria-label="{% translate 'Summary' %}">
+            <div><dt>{% translate "Active climbs" %}</dt><dd>{{ active_route_count }}</dd></div>
+            <div><dt>{% translate "Routes" %}</dt><dd>{{ route_count }}</dd></div>
+            <div><dt>{% translate "Boulders" %}</dt><dd>{{ boulder_count }}</dd></div>
+            <div><dt>{% translate "Projects" %}</dt><dd>{{ project_count }}</dd></div>
+            <div><dt>{% translate "Walls" %}</dt><dd>{{ active_wall_count }}</dd></div>
+            <div><dt>{% translate "Climbers" %}</dt><dd>{{ active_user_count }}</dd></div>
+            <div><dt>{% translate "Recorded ascents" %}</dt><dd>{{ ascent_count }}</dd></div>
+            <div><dt>{% translate "Highest active grade" %}</dt><dd>{{ highest_grade }}</dd></div>
+        </dl>
+
+        <div class="dashboard-grid">
+            <section class="data-card" aria-labelledby="grade-distribution-heading">
+                <h2 id="grade-distribution-heading">{% translate "Active climbs by grade" %}</h2>
+                {% if grade_distribution %}
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">{% translate "Grade" %}</th>
+                                    <th scope="col">{% translate "Total" %}</th>
+                                    <th scope="col">{% translate "Routes" %}</th>
+                                    <th scope="col">{% translate "Boulders" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bucket in grade_distribution %}
+                                    <tr>
+                                        <th scope="row">{{ bucket.label }}</th>
+                                        <td>
+                                            {{ bucket.total }}
+                                            <meter min="0" max="{{ maximum_grade_count }}" value="{{ bucket.total }}">
+                                                {{ bucket.total }}
+                                            </meter>
+                                        </td>
+                                        <td>{{ bucket.routes }}</td>
+                                        <td>{{ bucket.boulders }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="empty-state">{% translate "No graded active climbs are available yet." %}</p>
+                {% endif %}
+            </section>
+
+            <section class="data-card" aria-labelledby="wall-distribution-heading">
+                <h2 id="wall-distribution-heading">{% translate "Active climbs by wall" %}</h2>
+                {% if routes_by_wall %}
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">{% translate "Wall" %}</th>
+                                    <th scope="col">{% translate "Total" %}</th>
+                                    <th scope="col">{% translate "Routes" %}</th>
+                                    <th scope="col">{% translate "Boulders" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bucket in routes_by_wall %}
+                                    <tr>
+                                        <th scope="row">
+                                            <a href="{% url 'climbs:wall_detail' bucket.wall.pk %}">{{ bucket.wall.name }}</a>
+                                        </th>
+                                        <td>
+                                            {{ bucket.total }}
+                                            {% if maximum_wall_count %}
+                                                <meter min="0" max="{{ maximum_wall_count }}" value="{{ bucket.total }}">
+                                                    {{ bucket.total }}
+                                                </meter>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ bucket.routes }}</td>
+                                        <td>{{ bucket.boulders }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="empty-state">{% translate "No active walls are available yet." %}</p>
+                {% endif %}
+            </section>
+        </div>
+
+        <section class="data-card" aria-labelledby="ascent-trend-heading">
+            <h2 id="ascent-trend-heading">{% translate "Ascents in the last 12 months" %}</h2>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">{% translate "Month" %}</th>
+                            <th scope="col">{% translate "Ascents" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bucket in monthly_ascents %}
+                            <tr>
+                                <th scope="row">{{ bucket.month|date:"F Y" }}</th>
+                                <td>
+                                    {{ bucket.count }}
+                                    {% if maximum_monthly_ascent_count %}
+                                        <meter min="0" max="{{ maximum_monthly_ascent_count }}" value="{{ bucket.count }}">
+                                            {{ bucket.count }}
+                                        </meter>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load i18n climbs_tags %}
+
+{% block title %}{% translate "Climbers" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section"><div class="container">
+    <header class="catalog-header">
+        <div>
+            <p class="eyebrow">{% translate "Community" %}</p>
+            <h1>{% translate "Climbers" %}</h1>
+            <p>{% translate "Browse public profiles and compare completed routes and maximum grades." %}</p>
+        </div>
+    </header>
+
+    <form class="filter-bar user-filters" method="get">
+        <div>
+            <label for="user-search">{% translate "Search" %}</label>
+            <input id="user-search" name="q" type="search" value="{{ search }}" placeholder="{% translate 'Username' %}">
+        </div>
+        <div>
+            <label for="user-sort">{% translate "Order by" %}</label>
+            <select id="user-sort" name="sort">
+                <option value="name"{% if sort == 'name' %} selected{% endif %}>{% translate "Name" %}</option>
+                <option value="ascents"{% if sort == 'ascents' %} selected{% endif %}>{% translate "Completed routes" %}</option>
+                <option value="grade"{% if sort == 'grade' %} selected{% endif %}>{% translate "Maximum grade" %}</option>
+            </select>
+        </div>
+        <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
+    </form>
+
+    {% if page.object_list %}
+        <div class="user-list">
+            {% for profile_user in page %}
+                <article class="user-card">
+                    <div>
+                        <h2><a href="{% url 'accounts:public_profile' profile_user.username %}">{{ profile_user.username }}</a></h2>
+                        {% if profile_user.first_name or profile_user.last_name %}<p>{{ profile_user.get_full_name }}</p>{% endif %}
+                    </div>
+                    <div class="user-card-stats">
+                        <span><strong>{{ profile_user.ascent_count }}</strong> {% translate "completed" %}</span>
+                        <span><strong>{{ profile_user.highest_grade_order|french_grade_from_index }}</strong> {% translate "maximum grade" %}</span>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+        {% include "components/pagination.html" %}
+    {% else %}
+        <div class="empty-state catalog-empty">
+            <h2>{% translate "No climbers found" %}</h2>
+            <p>{% translate "Try changing the search." %}</p>
+        </div>
+    {% endif %}
+</div></section>
+{% endblock %}
+

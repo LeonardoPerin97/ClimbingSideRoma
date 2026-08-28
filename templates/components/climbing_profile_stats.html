@@ -1,0 +1,77 @@
+{% load i18n %}
+
+<section aria-labelledby="climbing-statistics-heading">
+    <div class="section-heading">
+        <h2 id="climbing-statistics-heading">{% translate "Climbing statistics" %}</h2>
+        {% if can_manage_ascents %}<a class="button button-primary" href="{% url 'climbs:ascent_create' %}">{% translate "Record ascent" %}</a>{% endif %}
+    </div>
+
+    <div class="summary-grid">
+        <article><span>{% translate "Completed routes" %}</span><strong>{{ ascent_count }}</strong></article>
+        <article><span>{% translate "Maximum grade" %}</span><strong>{{ highest_grade }}</strong></article>
+        <article><span>{% translate "Routes" %}</span><strong>{{ discipline_counts.route }}</strong></article>
+        <article><span>{% translate "Boulder" %}</span><strong>{{ discipline_counts.boulder }}</strong></article>
+    </div>
+
+    <div class="statistics-grid profile-statistics-grid">
+        <article class="profile-card profile-histogram-card">
+            <h3>{% translate "Grade distribution" %}</h3>
+            {% if grade_distribution %}
+                {% translate "Scrollable completed-grade histogram" as histogram_scroll_label %}
+                {% translate "Completed climbs grouped by official grade" as histogram_content_label %}
+                {% include "components/grade_histogram.html" with buckets=grade_distribution maximum_count=maximum_grade_count histogram_scroll_label=histogram_scroll_label histogram_content_label=histogram_content_label %}
+            {% else %}<p class="muted-text">{% translate "No grades available yet." %}</p>{% endif %}
+            {% if project_count %}
+                <p class="histogram-note">
+                    {% blocktranslate count count=project_count %}{{ count }} completed Project is not included in the histogram.{% plural %}{{ count }} completed Projects are not included in the histogram.{% endblocktranslate %}
+                </p>
+            {% endif %}
+        </article>
+        <article class="profile-card">
+            <h3>{% translate "Routes by wall" %}</h3>
+            {% if wall_distribution %}
+                <div class="grade-distribution">
+                    {% for bucket in wall_distribution %}<span><strong>{{ bucket.label }}</strong> {{ bucket.count }}</span>{% endfor %}
+                </div>
+            {% else %}<p class="muted-text">{% translate "No walls available yet." %}</p>{% endif %}
+        </article>
+    </div>
+
+    <div class="section-heading"><h2>{% translate "Completed routes" %}</h2></div>
+    <form class="filter-bar user-ascent-filters" method="get">
+        <div>
+            <label for="user-ascent-discipline">{% translate "Type" %}</label>
+            <select id="user-ascent-discipline" name="discipline">
+                <option value="">{% translate "All types" %}</option>
+                {% for value, label in disciplines %}
+                    <option value="{{ value }}"{% if selected_discipline == value %} selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="user-ascent-sort">{% translate "Order by" %}</label>
+            <select id="user-ascent-sort" name="sort">
+                <option value="date_desc"{% if ascent_sort == 'date_desc' %} selected{% endif %}>{% translate "Date: newest first" %}</option>
+                <option value="date_asc"{% if ascent_sort == 'date_asc' %} selected{% endif %}>{% translate "Date: oldest first" %}</option>
+                <option value="grade"{% if ascent_sort == 'grade' %} selected{% endif %}>{% translate "Official grade: easiest first" %}</option>
+                <option value="grade_desc"{% if ascent_sort == 'grade_desc' %} selected{% endif %}>{% translate "Official grade: hardest first" %}</option>
+            </select>
+        </div>
+        <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
+    </form>
+    {% if ascents %}
+        <div class="ascent-list">
+            {% for ascent in ascents %}{% include "components/ascent_card.html" with show_route=True %}{% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state catalog-empty">
+            {% if selected_discipline %}
+                <h3>{% translate "No completed climbs for this type" %}</h3>
+                <p>{% translate "Try selecting all types." %}</p>
+            {% else %}
+                <h3>{% translate "No ascents recorded" %}</h3>
+                <p>{% translate "Completed routes will appear here." %}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>

@@ -1,0 +1,1844 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ClimbingSide 0.9.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-28 12:00+0200\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: apps/accounts/admin.py:20 apps/accounts/admin.py:33
+#: apps/accounts/admin.py:100 templates/accounts/profile.html:30
+#: templates/accounts/public_profile.html:20
+msgid "Role"
+msgstr "Ruolo"
+
+#: apps/accounts/admin.py:47
+msgid "Personal information"
+msgstr "Informazioni personali"
+
+#: apps/accounts/admin.py:59
+msgid "Permissions"
+msgstr "Permessi"
+
+#: apps/accounts/admin.py:70
+msgid "Important dates"
+msgstr "Date importanti"
+
+#: apps/accounts/apps.py:8
+msgid "Account"
+msgstr "Account"
+
+#: apps/accounts/forms.py:22
+msgid "We will send a verification link to this address."
+msgstr "Invieremo un link di verifica a questo indirizzo."
+
+#: apps/accounts/forms.py:27 apps/accounts/forms.py:59
+msgid "An account with this username already exists."
+msgstr "Esiste già un account con questo username."
+
+#: apps/accounts/forms.py:33
+msgid "An account with this email already exists."
+msgstr "Esiste già un account con questa email."
+
+#: apps/accounts/forms.py:64 templates/accounts/profile.html:19
+#: templates/accounts/profile_edit.html:12
+msgid "Email"
+msgstr "Email"
+
+#: apps/accounts/models.py:64
+msgid "Italiano"
+msgstr "Italiano"
+
+#: apps/accounts/models.py:65
+msgid "English"
+msgstr "Inglese"
+
+#: apps/accounts/models.py:67
+msgid "email address"
+msgstr "indirizzo email"
+
+#: apps/accounts/models.py:69
+msgid "preferred language"
+msgstr "lingua preferita"
+
+#: apps/accounts/models.py:75
+msgid "email verified at"
+msgstr "email verificata il"
+
+#: apps/accounts/models.py:86 apps/climbs/models.py:117
+msgid "user"
+msgstr "utente"
+
+#: apps/accounts/models.py:87
+msgid "users"
+msgstr "utenti"
+
+#: apps/accounts/models.py:109
+msgid "login attempt"
+msgstr "tentativo di accesso"
+
+#: apps/accounts/models.py:110
+msgid "login attempts"
+msgstr "tentativi di accesso"
+
+#: apps/accounts/roles.py:17
+msgid "User"
+msgstr "Utente"
+
+#: apps/accounts/roles.py:18
+msgid "Route setter"
+msgstr "Route setter"
+
+#: apps/accounts/roles.py:19
+msgid "Administrator"
+msgstr "Amministratore"
+
+#: apps/accounts/views.py:70
+msgid ""
+"If an unverified account exists, a new verification email has been sent."
+msgstr ""
+"Se esiste un account non verificato, è stata inviata una nuova email di "
+"verifica."
+
+#: apps/accounts/views.py:185
+msgid "Profile updated successfully."
+msgstr "Profilo aggiornato correttamente."
+
+#: apps/climbs/annotations.py:21
+msgid "The annotation data is not valid JSON."
+msgstr "I dati dell'annotazione non sono in formato JSON valido."
+
+#: apps/climbs/annotations.py:27
+msgid "The annotation data has an invalid structure."
+msgstr "I dati dell'annotazione hanno una struttura non valida."
+
+#: apps/climbs/annotations.py:29
+msgid "This annotation version is not supported."
+msgstr "Questa versione dell'annotazione non è supportata."
+
+#: apps/climbs/annotations.py:33
+msgid "The annotation markers must be a list."
+msgstr "I marcatori dell'annotazione devono essere un elenco."
+
+#: apps/climbs/annotations.py:36
+#, python-format
+msgid "An annotation can contain at most %(limit)s markers."
+msgstr "Un'annotazione può contenere al massimo %(limit)s marcatori."
+
+#: apps/climbs/annotations.py:45
+msgid "Every annotation marker must be an object."
+msgstr "Ogni marcatore dell'annotazione deve essere un oggetto."
+
+#: apps/climbs/annotations.py:48
+msgid "An annotation marker has an invalid type."
+msgstr "Un marcatore dell'annotazione ha un tipo non valido."
+
+#: apps/climbs/annotations.py:60
+msgid "An annotation marker has invalid fields."
+msgstr "Un marcatore dell'annotazione contiene campi non validi."
+
+#: apps/climbs/annotations.py:69
+msgid "Move marker numbers must be integers."
+msgstr "I numeri dei movimenti devono essere interi."
+
+#: apps/climbs/annotations.py:71
+msgid "Move markers must be numbered consecutively."
+msgstr "I movimenti devono essere numerati consecutivamente."
+
+#: apps/climbs/annotations.py:76
+msgid "Start and top markers may only be used once."
+msgstr "I marcatori di partenza e top possono essere usati una sola volta."
+
+#: apps/climbs/annotations.py:90
+msgid "Marker coordinates must be numbers."
+msgstr "Le coordinate dei marcatori devono essere numeriche."
+
+#: apps/climbs/annotations.py:93
+msgid "Marker coordinates must be between 0 and 1."
+msgstr "Le coordinate dei marcatori devono essere comprese tra 0 e 1."
+
+#: apps/climbs/apps.py:8
+msgid "Climbing catalogue"
+msgstr "Catalogo di arrampicata"
+
+#: apps/climbs/forms.py:34
+msgid "A wall with this name already exists."
+msgstr "Esiste già una parete con questo nome."
+
+#: apps/climbs/forms.py:60
+msgid "Optional. You may select one or more route setters."
+msgstr "Facoltativo. Puoi selezionare uno o più route setter."
+
+#: apps/climbs/forms.py:84
+msgid "A climbing route with this name already exists."
+msgstr "Esiste già una via con questo nome."
+
+#: apps/climbs/forms.py:95
+msgid "Choose an official grade or mark the route as Project."
+msgstr "Scegli un grado ufficiale oppure contrassegna la via come Project."
+
+#: apps/climbs/forms.py:101
+msgid "Type the name to confirm"
+msgstr "Digita il nome per confermare"
+
+#: apps/climbs/forms.py:111
+msgid "The entered name does not match."
+msgstr "Il nome inserito non corrisponde."
+
+#: apps/climbs/forms.py:117 templates/climbs/route_detail.html:83
+msgid "Route image"
+msgstr "Immagine della via"
+
+#: apps/climbs/forms.py:122
+msgid "JPEG, PNG or WebP. Maximum 8 MB."
+msgstr "JPEG, PNG o WebP. Massimo 8 MB."
+
+#: apps/climbs/forms.py:159
+msgid "Perceived grade"
+msgstr "Grado percepito"
+
+#: apps/climbs/forms.py:160
+msgid "Choose a grade"
+msgstr "Scegli un grado"
+
+#: apps/climbs/forms.py:163
+msgid "Grade decimal"
+msgstr "Decimale del grado"
+
+#: apps/climbs/forms.py:212
+msgid "From 1 to 5 stars."
+msgstr "Da 1 a 5 stelle."
+
+#: apps/climbs/forms.py:214
+msgid "Use 0 if you do not need a decimal refinement."
+msgstr "Usa 0 se non vuoi specificare un decimale."
+
+#: apps/climbs/forms.py:218
+msgid "Required only when Number of attempts is selected."
+msgstr "Obbligatorio solo quando selezioni Numero di tentativi."
+
+#: apps/climbs/forms.py:229 apps/climbs/models.py:192
+msgid "The ascent date cannot be in the future."
+msgstr "La data della ripetizione non può essere futura."
+
+#: apps/climbs/forms.py:243 apps/climbs/views.py:799 apps/climbs/views.py:834
+msgid "You have already recorded an ascent for this route."
+msgstr "Hai già registrato una ripetizione per questa via."
+
+#: apps/climbs/forms.py:252 apps/climbs/models.py:195
+msgid "Enter a positive number of attempts."
+msgstr "Inserisci un numero di tentativi positivo."
+
+#: apps/climbs/images.py:29 apps/climbs/images.py:53
+msgid "Upload a JPEG, PNG or WebP image."
+msgstr "Carica un'immagine JPEG, PNG o WebP."
+
+#: apps/climbs/images.py:31
+msgid "The image must not exceed 8 MB."
+msgstr "L'immagine non deve superare 8 MB."
+
+#: apps/climbs/images.py:35
+msgid "The uploaded file has an invalid content type."
+msgstr "Il file caricato ha un content type non valido."
+
+#: apps/climbs/images.py:47
+msgid "The uploaded file is not a valid safe image."
+msgstr "Il file caricato non è un'immagine valida e sicura."
+
+#: apps/climbs/images.py:55
+msgid "The image content does not match its file extension."
+msgstr "Il contenuto dell'immagine non corrisponde all'estensione del file."
+
+#: apps/climbs/images.py:57
+msgid "The image content does not match its content type."
+msgstr "Il contenuto dell'immagine non corrisponde al suo content type."
+
+#: apps/climbs/images.py:59
+msgid "The image dimensions are too large."
+msgstr "Le dimensioni dell'immagine sono troppo grandi."
+
+#: apps/climbs/images.py:61
+msgid "The image contains too many pixels."
+msgstr "L'immagine contiene troppi pixel."
+
+#: apps/climbs/images.py:63
+msgid "Animated images are not supported."
+msgstr "Le immagini animate non sono supportate."
+
+#: apps/climbs/models.py:17 apps/climbs/models.py:40
+msgid "name"
+msgstr "nome"
+
+#: apps/climbs/models.py:18 apps/climbs/models.py:66
+msgid "archived"
+msgstr "archiviato"
+
+#: apps/climbs/models.py:22 apps/climbs/models.py:45 apps/climbs/views.py:450
+msgid "wall"
+msgstr "parete"
+
+#: apps/climbs/models.py:23
+msgid "walls"
+msgstr "pareti"
+
+#: apps/climbs/models.py:37 templates/climbs/wall_detail.html:37
+#: templates/components/climbing_profile_stats.html:12
+#: templates/core/statistics_dashboard.html:17
+#: templates/core/statistics_dashboard.html:36
+#: templates/core/statistics_dashboard.html:71
+msgid "Routes"
+msgstr "Vie"
+
+#: apps/climbs/models.py:38 templates/climbs/wall_detail.html:38
+#: templates/components/climbing_profile_stats.html:13
+msgid "Boulder"
+msgstr "Boulder"
+
+#: apps/climbs/models.py:48
+msgid "type"
+msgstr "tipo"
+
+#: apps/climbs/models.py:53
+msgid "official grade"
+msgstr "grado ufficiale"
+
+#: apps/climbs/models.py:58
+msgid "project"
+msgstr "project"
+
+#: apps/climbs/models.py:64
+msgid "route setters"
+msgstr "route setter"
+
+#: apps/climbs/models.py:70 apps/climbs/models.py:123 apps/climbs/models.py:223
+#: apps/climbs/views.py:579
+msgid "climbing route"
+msgstr "via"
+
+#: apps/climbs/models.py:71
+msgid "climbing routes"
+msgstr "vie"
+
+#: apps/climbs/models.py:95
+msgid "A non-project route must have an official grade."
+msgstr "Una via non Project deve avere un grado ufficiale."
+
+#: apps/climbs/models.py:100 templates/climbs/route_list.html:47
+msgid "Project"
+msgstr "Project"
+
+#: apps/climbs/models.py:108
+msgid "Onsight"
+msgstr "Onsight"
+
+#: apps/climbs/models.py:109
+msgid "Flash"
+msgstr "Flash"
+
+#: apps/climbs/models.py:110
+msgid "Number of attempts"
+msgstr "Numero di tentativi"
+
+#: apps/climbs/models.py:111
+msgid "N.D."
+msgstr "N.D."
+
+#: apps/climbs/models.py:125
+msgid "date"
+msgstr "data"
+
+#: apps/climbs/models.py:127
+msgid "rating"
+msgstr "valutazione"
+
+#: apps/climbs/models.py:131
+msgid "proposed grade"
+msgstr "grado proposto"
+
+#: apps/climbs/models.py:136
+msgid "Encoded French grade with a decimal from 0 to 9."
+msgstr "Grado francese codificato con un decimale da 0 a 9."
+
+#: apps/climbs/models.py:139
+msgid "attempt result"
+msgstr "esito dei tentativi"
+
+#: apps/climbs/models.py:145
+msgid "attempt count"
+msgstr "numero di tentativi"
+
+#: apps/climbs/models.py:150 apps/climbs/models.py:244 apps/core/models.py:30
+msgid "created at"
+msgstr "creato il"
+
+#: apps/climbs/models.py:151 apps/climbs/models.py:245
+msgid "updated at"
+msgstr "aggiornato il"
+
+#: apps/climbs/models.py:155
+msgid "ascent"
+msgstr "ripetizione"
+
+#: apps/climbs/models.py:156 templates/core/home.html:99
+msgid "ascents"
+msgstr "ripetizioni"
+
+#: apps/climbs/models.py:208
+#, python-format
+msgid "%(count)s attempt"
+msgid_plural "%(count)s attempts"
+msgstr[0] "%(count)s tentativo"
+msgstr[1] "%(count)s tentativi"
+
+#: apps/climbs/models.py:226
+msgid "image"
+msgstr "immagine"
+
+#: apps/climbs/models.py:232
+msgid "annotations"
+msgstr "annotazioni"
+
+#: apps/climbs/models.py:242
+msgid "uploaded by"
+msgstr "caricata da"
+
+#: apps/climbs/models.py:249
+msgid "route image"
+msgstr "immagine della via"
+
+#: apps/climbs/models.py:250
+msgid "route images"
+msgstr "immagini delle vie"
+
+#: apps/climbs/views.py:359
+msgid "Wall created successfully."
+msgstr "Parete creata correttamente."
+
+#: apps/climbs/views.py:382
+msgid "Wall updated successfully."
+msgstr "Parete aggiornata correttamente."
+
+#: apps/climbs/views.py:398
+msgid "Archive all routes on this wall first."
+msgstr "Prima archivia tutte le vie presenti su questa parete."
+
+#: apps/climbs/views.py:412
+msgid "Wall status updated."
+msgstr "Stato della parete aggiornato."
+
+#: apps/climbs/views.py:422
+msgid "Archive the wall before deleting it permanently."
+msgstr "Archivia la parete prima di eliminarla definitivamente."
+
+#: apps/climbs/views.py:437
+msgid "This wall still contains routes and cannot be deleted."
+msgstr "Questa parete contiene ancora delle vie e non può essere eliminata."
+
+#: apps/climbs/views.py:442
+msgid "Wall permanently deleted."
+msgstr "Parete eliminata definitivamente."
+
+#: apps/climbs/views.py:479
+msgid "Climbing route created successfully."
+msgstr "Via creata correttamente."
+
+#: apps/climbs/views.py:504
+msgid "Climbing route updated successfully."
+msgstr "Via aggiornata correttamente."
+
+#: apps/climbs/views.py:541
+msgid "Climbing route status updated."
+msgstr "Stato della via aggiornato."
+
+#: apps/climbs/views.py:551
+msgid "Archive the route before deleting it permanently."
+msgstr "Archivia la via prima di eliminarla definitivamente."
+
+#: apps/climbs/views.py:566
+msgid "This route has related records and cannot be deleted."
+msgstr "Questa via ha dati collegati e non può essere eliminata."
+
+#: apps/climbs/views.py:571
+msgid "Climbing route permanently deleted."
+msgstr "Via eliminata definitivamente."
+
+#: apps/climbs/views.py:621
+msgid "The route image changed while you were editing. Reload and try again."
+msgstr ""
+"L'immagine della via è cambiata durante la modifica. Ricarica e riprova."
+
+#: apps/climbs/views.py:633
+msgid "Image uploaded. You can now add route markers."
+msgstr "Immagine caricata. Ora puoi aggiungere i marcatori della via."
+
+#: apps/climbs/views.py:637
+msgid ""
+"Image replaced. Previous markers were cleared because the image changed."
+msgstr ""
+"Immagine sostituita. I marcatori precedenti sono stati rimossi perché "
+"l'immagine è cambiata."
+
+#: apps/climbs/views.py:681
+msgid "Route annotation saved."
+msgstr "Annotazione della via salvata."
+
+#: apps/climbs/views.py:720
+msgid "Route image and its annotation were deleted."
+msgstr "L'immagine della via e la relativa annotazione sono state eliminate."
+
+#: apps/climbs/views.py:775
+msgid "You already recorded this route. You can update it here."
+msgstr "Hai già registrato questa via. Puoi aggiornare la ripetizione qui."
+
+#: apps/climbs/views.py:808
+msgid "Ascent recorded successfully."
+msgstr "Ripetizione registrata correttamente."
+
+#: apps/climbs/views.py:843
+msgid "Ascent updated successfully."
+msgstr "Ripetizione aggiornata correttamente."
+
+#: apps/climbs/views.py:872
+msgid "Ascent deleted successfully."
+msgstr "Ripetizione eliminata correttamente."
+
+#: apps/core/models.py:8
+msgid "Created"
+msgstr "Creato"
+
+#: apps/core/models.py:9
+msgid "Updated"
+msgstr "Modificato"
+
+#: apps/core/models.py:10 templates/climbs/route_detail.html:21
+#: templates/climbs/route_list.html:57 templates/climbs/wall_detail.html:13
+#: templates/climbs/wall_list.html:29 templates/climbs/wall_list.html:49
+#: templates/components/route_card.html:7
+msgid "Archived"
+msgstr "Archiviato"
+
+#: apps/core/models.py:11
+msgid "Restored"
+msgstr "Ripristinato"
+
+#: apps/core/models.py:12
+msgid "Deleted"
+msgstr "Eliminato"
+
+#: apps/core/models.py:13
+msgid "Role changed"
+msgstr "Ruolo modificato"
+
+#: apps/core/models.py:14
+msgid "Uploaded"
+msgstr "Caricato"
+
+#: apps/core/models.py:15
+msgid "Replaced"
+msgstr "Sostituito"
+
+#: apps/core/models.py:16
+msgid "Annotated"
+msgstr "Annotato"
+
+#: apps/core/models.py:24
+msgid "actor"
+msgstr "autore"
+
+#: apps/core/models.py:26
+msgid "action"
+msgstr "azione"
+
+#: apps/core/models.py:27
+msgid "entity type"
+msgstr "tipo di entità"
+
+#: apps/core/models.py:28
+msgid "entity ID"
+msgstr "ID entità"
+
+#: apps/core/models.py:29
+msgid "metadata"
+msgstr "metadati"
+
+#: apps/core/models.py:34
+msgid "audit log entry"
+msgstr "voce del registro audit"
+
+#: apps/core/models.py:35
+msgid "audit log entries"
+msgstr "voci del registro audit"
+
+#: templates/accounts/email/password_reset_email.html:2
+#: templates/accounts/email/password_reset_email.txt:1
+#: templates/accounts/email/verify_email.html:2
+#: templates/accounts/email/verify_email.txt:1
+#, python-format
+msgid "Hello %(username)s,"
+msgstr "Ciao %(username)s,"
+
+#: templates/accounts/email/password_reset_email.html:3
+msgid "Open the following link to choose a new password:"
+msgstr "Apri il seguente link per scegliere una nuova password:"
+
+#: templates/accounts/email/password_reset_email.html:4
+#: templates/accounts/lockout.html:10
+#: templates/accounts/password_reset_form.html:4
+#: templates/accounts/password_reset_form.html:8
+msgid "Reset password"
+msgstr "Reimposta password"
+
+#: templates/accounts/email/password_reset_email.html:5
+#: templates/accounts/email/password_reset_email.txt:6
+msgid "If you did not request a password reset, ignore this email."
+msgstr ""
+"Se non hai richiesto la reimpostazione della password, ignora questa email."
+
+#: templates/accounts/email/password_reset_email.txt:3
+msgid "open this link to choose a new password:"
+msgstr "apri questo link per scegliere una nuova password:"
+
+#: templates/accounts/email/password_reset_subject.txt:1
+msgid "Reset your ClimbingSide password"
+msgstr "Reimposta la password di ClimbingSide"
+
+#: templates/accounts/email/verify_email.html:3
+msgid "confirm your email address to activate your ClimbingSide account."
+msgstr "conferma il tuo indirizzo email per attivare l'account ClimbingSide."
+
+#: templates/accounts/email/verify_email.html:4
+msgid "Verify email"
+msgstr "Verifica email"
+
+#: templates/accounts/email/verify_email.html:5
+#: templates/accounts/email/verify_email.txt:6
+msgid ""
+"The link expires after 24 hours. If you did not create this account, ignore "
+"this email."
+msgstr ""
+"Il link scade dopo 24 ore. Se non hai creato questo account, ignora questa "
+"email."
+
+#: templates/accounts/email/verify_email.txt:3
+msgid "confirm your email address by opening this link:"
+msgstr "conferma il tuo indirizzo email aprendo questo link:"
+
+#: templates/accounts/email/verify_email_subject.txt:1
+msgid "Verify your ClimbingSide email"
+msgstr "Verifica la tua email ClimbingSide"
+
+#: templates/accounts/lockout.html:4 templates/accounts/lockout.html:8
+msgid "Too many login attempts"
+msgstr "Troppi tentativi di accesso"
+
+#: templates/accounts/lockout.html:9
+msgid "Login is temporarily blocked. Please wait before trying again."
+msgstr "L'accesso è temporaneamente bloccato. Attendi prima di riprovare."
+
+#: templates/accounts/login.html:4 templates/accounts/login.html:17
+#: templates/accounts/password_reset_complete.html:11
+#: templates/accounts/register.html:22
+#: templates/accounts/verification_complete.html:13 templates/base.html:53
+msgid "Log in"
+msgstr "Accedi"
+
+#: templates/accounts/login.html:11
+msgid "Welcome back"
+msgstr "Bentornato"
+
+#: templates/accounts/login.html:21
+msgid "Forgot your password?"
+msgstr "Hai dimenticato la password?"
+
+#: templates/accounts/login.html:22
+#: templates/accounts/resend_verification.html:4
+#: templates/accounts/resend_verification.html:10
+msgid "Resend verification email"
+msgstr "Invia nuovamente l'email di verifica"
+
+#: templates/accounts/login.html:24
+msgid "No account yet?"
+msgstr "Non hai ancora un account?"
+
+#: templates/accounts/login.html:25 templates/accounts/register.html:4
+#: templates/base.html:54
+msgid "Register"
+msgstr "Registrati"
+
+#: templates/accounts/password_change.html:4
+#: templates/accounts/password_change.html:8 templates/accounts/profile.html:35
+msgid "Change password"
+msgstr "Cambia password"
+
+#: templates/accounts/password_change.html:12
+msgid "Update password"
+msgstr "Aggiorna password"
+
+#: templates/accounts/password_change_done.html:4
+#: templates/accounts/password_change_done.html:9
+msgid "Password updated"
+msgstr "Password aggiornata"
+
+#: templates/accounts/password_change_done.html:10
+msgid "Your new password is now active."
+msgstr "La nuova password è ora attiva."
+
+#: templates/accounts/password_change_done.html:11
+msgid "Return to profile"
+msgstr "Torna al profilo"
+
+#: templates/accounts/password_reset_complete.html:4
+#: templates/accounts/password_reset_complete.html:9
+msgid "Password reset complete"
+msgstr "Reimpostazione completata"
+
+#: templates/accounts/password_reset_complete.html:10
+msgid "You can now log in with your new password."
+msgstr "Ora puoi accedere con la nuova password."
+
+#: templates/accounts/password_reset_confirm.html:4
+#: templates/accounts/password_reset_confirm.html:9
+msgid "Choose a new password"
+msgstr "Scegli una nuova password"
+
+#: templates/accounts/password_reset_confirm.html:13
+msgid "Save new password"
+msgstr "Salva la nuova password"
+
+#: templates/accounts/password_reset_confirm.html:16
+#: templates/accounts/verification_invalid.html:10
+msgid "Invalid or expired link"
+msgstr "Link non valido o scaduto"
+
+#: templates/accounts/password_reset_confirm.html:17
+msgid "Request a new password reset email."
+msgstr "Richiedi una nuova email per reimpostare la password."
+
+#: templates/accounts/password_reset_confirm.html:18
+#: templates/accounts/verification_invalid.html:12
+msgid "Request another link"
+msgstr "Richiedi un altro link"
+
+#: templates/accounts/password_reset_done.html:4
+#: templates/accounts/password_reset_done.html:9
+#: templates/accounts/verification_sent.html:4
+#: templates/accounts/verification_sent.html:11
+msgid "Check your email"
+msgstr "Controlla la tua email"
+
+#: templates/accounts/password_reset_done.html:10
+msgid ""
+"If an active account exists for that address, a password reset link has been "
+"sent."
+msgstr ""
+"Se esiste un account attivo associato a questo indirizzo, è stato inviato un "
+"link per reimpostare la password."
+
+#: templates/accounts/password_reset_form.html:9
+msgid "Enter your verified email address to receive a reset link."
+msgstr "Inserisci il tuo indirizzo email verificato per ricevere un link."
+
+#: templates/accounts/password_reset_form.html:13
+msgid "Send reset link"
+msgstr "Invia link di reimpostazione"
+
+#: templates/accounts/profile.html:4 templates/base.html:43
+msgid "My profile"
+msgstr "Il mio profilo"
+
+#: templates/accounts/profile.html:11
+msgid "Personal area"
+msgstr "Area personale"
+
+#: templates/accounts/profile.html:13
+msgid "Manage your account and personal climbing logbook."
+msgstr "Gestisci il tuo account e il registro personale di arrampicata."
+
+#: templates/accounts/profile.html:17
+msgid "Account information"
+msgstr "Informazioni sull'account"
+
+#: templates/accounts/profile.html:21
+msgid "Email status"
+msgstr "Stato email"
+
+#: templates/accounts/profile.html:24
+msgid "Verified"
+msgstr "Verificata"
+
+#: templates/accounts/profile.html:26
+msgid "Not verified"
+msgstr "Non verificata"
+
+#: templates/accounts/profile.html:31 templates/base.html:60
+msgid "Language"
+msgstr "Lingua"
+
+#: templates/accounts/profile.html:34 templates/accounts/profile_edit.html:4
+#: templates/accounts/profile_edit.html:10
+msgid "Edit profile"
+msgstr "Modifica profilo"
+
+#: templates/accounts/profile.html:36
+msgid "View public profile"
+msgstr "Visualizza profilo pubblico"
+
+#: templates/accounts/profile_edit.html:11
+msgid "Your verified email cannot be changed from this form."
+msgstr "L'email verificata non può essere modificata da questo modulo."
+
+#: templates/accounts/profile_edit.html:17
+msgid "Save changes"
+msgstr "Salva modifiche"
+
+#: templates/accounts/profile_edit.html:18
+#: templates/climbs/ascent_delete_confirm.html:15
+#: templates/climbs/ascent_form.html:17 templates/climbs/ascent_form.html:19
+#: templates/climbs/delete_confirm.html:16
+#: templates/climbs/route_annotation_form.html:64
+#: templates/climbs/route_form.html:15
+#: templates/climbs/route_image_delete_confirm.html:15
+#: templates/climbs/route_image_form.html:20 templates/climbs/wall_form.html:14
+msgid "Cancel"
+msgstr "Annulla"
+
+#: templates/accounts/public_profile.html:11
+msgid "Climber profile"
+msgstr "Profilo climber"
+
+#: templates/accounts/public_profile.html:21
+msgid "Member since"
+msgstr "Iscritto dal"
+
+#: templates/accounts/register.html:11
+msgid "Create your account"
+msgstr "Crea il tuo account"
+
+#: templates/accounts/register.html:12
+msgid "Register to save your ascents and track your progress."
+msgstr "Registrati per salvare le tue ripetizioni e seguire i tuoi progressi."
+
+#: templates/accounts/register.html:17
+msgid "Create account"
+msgstr "Crea account"
+
+#: templates/accounts/register.html:21
+msgid "Already registered?"
+msgstr "Sei già registrato?"
+
+#: templates/accounts/resend_verification.html:11
+msgid "Enter the email used during registration."
+msgstr "Inserisci l'email usata durante la registrazione."
+
+#: templates/accounts/resend_verification.html:15
+msgid "Send new link"
+msgstr "Invia nuovo link"
+
+#: templates/accounts/verification_complete.html:4
+#: templates/accounts/verification_complete.html:11
+msgid "Email verified"
+msgstr "Email verificata"
+
+#: templates/accounts/verification_complete.html:12
+msgid "Your account is active. You can now log in."
+msgstr "Il tuo account è attivo. Ora puoi accedere."
+
+#: templates/accounts/verification_invalid.html:4
+msgid "Invalid verification link"
+msgstr "Link di verifica non valido"
+
+#: templates/accounts/verification_invalid.html:11
+msgid "Request a new verification email and try again."
+msgstr "Richiedi una nuova email di verifica e riprova."
+
+#: templates/accounts/verification_sent.html:12
+msgid ""
+"If the address can receive a verification message, you will find a link to "
+"activate the account."
+msgstr ""
+"Se l'indirizzo può ricevere il messaggio di verifica, troverai un link per "
+"attivare l'account."
+
+#: templates/accounts/verification_sent.html:13
+msgid "Go to login"
+msgstr "Vai all'accesso"
+
+#: templates/base.html:7
+msgid "Climbing gym route and ascent tracker"
+msgstr "Registro delle vie e delle ripetizioni della palestra"
+
+#: templates/base.html:17
+msgid "Skip to content"
+msgstr "Vai al contenuto"
+
+#: templates/base.html:20
+msgid "Main navigation"
+msgstr "Navigazione principale"
+
+#: templates/base.html:33
+msgid "Open navigation"
+msgstr "Apri la navigazione"
+
+#: templates/base.html:38 templates/base.html:92
+#: templates/climbs/wall_list.html:4 templates/climbs/wall_list.html:12
+#: templates/core/home.html:30 templates/core/statistics_dashboard.html:20
+msgid "Walls"
+msgstr "Pareti"
+
+#: templates/base.html:39 templates/base.html:93
+#: templates/climbs/route_detail.html:10 templates/climbs/route_list.html:4
+#: templates/climbs/route_list.html:12 templates/climbs/wall_detail.html:43
+msgid "Climbing routes"
+msgstr "Vie"
+
+#: templates/base.html:40 templates/climbs/user_list.html:4
+#: templates/climbs/user_list.html:11 templates/core/home.html:31
+#: templates/core/statistics_dashboard.html:21
+msgid "Climbers"
+msgstr "Climbers"
+
+#: templates/base.html:41 templates/base.html:94
+msgid "Statistics"
+msgstr "Statistiche"
+
+#: templates/base.html:45
+msgid "Management"
+msgstr "Gestione"
+
+#: templates/base.html:46 templates/core/management_dashboard.html:10
+msgid "Administration"
+msgstr "Amministrazione"
+
+#: templates/base.html:50
+msgid "Log out"
+msgstr "Esci"
+
+#: templates/base.html:70
+msgid "Apply"
+msgstr "Applica"
+
+#: templates/base.html:91
+msgid "Footer navigation"
+msgstr "Navigazione a piè di pagina"
+
+#: templates/climbs/ascent_delete_confirm.html:4
+#: templates/climbs/ascent_delete_confirm.html:9
+#: templates/climbs/ascent_delete_confirm.html:14
+msgid "Delete ascent"
+msgstr "Elimina ripetizione"
+
+#: templates/climbs/ascent_delete_confirm.html:8
+#: templates/climbs/route_image_delete_confirm.html:8
+msgid "Confirmation required"
+msgstr "Conferma richiesta"
+
+#: templates/climbs/ascent_delete_confirm.html:10
+#, python-format
+msgid "Delete your ascent of “%(route)s”? This operation cannot be undone."
+msgstr ""
+"Eliminare la ripetizione di “%(route)s”? L'operazione non può essere "
+"annullata."
+
+#: templates/climbs/ascent_form.html:4 templates/climbs/ascent_form.html:9
+msgid "Edit ascent"
+msgstr "Modifica ripetizione"
+
+#: templates/climbs/ascent_form.html:4 templates/climbs/ascent_form.html:9
+#: templates/climbs/route_detail.html:59
+#: templates/components/climbing_profile_stats.html:6
+#: templates/core/home.html:18
+msgid "Record ascent"
+msgstr "Registra ripetizione"
+
+#: templates/climbs/ascent_form.html:8
+msgid "Personal logbook"
+msgstr "Registro personale"
+
+#: templates/climbs/ascent_form.html:10
+msgid ""
+"Add the date, your rating, perceived grade and how many attempts it took."
+msgstr ""
+"Aggiungi la data, la valutazione, il grado percepito e il numero di "
+"tentativi."
+
+#: templates/climbs/ascent_form.html:15
+msgid "Save ascent"
+msgstr "Salva ripetizione"
+
+#: templates/climbs/delete_confirm.html:4
+#: templates/climbs/delete_confirm.html:9
+msgid "Permanent deletion"
+msgstr "Eliminazione definitiva"
+
+#: templates/climbs/delete_confirm.html:8
+msgid "Irreversible operation"
+msgstr "Operazione irreversibile"
+
+#: templates/climbs/delete_confirm.html:10
+#, python-format
+msgid ""
+"You are permanently deleting the %(type)s “%(name)s”. Use this only to "
+"correct an insertion error."
+msgstr ""
+"Stai eliminando definitivamente %(type)s “%(name)s”. Usa questa funzione "
+"solo per correggere un errore di inserimento."
+
+#: templates/climbs/delete_confirm.html:15
+#: templates/climbs/route_detail.html:75 templates/climbs/wall_detail.html:29
+msgid "Delete permanently"
+msgstr "Elimina definitivamente"
+
+#: templates/climbs/route_annotation_form.html:4
+#: templates/climbs/route_annotation_form.html:10
+msgid "Edit route annotation"
+msgstr "Modifica annotazione della via"
+
+#: templates/climbs/route_annotation_form.html:11
+msgid ""
+"Choose a marker, tap the corresponding hold, and drag an existing marker to "
+"reposition it."
+msgstr ""
+"Scegli un marcatore, tocca la presa corrispondente e trascina un marcatore "
+"esistente per riposizionarlo."
+
+#: templates/climbs/route_annotation_form.html:27
+#: templates/climbs/route_detail.html:103
+msgid "L"
+msgstr "S"
+
+#: templates/climbs/route_annotation_form.html:28
+#: templates/climbs/route_detail.html:104
+msgid "R"
+msgstr "D"
+
+#: templates/climbs/route_annotation_form.html:29
+#: templates/climbs/route_detail.html:105
+msgid "TOP"
+msgstr "TOP"
+
+#: templates/climbs/route_annotation_form.html:30
+msgid "The maximum number of markers has been reached."
+msgstr "È stato raggiunto il numero massimo di marcatori."
+
+#: templates/climbs/route_annotation_form.html:32
+msgid "Annotation tools"
+msgstr "Strumenti di annotazione"
+
+#: templates/climbs/route_annotation_form.html:34
+msgid "Left start"
+msgstr "Partenza sinistra"
+
+#: templates/climbs/route_annotation_form.html:35
+msgid "Right start"
+msgstr "Partenza destra"
+
+#: templates/climbs/route_annotation_form.html:36
+msgid "Numbered move"
+msgstr "Movimento numerato"
+
+#: templates/climbs/route_annotation_form.html:37
+msgid "Top"
+msgstr "Top"
+
+#: templates/climbs/route_annotation_form.html:40
+msgid "Undo"
+msgstr "Annulla ultima modifica"
+
+#: templates/climbs/route_annotation_form.html:41
+msgid "Delete selected"
+msgstr "Elimina selezionato"
+
+#: templates/climbs/route_annotation_form.html:42
+msgid "Clear"
+msgstr "Azzera"
+
+#: templates/climbs/route_annotation_form.html:50
+#: templates/climbs/route_detail.html:109
+#, python-format
+msgid "Route %(route)s"
+msgstr "Via %(route)s"
+
+#: templates/climbs/route_annotation_form.html:56
+msgid "Interactive route annotation canvas"
+msgstr "Area interattiva per annotare la via"
+
+#: templates/climbs/route_annotation_form.html:63
+msgid "Save annotation"
+msgstr "Salva annotazione"
+
+#: templates/climbs/route_detail.html:9
+msgid "Breadcrumb"
+msgstr "Percorso di navigazione"
+
+#: templates/climbs/route_detail.html:27 templates/climbs/route_detail.html:127
+msgid "Official grade"
+msgstr "Grado ufficiale"
+
+#: templates/climbs/route_detail.html:36
+msgid "Route summary"
+msgstr "Riepilogo della via"
+
+#: templates/climbs/route_detail.html:37 templates/climbs/wall_detail.html:39
+msgid "Total ascents"
+msgstr "Ripetizioni totali"
+
+#: templates/climbs/route_detail.html:39
+#: templates/components/route_card.html:24
+msgid "Average proposed grade"
+msgstr "Grado medio proposto"
+
+#: templates/climbs/route_detail.html:43
+msgid "Average rating"
+msgstr "Valutazione media"
+
+#: templates/climbs/route_detail.html:51
+msgid "Edit my ascent"
+msgstr "Modifica la mia ripetizione"
+
+#: templates/climbs/route_detail.html:52
+msgid "My ascent details"
+msgstr "Dettagli della mia ripetizione"
+
+#: templates/climbs/route_detail.html:53
+msgid "Date"
+msgstr "Data"
+
+#: templates/climbs/route_detail.html:54
+msgid "Proposed grade"
+msgstr "Grado proposto"
+
+#: templates/climbs/route_detail.html:55 templates/core/home.html:49
+#: templates/core/home.html:71
+msgid "Rating"
+msgstr "Valutazione"
+
+#: templates/climbs/route_detail.html:56
+msgid "Attempts"
+msgstr "Tentativi"
+
+#: templates/climbs/route_detail.html:66 templates/climbs/wall_detail.html:20
+#: templates/components/ascent_card.html:25
+msgid "Edit"
+msgstr "Modifica"
+
+#: templates/climbs/route_detail.html:70 templates/climbs/wall_detail.html:24
+msgid "Restore"
+msgstr "Ripristina"
+
+#: templates/climbs/route_detail.html:70 templates/climbs/wall_detail.html:24
+msgid "Archive"
+msgstr "Archivia"
+
+#: templates/climbs/route_detail.html:87
+msgid "Edit annotation"
+msgstr "Modifica annotazione"
+
+#: templates/climbs/route_detail.html:88
+msgid "Replace image"
+msgstr "Sostituisci immagine"
+
+#: templates/climbs/route_detail.html:91
+#: templates/climbs/route_image_delete_confirm.html:14
+msgid "Delete image"
+msgstr "Elimina immagine"
+
+#: templates/climbs/route_detail.html:94
+msgid "Upload image"
+msgstr "Carica immagine"
+
+#: templates/climbs/route_detail.html:117
+msgid "No route image"
+msgstr "Nessuna immagine della via"
+
+#: templates/climbs/route_detail.html:118
+msgid "An authorised route setter can upload one image for this route."
+msgstr "Un route setter autorizzato può caricare un'immagine per questa via."
+
+#: templates/climbs/route_detail.html:125
+msgid "Route information"
+msgstr "Informazioni sulla via"
+
+#: templates/climbs/route_detail.html:128 templates/climbs/route_list.html:35
+#: templates/climbs/wall_detail.html:52
+msgid "Type"
+msgstr "Tipo"
+
+#: templates/climbs/route_detail.html:129 templates/climbs/route_list.html:26
+#: templates/core/statistics_dashboard.html:69
+msgid "Wall"
+msgstr "Parete"
+
+#: templates/climbs/route_detail.html:131
+#: templates/core/management_dashboard.html:18
+msgid "Route setters"
+msgstr "Route setter"
+
+#: templates/climbs/route_detail.html:136
+msgid "Not specified"
+msgstr "Non specificato"
+
+#: templates/climbs/route_detail.html:145
+msgid "Proposed grade distribution"
+msgstr "Distribuzione dei gradi proposti"
+
+#: templates/climbs/route_detail.html:148
+msgid "Scrollable proposed grade histogram"
+msgstr "Istogramma scorrevole dei gradi proposti"
+
+#: templates/climbs/route_detail.html:149
+msgid "Proposals grouped by decimal grade"
+msgstr "Proposte raggruppate per grado decimale"
+
+#: templates/climbs/route_detail.html:152
+msgid "No proposed grades available yet."
+msgstr "Non sono ancora disponibili gradi proposti."
+
+#: templates/climbs/route_detail.html:155
+msgid "Completed by"
+msgstr "Completata da"
+
+#: templates/climbs/route_detail.html:162
+#: templates/components/climbing_profile_stats.html:59
+#: templates/core/home.html:81
+msgid "No ascents recorded"
+msgstr "Nessuna ripetizione registrata"
+
+#: templates/climbs/route_detail.html:163
+msgid "Be the first to record this route."
+msgstr "Registra per primo questa via."
+
+#: templates/climbs/route_form.html:4 templates/climbs/route_form.html:8
+msgid "Edit climbing route"
+msgstr "Modifica via"
+
+#: templates/climbs/route_form.html:4 templates/climbs/route_form.html:8
+#: templates/climbs/route_list.html:16 templates/climbs/wall_detail.html:45
+msgid "Add climbing route"
+msgstr "Aggiungi via"
+
+#: templates/climbs/route_form.html:9
+msgid "A Project has no official grade until it is completed and graded."
+msgstr ""
+"Un Project non ha un grado ufficiale finché non viene liberato e gradato."
+
+#: templates/climbs/route_form.html:14 templates/climbs/wall_form.html:13
+msgid "Save"
+msgstr "Salva"
+
+#: templates/climbs/route_image_delete_confirm.html:4
+#: templates/climbs/route_image_delete_confirm.html:9
+msgid "Delete route image"
+msgstr "Elimina immagine della via"
+
+#: templates/climbs/route_image_delete_confirm.html:10
+#, python-format
+msgid ""
+"Delete the image and editable annotation for “%(route)s”? This operation "
+"cannot be undone."
+msgstr ""
+"Eliminare l'immagine e l'annotazione modificabile di “%(route)s”? "
+"L'operazione non può essere annullata."
+
+#: templates/climbs/route_image_form.html:4
+#: templates/climbs/route_image_form.html:9
+msgid "Replace route image"
+msgstr "Sostituisci immagine della via"
+
+#: templates/climbs/route_image_form.html:4
+#: templates/climbs/route_image_form.html:9
+msgid "Upload route image"
+msgstr "Carica immagine della via"
+
+#: templates/climbs/route_image_form.html:11
+msgid ""
+"Replacing the file will clear the current annotation because its coordinates "
+"may no longer match."
+msgstr ""
+"Sostituendo il file verrà rimossa l'annotazione attuale, perché le "
+"coordinate potrebbero non corrispondere più."
+
+#: templates/climbs/route_image_form.html:13
+msgid ""
+"Upload one image, then mark starts, moves and the top without creating a "
+"second copy."
+msgstr ""
+"Carica una sola immagine, poi segna le partenze, i movimenti e il top senza "
+"creare una seconda copia."
+
+#: templates/climbs/route_image_form.html:19
+msgid "Replace and annotate"
+msgstr "Sostituisci e annota"
+
+#: templates/climbs/route_image_form.html:19
+msgid "Upload and annotate"
+msgstr "Carica e annota"
+
+#: templates/climbs/route_list.html:11 templates/climbs/wall_list.html:11
+msgid "Gym catalogue"
+msgstr "Catalogo della palestra"
+
+#: templates/climbs/route_list.html:13
+msgid "Search routes and boulders by wall, type and French grade."
+msgstr "Cerca vie e boulder per parete, tipo e grado francese."
+
+#: templates/climbs/route_list.html:22 templates/climbs/user_list.html:18
+#: templates/climbs/wall_list.html:22
+msgid "Search"
+msgstr "Cerca"
+
+#: templates/climbs/route_list.html:23
+msgid "Route name"
+msgstr "Nome della via"
+
+#: templates/climbs/route_list.html:28 templates/climbs/wall_detail.html:11
+msgid "All walls"
+msgstr "Tutte le pareti"
+
+#: templates/climbs/route_list.html:37 templates/climbs/wall_detail.html:54
+msgid "All types"
+msgstr "Tutti i tipi"
+
+#: templates/climbs/route_list.html:44 templates/core/home.html:48
+#: templates/core/home.html:67 templates/core/statistics_dashboard.html:34
+msgid "Grade"
+msgstr "Grado"
+
+#: templates/climbs/route_list.html:46
+msgid "All grades"
+msgstr "Tutti i gradi"
+
+#: templates/climbs/route_list.html:54 templates/climbs/wall_list.html:26
+msgid "Status"
+msgstr "Stato"
+
+#: templates/climbs/route_list.html:56 templates/climbs/wall_list.html:28
+msgid "Active"
+msgstr "Attivo"
+
+#: templates/climbs/route_list.html:58 templates/climbs/wall_list.html:30
+msgid "All"
+msgstr "Tutti"
+
+#: templates/climbs/route_list.html:62 templates/climbs/user_list.html:22
+#: templates/climbs/wall_detail.html:61 templates/climbs/wall_list.html:34
+#: templates/components/climbing_profile_stats.html:43
+msgid "Order by"
+msgstr "Ordina per"
+
+#: templates/climbs/route_list.html:64 templates/climbs/wall_detail.html:65
+msgid "Grade: easiest first"
+msgstr "Grado: dal più facile"
+
+#: templates/climbs/route_list.html:65 templates/climbs/wall_detail.html:66
+msgid "Grade: hardest first"
+msgstr "Grado: dal più difficile"
+
+#: templates/climbs/route_list.html:66 templates/climbs/wall_detail.html:67
+msgid "Most ascents"
+msgstr "Più ripetizioni"
+
+#: templates/climbs/route_list.html:67 templates/climbs/wall_detail.html:69
+msgid "Highest rating"
+msgstr "Valutazione più alta"
+
+#: templates/climbs/route_list.html:68 templates/climbs/wall_detail.html:63
+msgid "Name: A–Z"
+msgstr "Nome: A–Z"
+
+#: templates/climbs/route_list.html:69 templates/climbs/wall_detail.html:64
+msgid "Name: Z–A"
+msgstr "Nome: Z–A"
+
+#: templates/climbs/route_list.html:72 templates/climbs/user_list.html:29
+#: templates/climbs/wall_detail.html:73 templates/climbs/wall_list.html:41
+#: templates/components/climbing_profile_stats.html:51
+msgid "Apply filters"
+msgstr "Applica filtri"
+
+#: templates/climbs/route_list.html:77
+#, python-format
+msgid "%(total)s climbing route"
+msgid_plural "%(total)s climbing routes"
+msgstr[0] "%(total)s via"
+msgstr[1] "%(total)s vie"
+
+#: templates/climbs/route_list.html:87
+msgid "No climbing routes found"
+msgstr "Nessuna via trovata"
+
+#: templates/climbs/route_list.html:88
+msgid "Try changing one or more filters."
+msgstr "Prova a modificare uno o più filtri."
+
+#: templates/climbs/user_list.html:10
+msgid "Community"
+msgstr "Community"
+
+#: templates/climbs/user_list.html:12
+msgid "Browse public profiles and compare completed routes and maximum grades."
+msgstr ""
+"Consulta i profili pubblici e confronta vie completate e gradi massimi."
+
+#: templates/climbs/user_list.html:19
+msgid "Username"
+msgstr "Username"
+
+#: templates/climbs/user_list.html:24 templates/climbs/wall_list.html:36
+msgid "Name"
+msgstr "Nome"
+
+#: templates/climbs/user_list.html:25
+#: templates/components/climbing_profile_stats.html:10
+#: templates/components/climbing_profile_stats.html:40
+msgid "Completed routes"
+msgstr "Vie completate"
+
+#: templates/climbs/user_list.html:26
+#: templates/components/climbing_profile_stats.html:11
+msgid "Maximum grade"
+msgstr "Grado massimo"
+
+#: templates/climbs/user_list.html:41
+msgid "completed"
+msgstr "completate"
+
+#: templates/climbs/user_list.html:42
+msgid "maximum grade"
+msgstr "grado massimo"
+
+#: templates/climbs/user_list.html:50
+msgid "No climbers found"
+msgstr "Nessun climber trovato"
+
+#: templates/climbs/user_list.html:51
+msgid "Try changing the search."
+msgstr "Prova a modificare la ricerca."
+
+#: templates/climbs/wall_detail.html:36
+msgid "Total climbs"
+msgstr "Totale vie"
+
+#: templates/climbs/wall_detail.html:68
+msgid "Fewest ascents"
+msgstr "Meno ripetizioni"
+
+#: templates/climbs/wall_detail.html:70
+msgid "Lowest rating"
+msgstr "Valutazione più bassa"
+
+#: templates/climbs/wall_detail.html:78
+msgid "Hide archived routes"
+msgstr "Nascondi vie archiviate"
+
+#: templates/climbs/wall_detail.html:80
+msgid "Include archived routes"
+msgstr "Includi vie archiviate"
+
+#: templates/climbs/wall_detail.html:91
+msgid "No routes on this wall"
+msgstr "Nessuna via su questa parete"
+
+#: templates/climbs/wall_detail.html:92
+msgid "Routes added to this wall will appear here."
+msgstr "Le vie aggiunte a questa parete compariranno qui."
+
+#: templates/climbs/wall_detail.html:97
+msgid "Climbs by grade"
+msgstr "Vie per grado"
+
+#: templates/climbs/wall_detail.html:100
+msgid "Scrollable grade histogram"
+msgstr "Istogramma scorrevole dei gradi"
+
+#: templates/climbs/wall_detail.html:101
+msgid "Climbs grouped by grade"
+msgstr "Vie raggruppate per grado"
+
+#: templates/climbs/wall_detail.html:105
+#, python-format
+msgid "%(count)s Project is not included in the histogram."
+msgid_plural "%(count)s Projects are not included in the histogram."
+msgstr[0] "%(count)s Project non è incluso nell'istogramma."
+msgstr[1] "%(count)s Project non sono inclusi nell'istogramma."
+
+#: templates/climbs/wall_detail.html:109
+msgid "No routes are available on this wall."
+msgstr "Su questa parete non sono presenti vie."
+
+#: templates/climbs/wall_form.html:4 templates/climbs/wall_form.html:8
+msgid "Edit wall"
+msgstr "Modifica parete"
+
+#: templates/climbs/wall_form.html:4 templates/climbs/wall_form.html:8
+#: templates/climbs/wall_list.html:16
+msgid "Add wall"
+msgstr "Aggiungi parete"
+
+#: templates/climbs/wall_list.html:13
+msgid "Browse every wall and the routes currently available on it."
+msgstr "Consulta tutte le pareti e le vie attualmente disponibili."
+
+#: templates/climbs/wall_list.html:23
+msgid "Wall name"
+msgstr "Nome della parete"
+
+#: templates/climbs/wall_list.html:37
+msgid "Number of routes"
+msgstr "Numero di vie"
+
+#: templates/climbs/wall_list.html:38
+msgid "Number of ascents"
+msgstr "Numero di ripetizioni"
+
+#: templates/climbs/wall_list.html:54 templates/core/home.html:29
+#: templates/core/management_dashboard.html:22
+#: templates/core/statistics_dashboard.html:16
+msgid "Active climbs"
+msgstr "Vie attive"
+
+#: templates/climbs/wall_list.html:58
+msgid "routes"
+msgstr "vie"
+
+#: templates/climbs/wall_list.html:59
+msgid "boulders"
+msgstr "boulder"
+
+#: templates/climbs/wall_list.html:64 templates/core/home.html:32
+#: templates/core/management_dashboard.html:24
+#: templates/core/statistics_dashboard.html:22
+msgid "Recorded ascents"
+msgstr "Ripetizioni registrate"
+
+#: templates/climbs/wall_list.html:74
+msgid "No walls found"
+msgstr "Nessuna parete trovata"
+
+#: templates/climbs/wall_list.html:75
+msgid "Try changing the search or filters."
+msgstr "Prova a modificare la ricerca o i filtri."
+
+#: templates/components/ascent_card.html:12 templates/core/home.html:60
+msgid "Former user"
+msgstr "Utente non attivo"
+
+#: templates/components/ascent_card.html:17
+#, python-format
+msgid "★ %(rating)s/5 rating"
+msgstr "★ valutazione %(rating)s/5"
+
+#: templates/components/ascent_card.html:26
+msgid "Delete"
+msgstr "Elimina"
+
+#: templates/components/climbing_profile_stats.html:5
+msgid "Climbing statistics"
+msgstr "Statistiche di arrampicata"
+
+#: templates/components/climbing_profile_stats.html:18
+msgid "Grade distribution"
+msgstr "Distribuzione dei gradi"
+
+#: templates/components/climbing_profile_stats.html:20
+msgid "Scrollable completed-grade histogram"
+msgstr "Istogramma scorrevole dei gradi completati"
+
+#: templates/components/climbing_profile_stats.html:21
+msgid "Completed climbs grouped by official grade"
+msgstr "Vie completate raggruppate per grado ufficiale"
+
+#: templates/components/climbing_profile_stats.html:23
+msgid "No grades available yet."
+msgstr "Non sono ancora disponibili gradi."
+
+#: templates/components/climbing_profile_stats.html:26
+#, python-format
+msgid "%(count)s completed Project is not included in the histogram."
+msgid_plural "%(count)s completed Projects are not included in the histogram."
+msgstr[0] "%(count)s Project completato non è incluso nell'istogramma."
+msgstr[1] "%(count)s Project completati non sono inclusi nell'istogramma."
+
+#: templates/components/climbing_profile_stats.html:31
+msgid "Routes by wall"
+msgstr "Vie per parete"
+
+#: templates/components/climbing_profile_stats.html:36
+msgid "No walls available yet."
+msgstr "Non sono ancora disponibili pareti."
+
+#: templates/components/climbing_profile_stats.html:45
+msgid "Date: newest first"
+msgstr "Data: dalla più recente"
+
+#: templates/components/climbing_profile_stats.html:46
+msgid "Date: oldest first"
+msgstr "Data: dalla meno recente"
+
+#: templates/components/climbing_profile_stats.html:47
+msgid "Official grade: easiest first"
+msgstr "Grado ufficiale: dal più facile"
+
+#: templates/components/climbing_profile_stats.html:48
+msgid "Official grade: hardest first"
+msgstr "Grado ufficiale: dal più difficile"
+
+#: templates/components/climbing_profile_stats.html
+msgid "No completed climbs for this type"
+msgstr "Nessuna via completata per questo tipo"
+
+#: templates/components/climbing_profile_stats.html
+msgid "Try selecting all types."
+msgstr "Prova a selezionare tutti i tipi."
+
+#: templates/components/climbing_profile_stats.html:60
+msgid "Completed routes will appear here."
+msgstr "Le vie completate compariranno qui."
+
+#: templates/components/grade_histogram.html:14
+#, python-format
+msgid "Grade %(grade)s: %(count)s entries"
+msgstr "Grado %(grade)s: %(count)s inserimenti"
+
+#: templates/components/pagination.html:4
+msgid "Pagination"
+msgstr "Paginazione"
+
+#: templates/components/pagination.html:7
+msgid "Previous"
+msgstr "Precedente"
+
+#: templates/components/pagination.html:11
+#, python-format
+msgid "Page %(current)s of %(total)s"
+msgstr "Pagina %(current)s di %(total)s"
+
+#: templates/components/pagination.html:15
+msgid "Next"
+msgstr "Successiva"
+
+#: templates/components/route_card.html:14
+#, python-format
+msgid "%(count)s ascent"
+msgid_plural "%(count)s ascents"
+msgstr[0] "%(count)s ripetizione"
+msgstr[1] "%(count)s ripetizioni"
+
+#: templates/core/home.html:4
+msgid "Home"
+msgstr "Home"
+
+#: templates/core/home.html:14
+msgid ""
+"Find your next climb, record the result and follow the progress of the whole "
+"gym."
+msgstr ""
+"Trova la prossima via, registra il risultato e segui i progressi di tutta la "
+"palestra."
+
+#: templates/core/home.html:16
+msgid "Explore climbs"
+msgstr "Esplora le vie"
+
+#: templates/core/home.html:20
+msgid "Create an account"
+msgstr "Crea un account"
+
+#: templates/core/home.html:28
+msgid "Gym at a glance"
+msgstr "La palestra in breve"
+
+#: templates/core/home.html:38
+msgid "Recent ascents"
+msgstr "Ripetizioni recenti"
+
+#: templates/core/home.html:39
+msgid "View climbers"
+msgstr "Vedi i climber"
+
+#: templates/core/home.html:46 templates/core/home.html:55
+msgid "Climber"
+msgstr "Climber"
+
+#: templates/core/home.html:47 templates/core/home.html:63
+msgid "Climb"
+msgstr "Via"
+
+#: templates/core/home.html:72
+#, python-format
+msgid "%(rating)s out of 5 stars"
+msgstr "Valutazione %(rating)s su 5 stelle"
+
+#: templates/core/home.html:82
+msgid "The latest community ascents will appear here."
+msgstr "Le ultime ripetizioni della community compariranno qui."
+
+#: templates/core/home.html:89
+msgid "Most climbed"
+msgstr "Vie più salite"
+
+#: templates/core/home.html:90
+msgid "View all"
+msgstr "Vedi tutte"
+
+#: templates/core/home.html:107
+msgid "No active climbs"
+msgstr "Nessuna via attiva"
+
+#: templates/core/home.html:108
+msgid "Climbs will appear here after they are added."
+msgstr "Le vie compariranno qui dopo essere state aggiunte."
+
+#: templates/core/management_dashboard.html:4
+#: templates/core/management_dashboard.html:11
+msgid "Management dashboard"
+msgstr "Pannello di gestione"
+
+#: templates/core/management_dashboard.html:12
+msgid "Operational summary and recent administrative activity."
+msgstr "Riepilogo operativo e attività amministrative recenti."
+
+#: templates/core/management_dashboard.html:15
+msgid "Management summary"
+msgstr "Riepilogo della gestione"
+
+#: templates/core/management_dashboard.html:16
+msgid "Active users"
+msgstr "Utenti attivi"
+
+#: templates/core/management_dashboard.html:17
+msgid "Administrators"
+msgstr "Amministratori"
+
+#: templates/core/management_dashboard.html:19
+msgid "Standard users"
+msgstr "Utenti standard"
+
+#: templates/core/management_dashboard.html:20
+msgid "Active walls"
+msgstr "Pareti attive"
+
+#: templates/core/management_dashboard.html:21
+msgid "Archived walls"
+msgstr "Pareti archiviate"
+
+#: templates/core/management_dashboard.html:23
+msgid "Archived climbs"
+msgstr "Vie archiviate"
+
+#: templates/core/management_dashboard.html:25
+msgid "Route images"
+msgstr "Immagini delle vie"
+
+#: templates/core/management_dashboard.html:29
+msgid "Management shortcuts"
+msgstr "Scorciatoie di gestione"
+
+#: templates/core/management_dashboard.html:31
+msgid "Manage users"
+msgstr "Gestisci utenti"
+
+#: templates/core/management_dashboard.html:32
+msgid "Create wall"
+msgstr "Crea parete"
+
+#: templates/core/management_dashboard.html:33
+msgid "Create climbing route"
+msgstr "Crea via"
+
+#: templates/core/management_dashboard.html:35
+msgid "Open complete audit log"
+msgstr "Apri il registro audit completo"
+
+#: templates/core/management_dashboard.html:41
+msgid "Recent administrative activity"
+msgstr "Attività amministrative recenti"
+
+#: templates/core/management_dashboard.html:47
+msgid "Date and time"
+msgstr "Data e ora"
+
+#: templates/core/management_dashboard.html:48
+msgid "Actor"
+msgstr "Autore"
+
+#: templates/core/management_dashboard.html:49
+msgid "Action"
+msgstr "Azione"
+
+#: templates/core/management_dashboard.html:50
+msgid "Entity"
+msgstr "Entità"
+
+#: templates/core/management_dashboard.html:51
+msgid "Identifier"
+msgstr "Identificativo"
+
+#: templates/core/management_dashboard.html:68
+msgid "No administrative activity has been recorded yet."
+msgstr "Non è stata ancora registrata alcuna attività amministrativa."
+
+#: templates/core/statistics_dashboard.html:4
+#: templates/core/statistics_dashboard.html:11
+msgid "Collective statistics"
+msgstr "Statistiche collettive"
+
+#: templates/core/statistics_dashboard.html:10
+msgid "Gym overview"
+msgstr "Panoramica della palestra"
+
+#: templates/core/statistics_dashboard.html:12
+msgid "A concise view of the active catalogue and the community's ascents."
+msgstr "Una sintesi del catalogo attivo e delle ripetizioni della comunità."
+
+#: templates/core/statistics_dashboard.html:15
+msgid "Summary"
+msgstr "Riepilogo"
+
+#: templates/core/statistics_dashboard.html:18
+#: templates/core/statistics_dashboard.html:37
+#: templates/core/statistics_dashboard.html:72
+msgid "Boulders"
+msgstr "Boulder"
+
+#: templates/core/statistics_dashboard.html:19
+msgid "Projects"
+msgstr "Project"
+
+#: templates/core/statistics_dashboard.html:23
+msgid "Highest active grade"
+msgstr "Grado attivo più alto"
+
+#: templates/core/statistics_dashboard.html:28
+msgid "Active climbs by grade"
+msgstr "Vie attive per grado"
+
+#: templates/core/statistics_dashboard.html:35
+#: templates/core/statistics_dashboard.html:70
+msgid "Total"
+msgstr "Totale"
+
+#: templates/core/statistics_dashboard.html:58
+msgid "No graded active climbs are available yet."
+msgstr "Non sono ancora disponibili vie attive con un grado."
+
+#: templates/core/statistics_dashboard.html:63
+msgid "Active climbs by wall"
+msgstr "Vie attive per parete"
+
+#: templates/core/statistics_dashboard.html:97
+msgid "No active walls are available yet."
+msgstr "Non sono ancora disponibili pareti attive."
+
+#: templates/core/statistics_dashboard.html:103
+msgid "Ascents in the last 12 months"
+msgstr "Ripetizioni negli ultimi 12 mesi"
+
+#: templates/core/statistics_dashboard.html:108
+msgid "Month"
+msgstr "Mese"
+
+#: templates/core/statistics_dashboard.html:109
+msgid "Ascents"
+msgstr "Ripetizioni"

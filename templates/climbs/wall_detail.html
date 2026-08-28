@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ wall.name }} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <header class="detail-header">
+            <div>
+                <a class="back-link" href="{% url 'climbs:wall_list' %}">← {% translate "All walls" %}</a>
+                <div class="badge-row">
+                    {% if wall.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
+                </div>
+                <h1>{{ wall.name }}</h1>
+            </div>
+            {% if perms.climbs.change_wall or perms.climbs.delete_wall %}
+                <div class="button-row admin-actions">
+                    {% if perms.climbs.change_wall %}
+                        <a class="button button-secondary" href="{% url 'climbs:wall_edit' wall.pk %}">{% translate "Edit" %}</a>
+                        <form method="post" action="{% url 'climbs:wall_archive' wall.pk %}">
+                            {% csrf_token %}
+                            <button class="button button-secondary" type="submit">
+                                {% if wall.is_archived %}{% translate "Restore" %}{% else %}{% translate "Archive" %}{% endif %}
+                            </button>
+                        </form>
+                    {% endif %}
+                    {% if perms.climbs.delete_wall %}
+                        <a class="button button-danger" href="{% url 'climbs:wall_delete' wall.pk %}">{% translate "Delete permanently" %}</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </header>
+
+        <div class="summary-grid wall-summary-grid">
+            <article><span>{% translate "Total climbs" %}</span><strong>{{ total_route_count }}</strong></article>
+            <article><span>{% translate "Routes" %}</span><strong>{{ discipline_counts.route|default:0 }}</strong></article>
+            <article><span>{% translate "Boulder" %}</span><strong>{{ discipline_counts.boulder|default:0 }}</strong></article>
+            <article><span>{% translate "Total ascents" %}</span><strong>{{ total_ascent_count }}</strong></article>
+        </div>
+
+        <div class="section-heading">
+            <h2>{% translate "Climbing routes" %}</h2>
+            {% if perms.climbs.add_climbingroute %}
+                <a class="button button-primary" href="{% url 'climbs:route_create' %}">{% translate "Add climbing route" %}</a>
+            {% endif %}
+        </div>
+
+        <form class="filter-bar wall-detail-filters" method="get">
+            {% if show_archived %}<input type="hidden" name="status" value="all">{% endif %}
+            <div>
+                <label for="wall-route-discipline">{% translate "Type" %}</label>
+                <select id="wall-route-discipline" name="discipline">
+                    <option value="">{% translate "All types" %}</option>
+                    {% for value, label in disciplines %}
+                        <option value="{{ value }}"{% if selected_discipline == value %} selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="wall-route-sort">{% translate "Order by" %}</label>
+                <select id="wall-route-sort" name="sort">
+                    <option value="name"{% if sort == 'name' %} selected{% endif %}>{% translate "Name: A–Z" %}</option>
+                    <option value="name_desc"{% if sort == 'name_desc' %} selected{% endif %}>{% translate "Name: Z–A" %}</option>
+                    <option value="grade"{% if sort == 'grade' %} selected{% endif %}>{% translate "Grade: easiest first" %}</option>
+                    <option value="grade_desc"{% if sort == 'grade_desc' %} selected{% endif %}>{% translate "Grade: hardest first" %}</option>
+                    <option value="ascents"{% if sort == 'ascents' %} selected{% endif %}>{% translate "Most ascents" %}</option>
+                    <option value="ascents_asc"{% if sort == 'ascents_asc' %} selected{% endif %}>{% translate "Fewest ascents" %}</option>
+                    <option value="rating"{% if sort == 'rating' %} selected{% endif %}>{% translate "Highest rating" %}</option>
+                    <option value="rating_asc"{% if sort == 'rating_asc' %} selected{% endif %}>{% translate "Lowest rating" %}</option>
+                </select>
+            </div>
+            <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
+        </form>
+
+        <div class="wall-catalogue-status">
+            {% if show_archived %}
+                <a href="{% querystring status=None %}">{% translate "Hide archived routes" %}</a>
+            {% else %}
+                <a href="{% querystring status='all' %}">{% translate "Include archived routes" %}</a>
+            {% endif %}
+        </div>
+        {% if climbing_routes %}
+            <div class="catalog-list">
+                {% for climbing_route in climbing_routes %}
+                    {% include "components/route_card.html" with show_proposed_average=True %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state catalog-empty">
+                <h2>{% translate "No routes on this wall" %}</h2>
+                <p>{% translate "Routes added to this wall will appear here." %}</p>
+            </div>
+        {% endif %}
+
+        <div class="section-heading section-heading-bordered">
+            <h2>{% translate "Climbs by grade" %}</h2>
+        </div>
+        {% if grade_distribution %}
+            {% translate "Scrollable grade histogram" as histogram_scroll_label %}
+            {% translate "Climbs grouped by grade" as histogram_content_label %}
+            {% include "components/grade_histogram.html" with buckets=grade_distribution maximum_count=maximum_grade_count histogram_scroll_label=histogram_scroll_label histogram_content_label=histogram_content_label %}
+        {% else %}
+            <p class="muted-text">{% translate "No routes are available on this wall." %}</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

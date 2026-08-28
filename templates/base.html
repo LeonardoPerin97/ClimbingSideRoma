@@ -1,0 +1,100 @@
+{% load i18n static %}
+<!doctype html>
+<html lang="{{ request.LANGUAGE_CODE|default:'it' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% translate 'Climbing gym route and ascent tracker' %}">
+    <meta name="theme-color" content="#202020">
+    <title>{% block title %}ClimbingSide{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <script src="{% static 'js/app.js' %}" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">{% translate "Skip to content" %}</a>
+
+    <header class="site-header">
+        <nav class="navbar container" aria-label="{% translate 'Main navigation' %}">
+            <a class="brand" href="{% url 'core:home' %}" aria-label="ClimbingSide home">
+                <img class="brand-logo" src="{% static 'images/climbingside-logo.jpg' %}" alt="">
+                <span class="brand-word">ClimbingSide</span>
+            </a>
+
+            <button
+                class="menu-toggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="main-menu"
+                data-menu-toggle
+            >
+                <span class="sr-only">{% translate "Open navigation" %}</span>
+                <span aria-hidden="true">☰</span>
+            </button>
+
+            <div class="nav-content" id="main-menu" data-menu>
+                <a href="{% url 'climbs:wall_list' %}">{% translate "Walls" %}</a>
+                <a href="{% url 'climbs:route_list' %}">{% translate "Climbing routes" %}</a>
+                <a href="{% url 'climbs:user_list' %}">{% translate "Climbers" %}</a>
+                <a href="{% url 'core:statistics' %}">{% translate "Statistics" %}</a>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'accounts:profile' %}">{% translate "My profile" %}</a>
+                    {% if request.user.is_staff %}
+                        <a href="{% url 'core:management_dashboard' %}">{% translate "Management" %}</a>
+                        <a href="{% url 'admin:index' %}">{% translate "Administration" %}</a>
+                    {% endif %}
+                    <form class="nav-logout" action="{% url 'accounts:logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">{% translate "Log out" %}</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">{% translate "Log in" %}</a>
+                    <a class="nav-cta" href="{% url 'accounts:register' %}">{% translate "Register" %}</a>
+                {% endif %}
+
+                <form class="language-form" action="{% url 'set_language' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <label class="sr-only" for="language-select">{% translate "Language" %}</label>
+                    <select id="language-select" name="language" data-language-select>
+                        {% get_current_language as current_language %}
+                        {% get_available_languages as available_languages %}
+                        {% for code, name in available_languages %}
+                            <option value="{{ code }}"{% if code == current_language %} selected{% endif %}>
+                                {% if code == "it" %}🇮🇹{% elif code == "en" %}🇬🇧{% else %}{{ name }}{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <noscript><button type="submit">{% translate "Apply" %}</button></noscript>
+                </form>
+            </div>
+        </nav>
+    </header>
+
+    {% if messages %}
+        <div class="container messages" role="status" aria-live="polite">
+            {% for message in messages %}
+                <p class="message message-{{ message.tags|default:'info' }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <strong>ClimbingSide</strong>
+            <nav aria-label="{% translate 'Footer navigation' %}">
+                <a href="{% url 'climbs:wall_list' %}">{% translate "Walls" %}</a>
+                <a href="{% url 'climbs:route_list' %}">{% translate "Climbing routes" %}</a>
+                <a href="{% url 'core:statistics' %}">{% translate "Statistics" %}</a>
+            </nav>
+        </div>
+    </footer>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

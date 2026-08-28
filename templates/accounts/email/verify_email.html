@@ -1,0 +1,5 @@
+{% load i18n %}
+<p>{% blocktranslate with username=user.username %}Hello {{ username }},{% endblocktranslate %}</p>
+<p>{% translate "confirm your email address to activate your ClimbingSide account." %}</p>
+<p><a href="{{ verification_url }}">{% translate "Verify email" %}</a></p>
+<p>{% translate "The link expires after 24 hours. If you did not create this account, ignore this email." %}</p>

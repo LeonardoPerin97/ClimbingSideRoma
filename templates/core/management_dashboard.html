@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Management dashboard" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <header class="catalog-header">
+            <p class="eyebrow">{% translate "Administration" %}</p>
+            <h1>{% translate "Management dashboard" %}</h1>
+            <p>{% translate "Operational summary and recent administrative activity." %}</p>
+        </header>
+
+        <dl class="summary-grid" aria-label="{% translate 'Management summary' %}">
+            <div><dt>{% translate "Active users" %}</dt><dd>{{ active_user_count }}</dd></div>
+            <div><dt>{% translate "Administrators" %}</dt><dd>{{ admin_count }}</dd></div>
+            <div><dt>{% translate "Route setters" %}</dt><dd>{{ route_setter_count }}</dd></div>
+            <div><dt>{% translate "Standard users" %}</dt><dd>{{ standard_user_count }}</dd></div>
+            <div><dt>{% translate "Active walls" %}</dt><dd>{{ active_wall_count }}</dd></div>
+            <div><dt>{% translate "Archived walls" %}</dt><dd>{{ archived_wall_count }}</dd></div>
+            <div><dt>{% translate "Active climbs" %}</dt><dd>{{ active_route_count }}</dd></div>
+            <div><dt>{% translate "Archived climbs" %}</dt><dd>{{ archived_route_count }}</dd></div>
+            <div><dt>{% translate "Recorded ascents" %}</dt><dd>{{ ascent_count }}</dd></div>
+            <div><dt>{% translate "Route images" %}</dt><dd>{{ image_count }}</dd></div>
+        </dl>
+
+        <section class="data-card" aria-labelledby="quick-actions-heading">
+            <h2 id="quick-actions-heading">{% translate "Management shortcuts" %}</h2>
+            <div class="button-row">
+                <a class="button button-primary" href="{% url 'admin:accounts_user_changelist' %}">{% translate "Manage users" %}</a>
+                <a class="button button-primary" href="{% url 'climbs:wall_create' %}">{% translate "Create wall" %}</a>
+                <a class="button button-primary" href="{% url 'climbs:route_create' %}">{% translate "Create climbing route" %}</a>
+                <a class="button button-secondary" href="{% url 'admin:core_auditlogentry_changelist' %}">
+                    {% translate "Open complete audit log" %}
+                </a>
+            </div>
+        </section>
+
+        <section class="data-card" aria-labelledby="audit-heading">
+            <h2 id="audit-heading">{% translate "Recent administrative activity" %}</h2>
+            {% if recent_audit_entries %}
+                <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">{% translate "Date and time" %}</th>
+                                <th scope="col">{% translate "Actor" %}</th>
+                                <th scope="col">{% translate "Action" %}</th>
+                                <th scope="col">{% translate "Entity" %}</th>
+                                <th scope="col">{% translate "Identifier" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in recent_audit_entries %}
+                                <tr>
+                                    <td>{{ entry.created_at|date:"SHORT_DATETIME_FORMAT" }}</td>
+                                    <td>{% if entry.actor %}{{ entry.actor.username }}{% else %}—{% endif %}</td>
+                                    <td>{{ entry.get_action_display }}</td>
+                                    <td>{{ entry.entity_type }}</td>
+                                    <td>{{ entry.entity_id }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="empty-state">{% translate "No administrative activity has been recorded yet." %}</p>
+            {% endif %}
+        </section>
+    </div>
+</section>
+{% endblock %}

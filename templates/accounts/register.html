@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Register" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container narrow-container">
+        <div class="form-card">
+            <p class="eyebrow">ClimbingSide</p>
+            <h1>{% translate "Create your account" %}</h1>
+            <p>{% translate "Register to save your ascents and track your progress." %}</p>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% include "components/form.html" %}
+                <button class="button button-primary button-block" type="submit">
+                    {% translate "Create account" %}
+                </button>
+            </form>
+            <p class="form-footer">
+                {% translate "Already registered?" %}
+                <a href="{% url 'accounts:login' %}">{% translate "Log in" %}</a>
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

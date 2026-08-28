@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Email verified" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container narrow-container">
+        <div class="form-card centered-card">
+            <span class="success-icon" aria-hidden="true">✓</span>
+            <h1>{% translate "Email verified" %}</h1>
+            <p>{% translate "Your account is active. You can now log in." %}</p>
+            <a class="button button-primary" href="{% url 'accounts:login' %}">{% translate "Log in" %}</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

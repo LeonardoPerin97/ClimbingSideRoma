@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% if editing %}{% translate "Edit climbing route" %}{% else %}{% translate "Add climbing route" %}{% endif %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section"><div class="container narrow-container"><div class="form-card">
+    <h1>{% if editing %}{% translate "Edit climbing route" %}{% else %}{% translate "Add climbing route" %}{% endif %}</h1>
+    <p>{% translate "A Project has no official grade until it is completed and graded." %}</p>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% include "components/form.html" %}
+        <div class="button-row">
+            <button class="button button-primary" type="submit">{% translate "Save" %}</button>
+            <a class="button button-secondary" href="{% if editing %}{% url 'climbs:route_detail' climbing_route.pk %}{% else %}{% url 'climbs:route_list' %}{% endif %}">{% translate "Cancel" %}</a>
+        </div>
+    </form>
+</div></div></section>
+{% endblock %}

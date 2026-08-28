@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Delete route image" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section"><div class="container narrow-container"><div class="form-card danger-card">
+    <p class="eyebrow danger-text">{% translate "Confirmation required" %}</p>
+    <h1>{% translate "Delete route image" %}</h1>
+    <p>{% blocktranslate with route=climbing_route.name %}Delete the image and editable annotation for “{{ route }}”? This operation cannot be undone.{% endblocktranslate %}</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="button-row">
+            <button class="button button-danger" type="submit">{% translate "Delete image" %}</button>
+            <a class="button button-secondary" href="{% url 'climbs:route_detail' climbing_route.pk %}">{% translate "Cancel" %}</a>
+        </div>
+    </form>
+</div></div></section>
+{% endblock %}

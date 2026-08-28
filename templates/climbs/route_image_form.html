@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% if replacing %}{% translate "Replace route image" %}{% else %}{% translate "Upload route image" %}{% endif %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section"><div class="container narrow-container"><div class="form-card">
+    <p class="eyebrow">{{ climbing_route.name }}</p>
+    <h1>{% if replacing %}{% translate "Replace route image" %}{% else %}{% translate "Upload route image" %}{% endif %}</h1>
+    {% if replacing %}
+        <p>{% translate "Replacing the file will clear the current annotation because its coordinates may no longer match." %}</p>
+    {% else %}
+        <p>{% translate "Upload one image, then mark starts, moves and the top without creating a second copy." %}</p>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {% include "components/form.html" %}
+        <div class="button-row">
+            <button class="button button-primary" type="submit">{% if replacing %}{% translate "Replace and annotate" %}{% else %}{% translate "Upload and annotate" %}{% endif %}</button>
+            <a class="button button-secondary" href="{% url 'climbs:route_detail' climbing_route.pk %}">{% translate "Cancel" %}</a>
+        </div>
+    </form>
+</div></div></section>
+{% endblock %}

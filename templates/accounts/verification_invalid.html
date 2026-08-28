@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Invalid verification link" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container narrow-container">
+        <div class="form-card centered-card">
+            <h1>{% translate "Invalid or expired link" %}</h1>
+            <p>{% translate "Request a new verification email and try again." %}</p>
+            <a class="button button-primary" href="{% url 'accounts:resend_verification' %}">{% translate "Request another link" %}</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

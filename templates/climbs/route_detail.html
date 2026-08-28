@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ climbing_route.name }} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <nav class="breadcrumb" aria-label="{% translate 'Breadcrumb' %}">
+            <a href="{% url 'climbs:route_list' %}">{% translate "Climbing routes" %}</a>
+            <span aria-hidden="true">›</span>
+            <a href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">{{ climbing_route.name }}</span>
+        </nav>
+
+        <header class="detail-header route-detail-header">
+            <div>
+                <div class="badge-row">
+                    <span class="badge badge-discipline">{{ climbing_route.get_discipline_display }}</span>
+                    {% if climbing_route.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
+                </div>
+                <div class="route-title-row">
+                    <h1>{{ climbing_route.name }}</h1>
+                    <div
+                        class="route-grade-large{% if climbing_route.is_project %} grade-project{% endif %}"
+                        aria-label="{% translate 'Official grade' %}: {{ climbing_route.display_grade }}"
+                    >
+                        {{ climbing_route.display_grade }}
+                    </div>
+                </div>
+                <p><a href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a></p>
+            </div>
+        </header>
+
+        <dl class="route-summary" aria-label="{% translate 'Route summary' %}">
+            <div><dt>{% translate "Total ascents" %}</dt><dd>{{ climbing_route.ascent_count }}</dd></div>
+            <div>
+                <dt>{% translate "Average proposed grade" %}</dt>
+                <dd>{{ average_proposed_grade }}</dd>
+            </div>
+            <div>
+                <dt>{% translate "Average rating" %}</dt>
+                <dd class="rating-stars">{% if climbing_route.average_rating %}★ {{ climbing_route.average_rating|floatformat:1 }}/5{% else %}—{% endif %}</dd>
+            </div>
+        </dl>
+
+        <div class="route-action-bar">
+            <div class="route-user-actions">
+                {% if user_ascent %}
+                    <a class="button button-primary" href="{% url 'climbs:ascent_edit' user_ascent.pk %}">{% translate "Edit my ascent" %}</a>
+                    <dl class="my-ascent-summary" aria-label="{% translate 'My ascent details' %}">
+                        <div><dt>{% translate "Date" %}</dt><dd>{{ user_ascent.date|date:"SHORT_DATE_FORMAT" }}</dd></div>
+                        <div><dt>{% translate "Proposed grade" %}</dt><dd>{{ user_ascent.display_proposed_grade }}</dd></div>
+                        <div><dt>{% translate "Rating" %}</dt><dd class="rating-stars">★ {{ user_ascent.rating }}/5</dd></div>
+                        <div><dt>{% translate "Attempts" %}</dt><dd>{{ user_ascent.display_attempts }}</dd></div>
+                    </dl>
+                {% elif perms.climbs.add_ascent %}
+                    <a class="button button-accent" href="{% url 'climbs:ascent_create' %}?route={{ climbing_route.pk }}">{% translate "Record ascent" %}</a>
+                {% endif %}
+            </div>
+
+            {% if perms.climbs.change_climbingroute or perms.climbs.delete_climbingroute %}
+                <div class="button-row admin-actions">
+                {% if perms.climbs.change_climbingroute %}
+                    <a class="button button-secondary" href="{% url 'climbs:route_edit' climbing_route.pk %}">{% translate "Edit" %}</a>
+                    <form method="post" action="{% url 'climbs:route_archive' climbing_route.pk %}">
+                        {% csrf_token %}
+                        <button class="button button-secondary" type="submit">
+                            {% if climbing_route.is_archived %}{% translate "Restore" %}{% else %}{% translate "Archive" %}{% endif %}
+                        </button>
+                    </form>
+                {% endif %}
+                {% if perms.climbs.delete_climbingroute %}
+                    <a class="button button-danger" href="{% url 'climbs:route_delete' climbing_route.pk %}">{% translate "Delete permanently" %}</a>
+                {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <section class="route-media-section" aria-labelledby="route-image-heading">
+            <div class="section-heading">
+                <h2 id="route-image-heading">{% translate "Route image" %}</h2>
+                <div class="button-row media-actions">
+                    {% if route_image %}
+                        {% if perms.climbs.change_routeimage %}
+                            <a class="button button-secondary" href="{% url 'climbs:route_annotation_edit' climbing_route.pk %}">{% translate "Edit annotation" %}</a>
+                            <a class="button button-secondary" href="{% url 'climbs:route_image_upload' climbing_route.pk %}">{% translate "Replace image" %}</a>
+                        {% endif %}
+                        {% if perms.climbs.delete_routeimage %}
+                            <a class="button button-danger" href="{% url 'climbs:route_image_delete' climbing_route.pk %}">{% translate "Delete image" %}</a>
+                        {% endif %}
+                    {% elif perms.climbs.add_routeimage %}
+                        <a class="button button-primary" href="{% url 'climbs:route_image_upload' climbing_route.pk %}">{% translate "Upload image" %}</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% if route_image %}
+                <div
+                    class="route-image-stage"
+                    data-annotation-viewer
+                    data-annotation-source="route-annotation-data"
+                    data-label-left="{% translate 'L' %}"
+                    data-label-right="{% translate 'R' %}"
+                    data-label-top="{% translate 'TOP' %}"
+                >
+                    <img
+                        src="{{ route_image.image.url }}"
+                        alt="{% blocktranslate with route=climbing_route.name %}Route {{ route }}{% endblocktranslate %}"
+                        data-route-image
+                    >
+                    <canvas data-annotation-canvas aria-hidden="true"></canvas>
+                </div>
+                {{ route_image.annotations|json_script:"route-annotation-data" }}
+            {% else %}
+                <div class="empty-state catalog-empty">
+                    <h3>{% translate "No route image" %}</h3>
+                    <p>{% translate "An authorised route setter can upload one image for this route." %}</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <div class="detail-grid detail-grid-single">
+            <article class="profile-card">
+                <h2>{% translate "Route information" %}</h2>
+                <dl class="profile-data">
+                    <div><dt>{% translate "Official grade" %}</dt><dd>{{ climbing_route.display_grade }}</dd></div>
+                    <div><dt>{% translate "Type" %}</dt><dd>{{ climbing_route.get_discipline_display }}</dd></div>
+                    <div><dt>{% translate "Wall" %}</dt><dd>{{ climbing_route.wall.name }}</dd></div>
+                    <div>
+                        <dt>{% translate "Route setters" %}</dt>
+                        <dd>
+                            {% for setter in climbing_route.route_setters.all %}
+                                <a href="{% url 'accounts:public_profile' setter.username %}">{{ setter.username }}</a>{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                {% translate "Not specified" %}
+                            {% endfor %}
+                        </dd>
+                    </div>
+                </dl>
+            </article>
+        </div>
+
+        <div class="section-heading section-heading-bordered">
+            <h2>{% translate "Proposed grade distribution" %}</h2>
+        </div>
+        {% if proposed_distribution %}
+            {% translate "Scrollable proposed grade histogram" as histogram_scroll_label %}
+            {% translate "Proposals grouped by decimal grade" as histogram_content_label %}
+            {% include "components/grade_histogram.html" with buckets=proposed_distribution maximum_count=maximum_proposed_grade_count histogram_scroll_label=histogram_scroll_label histogram_content_label=histogram_content_label %}
+        {% else %}
+            <p class="muted-text">{% translate "No proposed grades available yet." %}</p>
+        {% endif %}
+
+        <div class="section-heading"><h2>{% translate "Completed by" %}</h2></div>
+        {% if ascents %}
+            <div class="ascent-list">
+                {% for ascent in ascents %}{% include "components/ascent_card.html" with show_user=True %}{% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state catalog-empty">
+                <h3>{% translate "No ascents recorded" %}</h3>
+                <p>{% translate "Be the first to record this route." %}</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    {% if route_image %}<script src="{% static 'js/route-annotation.js' %}" defer></script>{% endif %}
+{% endblock %}

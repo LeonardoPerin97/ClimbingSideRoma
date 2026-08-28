@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Walls" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <header class="catalog-header">
+            <div>
+                <p class="eyebrow">{% translate "Gym catalogue" %}</p>
+                <h1>{% translate "Walls" %}</h1>
+                <p>{% translate "Browse every wall and the routes currently available on it." %}</p>
+            </div>
+            {% if perms.climbs.add_wall %}
+                <a class="button button-primary" href="{% url 'climbs:wall_create' %}">{% translate "Add wall" %}</a>
+            {% endif %}
+        </header>
+
+        <form class="filter-bar" method="get">
+            <div>
+                <label for="wall-search">{% translate "Search" %}</label>
+                <input id="wall-search" name="q" type="search" value="{{ search }}" placeholder="{% translate 'Wall name' %}">
+            </div>
+            <div>
+                <label for="wall-status">{% translate "Status" %}</label>
+                <select id="wall-status" name="status">
+                    <option value="active"{% if status == 'active' %} selected{% endif %}>{% translate "Active" %}</option>
+                    <option value="archived"{% if status == 'archived' %} selected{% endif %}>{% translate "Archived" %}</option>
+                    <option value="all"{% if status == 'all' %} selected{% endif %}>{% translate "All" %}</option>
+                </select>
+            </div>
+            <div>
+                <label for="wall-sort">{% translate "Order by" %}</label>
+                <select id="wall-sort" name="sort">
+                    <option value="name"{% if sort == 'name' %} selected{% endif %}>{% translate "Name" %}</option>
+                    <option value="routes"{% if sort == 'routes' %} selected{% endif %}>{% translate "Number of routes" %}</option>
+                    <option value="ascents"{% if sort == 'ascents' %} selected{% endif %}>{% translate "Number of ascents" %}</option>
+                </select>
+            </div>
+            <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
+        </form>
+
+        {% if page.object_list %}
+            <div class="wall-grid">
+                {% for wall in page %}
+                    <article class="wall-card{% if wall.is_archived %} is-archived{% endif %}">
+                        <div class="badge-row">
+                            {% if wall.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
+                        </div>
+                        <h2><a href="{% url 'climbs:wall_detail' wall.pk %}">{{ wall.name }}</a></h2>
+                        <dl class="wall-stats">
+                            <div class="wall-stat wall-stat-climbs">
+                                <dt>{% translate "Active climbs" %}</dt>
+                                <dd>
+                                    <strong>{{ wall.route_count }}</strong>
+                                    <span>
+                                        {{ wall.route_discipline_count }} {% translate "routes" %}
+                                        · {{ wall.boulder_count }} {% translate "boulders" %}
+                                    </span>
+                                </dd>
+                            </div>
+                            <div class="wall-stat wall-stat-ascents">
+                                <dt>{% translate "Recorded ascents" %}</dt>
+                                <dd><strong>{{ wall.ascent_count }}</strong></dd>
+                            </div>
+                        </dl>
+                    </article>
+                {% endfor %}
+            </div>
+            {% include "components/pagination.html" %}
+        {% else %}
+            <div class="empty-state catalog-empty">
+                <h2>{% translate "No walls found" %}</h2>
+                <p>{% translate "Try changing the search or filters." %}</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

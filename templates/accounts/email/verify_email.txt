@@ -1,0 +1,6 @@
+{% load i18n %}{% blocktranslate with username=user.username %}Hello {{ username }},{% endblocktranslate %}
+
+{% translate "confirm your email address by opening this link:" %}
+{{ verification_url }}
+
+{% translate "The link expires after 24 hours. If you did not create this account, ignore this email." %}

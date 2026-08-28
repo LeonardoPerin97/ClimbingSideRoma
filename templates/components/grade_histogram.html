@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<div class="histogram-scroll" tabindex="0" aria-label="{{ histogram_scroll_label }}">
+    <div class="grade-histogram">
+        <div class="histogram-y-axis" aria-hidden="true">
+            <span>{{ maximum_count }}</span>
+            <span>0</span>
+        </div>
+        <div class="histogram-plot" role="list" aria-label="{{ histogram_content_label }}">
+            {% for bucket in buckets %}
+                <div
+                    class="histogram-column"
+                    role="listitem"
+                    aria-label="{% blocktranslate with grade=bucket.label count=bucket.count %}Grade {{ grade }}: {{ count }} entries{% endblocktranslate %}"
+                >
+                    <span class="histogram-value" aria-hidden="true">{{ bucket.count }}</span>
+                    <span class="histogram-track" aria-hidden="true">
+                        <span class="histogram-bar{% if not bucket.count %} is-zero{% endif %}" style="--histogram-height: {% widthratio bucket.count maximum_count 100 %}%;"></span>
+                    </span>
+                    <span class="histogram-label" aria-hidden="true">{{ bucket.label }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Too many login attempts" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section"><div class="container narrow-container"><div class="form-card centered-card">
+    <h1>{% translate "Too many login attempts" %}</h1>
+    <p>{% translate "Login is temporarily blocked. Please wait before trying again." %}</p>
+    <a class="button button-secondary" href="{% url 'accounts:password_reset' %}">{% translate "Reset password" %}</a>
+</div></div></section>
+{% endblock %}

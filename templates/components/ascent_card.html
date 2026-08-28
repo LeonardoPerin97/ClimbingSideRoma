@@ -1,0 +1,30 @@
+{% load i18n %}
+
+<article class="ascent-card">
+    <div class="ascent-main">
+        {% if show_route %}
+            <h3><a href="{% url 'climbs:route_detail' ascent.climbing_route_id %}">{{ ascent.climbing_route.name }}</a></h3>
+            <p><a href="{% url 'climbs:wall_detail' ascent.climbing_route.wall_id %}">{{ ascent.climbing_route.wall.name }}</a> · {{ ascent.climbing_route.get_discipline_display }} · {{ ascent.climbing_route.display_grade }}</p>
+        {% elif show_user %}
+            {% if ascent.user.is_active %}
+                <h3><a href="{% url 'accounts:public_profile' ascent.user.username %}">{{ ascent.user.username }}</a></h3>
+            {% else %}
+                <h3>{% translate "Former user" %}</h3>
+            {% endif %}
+        {% endif %}
+        <div class="ascent-meta">
+            <span>{{ ascent.date|date:"DATE_FORMAT" }}</span>
+            <span class="rating-stars">{% blocktranslate with rating=ascent.rating %}★ {{ rating }}/5 rating{% endblocktranslate %}</span>
+            <span>{{ ascent.display_attempts }}</span>
+        </div>
+    </div>
+    <div class="ascent-side">
+        <span class="grade-chip">{{ ascent.display_proposed_grade }}</span>
+        {% if perms.climbs.change_ascent and ascent.user_id == request.user.id %}
+            <div class="compact-actions">
+                <a href="{% url 'climbs:ascent_edit' ascent.pk %}">{% translate "Edit" %}</a>
+                <a class="danger-text" href="{% url 'climbs:ascent_delete' ascent.pk %}">{% translate "Delete" %}</a>
+            </div>
+        {% endif %}
+    </div>
+</article>

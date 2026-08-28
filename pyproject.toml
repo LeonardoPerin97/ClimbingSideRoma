@@ -1,0 +1,70 @@
+[project]
+name = "climbingside"
+version = "0.9.0"
+description = "Modern climbing-gym route and ascent tracker"
+readme = "README.md"
+requires-python = ">=3.12,<3.15"
+dependencies = [
+    "cloudinary>=1.46,<2",
+    "django>=5.2.17,<5.3",
+    "django-environ>=0.12,<1",
+    "gunicorn>=23,<24",
+    "pillow>=11.3,<13",
+    "psycopg[binary]>=3.2,<4",
+    "whitenoise>=6.9,<7",
+]
+
+[dependency-groups]
+dev = [
+    "django-stubs[compatible-mypy]>=5.2,<6",
+    "mypy>=1.17,<2",
+    "pre-commit>=4.3,<5",
+    "pytest>=8.4,<9",
+    "pytest-cov>=6.2,<7",
+    "pytest-django>=4.11,<5",
+    "ruff>=0.12,<1",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+addopts = "--strict-markers --strict-config --showlocals"
+python_files = ["test_*.py", "*_test.py"]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["apps"]
+
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+extend-exclude = ["**/migrations/*.py"]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4", "SIM", "RUF"]
+ignore = ["RUF012"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["apps", "config"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["mypy_django_plugin.main"]
+check_untyped_defs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+no_implicit_optional = true
+show_error_codes = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings.test"

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Home" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="home-hero">
+    {% if hero_route_image %}
+        <img class="home-hero-image" src="{{ hero_route_image.image.url }}" alt="" aria-hidden="true">
+    {% endif %}
+    <div class="home-hero-overlay" aria-hidden="true"></div>
+    <div class="container home-hero-content">
+        <h1>Climbing Side Roma</h1>
+        <p>{% translate "Find your next climb, record the result and follow the progress of the whole gym." %}</p>
+        <div class="button-row hero-actions">
+            <a class="button button-accent" href="{% url 'climbs:route_list' %}">{% translate "Explore climbs" %}</a>
+            {% if request.user.is_authenticated %}
+                <a class="button button-ghost" href="{% url 'climbs:ascent_create' %}">{% translate "Record ascent" %}</a>
+            {% else %}
+                <a class="button button-ghost" href="{% url 'accounts:register' %}">{% translate "Create an account" %}</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="home-content">
+    <div class="container">
+        <dl class="home-summary" aria-label="{% translate 'Gym at a glance' %}">
+            <div><dt>{% translate "Active climbs" %}</dt><dd>{{ active_route_count }}</dd></div>
+            <div><dt>{% translate "Walls" %}</dt><dd>{{ active_wall_count }}</dd></div>
+            <div><dt>{% translate "Climbers" %}</dt><dd>{{ active_user_count }}</dd></div>
+            <div><dt>{% translate "Recorded ascents" %}</dt><dd>{{ ascent_count }}</dd></div>
+        </dl>
+
+        <div class="home-dashboard">
+            <section class="home-feed" aria-labelledby="recent-ascents-heading">
+                <div class="section-heading section-heading-bordered">
+                    <h2 id="recent-ascents-heading">{% translate "Recent ascents" %}</h2>
+                    <a href="{% url 'climbs:user_list' %}">{% translate "View climbers" %} →</a>
+                </div>
+                {% if recent_ascents %}
+                    <div class="table-scroll">
+                        <table class="activity-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">{% translate "Climber" %}</th>
+                                    <th scope="col">{% translate "Climb" %}</th>
+                                    <th scope="col">{% translate "Grade" %}</th>
+                                    <th scope="col">{% translate "Rating" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ascent in recent_ascents %}
+                                    <tr>
+                                        <td data-label="{% translate 'Climber' %}">
+                                            <span class="avatar-placeholder" aria-hidden="true">{{ ascent.user.username|first|upper }}</span>
+                                            {% if ascent.user.is_active %}
+                                                <a href="{% url 'accounts:public_profile' ascent.user.username %}">{{ ascent.user.username }}</a>
+                                            {% else %}
+                                                {% translate "Former user" %}
+                                            {% endif %}
+                                        </td>
+                                        <td data-label="{% translate 'Climb' %}">
+                                            <a class="activity-route" href="{% url 'climbs:route_detail' ascent.climbing_route_id %}">{{ ascent.climbing_route.name }}</a>
+                                            <a class="activity-wall" href="{% url 'climbs:wall_detail' ascent.climbing_route.wall_id %}">{{ ascent.climbing_route.wall.name }}</a>
+                                        </td>
+                                        <td data-label="{% translate 'Grade' %}">
+                                            <span class="grade-inline">{{ ascent.climbing_route.display_grade }}</span>
+                                            <small>{{ ascent.display_proposed_grade }}</small>
+                                        </td>
+                                        <td data-label="{% translate 'Rating' %}">
+                                            <span class="rating-stars" aria-label="{% blocktranslate with rating=ascent.rating %}{{ rating }} out of 5 stars{% endblocktranslate %}">★ {{ ascent.rating }}/5</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <h3>{% translate "No ascents recorded" %}</h3>
+                        <p>{% translate "The latest community ascents will appear here." %}</p>
+                    </div>
+                {% endif %}
+            </section>
+
+            <aside class="home-sidebar" aria-labelledby="popular-climbs-heading">
+                <div class="section-heading section-heading-bordered">
+                    <h2 id="popular-climbs-heading">{% translate "Most climbed" %}</h2>
+                    <a href="{% url 'climbs:route_list' %}?sort=ascents">{% translate "View all" %} →</a>
+                </div>
+                {% if popular_routes %}
+                    <ol class="popular-list">
+                        {% for climbing_route in popular_routes %}
+                            <li>
+                                <span class="popular-rank">{{ forloop.counter|stringformat:"02d" }}</span>
+                                <div>
+                                    <a href="{% url 'climbs:route_detail' climbing_route.pk %}">{{ climbing_route.name }}</a>
+                                    <span>{{ climbing_route.wall.name }} · {{ climbing_route.ascent_count }} {% translate "ascents" %}</span>
+                                </div>
+                                <strong class="grade-inline{% if climbing_route.is_project %} grade-project{% endif %}">{{ climbing_route.display_grade }}</strong>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                {% else %}
+                    <div class="empty-state">
+                        <h3>{% translate "No active climbs" %}</h3>
+                        <p>{% translate "Climbs will appear here after they are added." %}</p>
+                    </div>
+                {% endif %}
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}

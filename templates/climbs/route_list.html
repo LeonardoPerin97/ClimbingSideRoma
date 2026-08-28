@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Climbing routes" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <header class="catalog-header">
+            <div>
+                <p class="eyebrow">{% translate "Gym catalogue" %}</p>
+                <h1>{% translate "Climbing routes" %}</h1>
+                <p>{% translate "Search routes and boulders by wall, type and French grade." %}</p>
+            </div>
+            {% if perms.climbs.add_climbingroute %}
+                <a class="button button-primary" href="{% url 'climbs:route_create' %}">{% translate "Add climbing route" %}</a>
+            {% endif %}
+        </header>
+
+        <form class="filter-bar route-filters" method="get">
+            <div>
+                <label for="route-search">{% translate "Search" %}</label>
+                <input id="route-search" name="q" type="search" value="{{ search }}" placeholder="{% translate 'Route name' %}">
+            </div>
+            <div>
+                <label for="route-wall">{% translate "Wall" %}</label>
+                <select id="route-wall" name="wall">
+                    <option value="">{% translate "All walls" %}</option>
+                    {% for wall in walls %}
+                        <option value="{{ wall.pk }}"{% if selected_wall == wall.pk|stringformat:'s' %} selected{% endif %}>{{ wall.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="route-discipline">{% translate "Type" %}</label>
+                <select id="route-discipline" name="discipline">
+                    <option value="">{% translate "All types" %}</option>
+                    {% for value, label in disciplines %}
+                        <option value="{{ value }}"{% if selected_discipline == value %} selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="route-grade">{% translate "Grade" %}</label>
+                <select id="route-grade" name="grade">
+                    <option value="">{% translate "All grades" %}</option>
+                    <option value="project"{% if selected_grade == 'project' %} selected{% endif %}>{% translate "Project" %}</option>
+                    {% for grade in grades %}
+                        <option value="{{ grade }}"{% if selected_grade == grade %} selected{% endif %}>{{ grade }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="route-status">{% translate "Status" %}</label>
+                <select id="route-status" name="status">
+                    <option value="active"{% if status == 'active' %} selected{% endif %}>{% translate "Active" %}</option>
+                    <option value="archived"{% if status == 'archived' %} selected{% endif %}>{% translate "Archived" %}</option>
+                    <option value="all"{% if status == 'all' %} selected{% endif %}>{% translate "All" %}</option>
+                </select>
+            </div>
+            <div>
+                <label for="route-sort">{% translate "Order by" %}</label>
+                <select id="route-sort" name="sort">
+                    <option value="grade"{% if sort == 'grade' %} selected{% endif %}>{% translate "Grade: easiest first" %}</option>
+                    <option value="grade_desc"{% if sort == 'grade_desc' %} selected{% endif %}>{% translate "Grade: hardest first" %}</option>
+                    <option value="ascents"{% if sort == 'ascents' %} selected{% endif %}>{% translate "Most ascents" %}</option>
+                    <option value="rating"{% if sort == 'rating' %} selected{% endif %}>{% translate "Highest rating" %}</option>
+                    <option value="name"{% if sort == 'name' %} selected{% endif %}>{% translate "Name: A–Z" %}</option>
+                    <option value="name_desc"{% if sort == 'name_desc' %} selected{% endif %}>{% translate "Name: Z–A" %}</option>
+                </select>
+            </div>
+            <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
+        </form>
+
+        {% if page.object_list %}
+            <div class="result-count">
+                {% blocktranslate count total=page.paginator.count %}{{ total }} climbing route{% plural %}{{ total }} climbing routes{% endblocktranslate %}
+            </div>
+            <div class="catalog-list">
+                {% for climbing_route in page %}
+                    {% include "components/route_card.html" %}
+                {% endfor %}
+            </div>
+            {% include "components/pagination.html" %}
+        {% else %}
+            <div class="empty-state catalog-empty">
+                <h2>{% translate "No climbing routes found" %}</h2>
+                <p>{% translate "Try changing one or more filters." %}</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
