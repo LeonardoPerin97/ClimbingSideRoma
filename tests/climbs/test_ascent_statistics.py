@@ -343,7 +343,5 @@ def test_profile_ascents_can_be_sorted_by_date_and_official_grade(
         {"discipline": ClimbingRoute.Discipline.BOULDER, "sort": "date_desc"},
     )
     assert boulders.context["selected_discipline"] == ClimbingRoute.Discipline.BOULDER
-    assert [ascent.climbing_route.name for ascent in boulders.context["ascents"]] == [
-        "Hard Old"
-    ]
+    assert [ascent.climbing_route.name for ascent in boulders.context["ascents"]] == ["Hard Old"]
     assert boulders.context["ascent_count"] == 2

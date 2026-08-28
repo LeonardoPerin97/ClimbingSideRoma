@@ -3,9 +3,7 @@ from .base import *  # noqa: F403
 DEBUG = False
 
 database_url = env("DATABASE_URL", default="")  # noqa: F405
-if database_url:
-    DATABASES = {"default": env.db_url(database_url)}  # noqa: F405
-else:
+if not database_url:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
