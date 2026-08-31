@@ -76,7 +76,7 @@
             <h2 id="catalogue-grade-heading">{% translate "Total climbs by grade" %}</h2>
             {% if grade_distribution %}
                 {% translate "Scrollable catalogue-grade histogram" as histogram_scroll_label %}
-                {% translate "Catalogue climbs grouped by official grade and type" as histogram_content_label %}
+                {% translate "Catalogue climbs grouped by grade and type" as histogram_content_label %}
                 {% include "components/discipline_grade_histogram.html" with buckets=grade_distribution maximum_count=maximum_grade_count histogram_scroll_label=histogram_scroll_label histogram_content_label=histogram_content_label %}
             {% else %}
                 <p class="muted-text">{% translate "No grades are available for the selected catalogue status." %}</p>

@@ -10,7 +10,7 @@
         <h3>{% translate "Grade distribution" %}</h3>
         {% if grade_distribution %}
             {% translate "Scrollable completed-grade histogram" as histogram_scroll_label %}
-            {% translate "Completed climbs grouped by official grade" as histogram_content_label %}
+            {% translate "Completed climbs grouped by grade" as histogram_content_label %}
             {% include "components/grade_histogram.html" with buckets=grade_distribution maximum_count=maximum_grade_count histogram_scroll_label=histogram_scroll_label histogram_content_label=histogram_content_label %}
         {% else %}<p class="muted-text">{% translate "No grades available yet." %}</p>{% endif %}
         {% if project_count %}
@@ -54,8 +54,8 @@
             <select id="user-ascent-sort" name="sort">
                 <option value="date_desc"{% if ascent_sort == 'date_desc' %} selected{% endif %}>{% translate "Date: newest first" %}</option>
                 <option value="date_asc"{% if ascent_sort == 'date_asc' %} selected{% endif %}>{% translate "Date: oldest first" %}</option>
-                <option value="grade"{% if ascent_sort == 'grade' %} selected{% endif %}>{% translate "Official grade: easiest first" %}</option>
-                <option value="grade_desc"{% if ascent_sort == 'grade_desc' %} selected{% endif %}>{% translate "Official grade: hardest first" %}</option>
+                <option value="grade"{% if ascent_sort == 'grade' %} selected{% endif %}>{% translate "Grade: easiest first" %}</option>
+                <option value="grade_desc"{% if ascent_sort == 'grade_desc' %} selected{% endif %}>{% translate "Grade: hardest first" %}</option>
             </select>
         </div>
         <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>

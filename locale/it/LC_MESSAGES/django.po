@@ -197,8 +197,8 @@ msgid "A climbing route with this name already exists."
 msgstr "Esiste già una via con questo nome."
 
 #: apps/climbs/forms.py:95
-msgid "Choose an official grade or mark the route as Project."
-msgstr "Scegli un grado ufficiale oppure contrassegna la via come Project."
+msgid "Choose a grade or mark the route as Project."
+msgstr "Scegli un grado oppure contrassegna la via come Project."
 
 #: apps/climbs/forms.py:101
 msgid "Type the name to confirm"
@@ -1415,8 +1415,8 @@ msgid "Scrollable catalogue-grade histogram"
 msgstr "Istogramma scorrevole dei gradi del catalogo"
 
 #: templates/climbs/route_list.html:79
-msgid "Catalogue climbs grouped by official grade and type"
-msgstr "Vie del catalogo raggruppate per grado ufficiale e tipo"
+msgid "Catalogue climbs grouped by grade and type"
+msgstr "Vie del catalogo raggruppate per grado e tipo"
 
 #: templates/climbs/route_list.html:82
 msgid "No grades are available for the selected catalogue status."
@@ -1546,9 +1546,12 @@ msgstr "Numero di vie"
 
 #: templates/climbs/wall_list.html:38
 #: templates/components/climbing_profile_stats.html:24
-#: templates/components/climbing_profile_stats.html:41
 msgid "Number of ascents"
 msgstr "Numero di ripetizioni"
+
+#: templates/components/climbing_profile_stats.html:41
+msgid "Ascents"
+msgstr "Ripetizioni"
 
 #: templates/climbs/wall_list.html:54 templates/core/home.html:29
 #: templates/core/management_dashboard.html:22
@@ -1604,8 +1607,8 @@ msgid "Scrollable completed-grade histogram"
 msgstr "Istogramma scorrevole dei gradi completati"
 
 #: templates/components/climbing_profile_stats.html:13
-msgid "Completed climbs grouped by official grade"
-msgstr "Vie completate raggruppate per grado ufficiale"
+msgid "Completed climbs grouped by grade"
+msgstr "Vie completate raggruppate per grado"
 
 #: templates/components/climbing_profile_stats.html:15
 msgid "No grades available yet."
@@ -1635,12 +1638,12 @@ msgid "Date: oldest first"
 msgstr "Data: dalla meno recente"
 
 #: templates/components/climbing_profile_stats.html:57
-msgid "Official grade: easiest first"
-msgstr "Grado ufficiale: dal più facile"
+msgid "Grade: easiest first"
+msgstr "Grado: dal più facile"
 
 #: templates/components/climbing_profile_stats.html:58
-msgid "Official grade: hardest first"
-msgstr "Grado ufficiale: dal più difficile"
+msgid "Grade: hardest first"
+msgstr "Grado: dal più difficile"
 
 #: templates/components/climbing_profile_stats.html:70
 msgid "No completed climbs for this type"

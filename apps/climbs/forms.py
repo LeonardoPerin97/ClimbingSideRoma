@@ -92,7 +92,7 @@ class ClimbingRouteForm(StyledFormMixin, forms.ModelForm):
         elif not cleaned_data.get("official_grade"):
             self.add_error(
                 "official_grade",
-                _("Choose an official grade or mark the route as Project."),
+                _("Choose a grade or mark the route as Project."),
             )
         return cleaned_data
 
