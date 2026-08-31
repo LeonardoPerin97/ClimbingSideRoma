@@ -85,6 +85,8 @@ def test_home_page_summarises_public_gym_activity(
     assert "Popular line" in content
     assert "alice-private@example.com" not in content
     assert content.count('<th scope="col">') == 3
+    assert 'class="activity-climber"' in content
+    assert 'class="activity-climb"' in content
     assert "rating-stars" not in content
 
 

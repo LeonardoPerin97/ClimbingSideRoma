@@ -26,17 +26,33 @@
 <section class="home-content">
     <div class="container">
         <dl class="home-summary" aria-label="{% translate 'Gym at a glance' %}">
-            <div><dt>{% translate "Active climbs" %}</dt><dd>{{ active_route_count }}</dd></div>
-            <div><dt>{% translate "Walls" %}</dt><dd>{{ active_wall_count }}</dd></div>
-            <div><dt>{% translate "Climbers" %}</dt><dd>{{ active_user_count }}</dd></div>
-            <div><dt>{% translate "Recorded ascents" %}</dt><dd>{{ ascent_count }}</dd></div>
+            <div>
+                <dt>{% translate "Active climbs" %}</dt>
+                <dd>{{ active_route_count }}</dd>
+            </div>
+            <div>
+                <dt>{% translate "Walls" %}</dt>
+                <dd>{{ active_wall_count }}</dd>
+            </div>
+            <div>
+                <dt>{% translate "Climbers" %}</dt>
+                <dd>{{ active_user_count }}</dd>
+            </div>
+            <div>
+                <dt>{% translate "Recorded ascents" %}</dt>
+                <dd>{{ ascent_count }}</dd>
+            </div>
         </dl>
 
         <div class="home-dashboard">
             <section class="home-feed" aria-labelledby="recent-ascents-heading">
                 <div class="section-heading section-heading-bordered">
-                    <h2 id="recent-ascents-heading">{% translate "Recent ascents" %}</h2>
-                    <a href="{% url 'climbs:user_list' %}">{% translate "View climbers" %} →</a>
+                    <h2 id="recent-ascents-heading">
+                        {% translate "Recent ascents" %}
+                    </h2>
+                    <a href="{% url 'climbs:user_list' %}">
+                        {% translate "View climbers" %} →
+                    </a>
                 </div>
 
                 {% if recent_ascents %}
@@ -49,30 +65,45 @@
                                     <th scope="col">{% translate "Grade" %}</th>
                                 </tr>
                             </thead>
+
                             <tbody>
                                 {% for ascent in recent_ascents %}
                                     <tr>
                                         <td data-label="{% translate 'Climber' %}">
-                                            <span class="avatar-placeholder" aria-hidden="true">
-                                                {{ ascent.user.username|first|upper }}
-                                            </span>
+                                            <span class="activity-climber">
+                                                <span
+                                                    class="avatar-placeholder"
+                                                    aria-hidden="true"
+                                                >
+                                                    {{ ascent.user.username|first|upper }}
+                                                </span>
 
-                                            {% if ascent.user.is_active %}
-                                                <a href="{% url 'accounts:public_profile' ascent.user.username %}">
-                                                    {{ ascent.user.username }}
-                                                </a>
-                                            {% else %}
-                                                {% translate "Former user" %}
-                                            {% endif %}
+                                                {% if ascent.user.is_active %}
+                                                    <a href="{% url 'accounts:public_profile' ascent.user.username %}">
+                                                        {{ ascent.user.username }}
+                                                    </a>
+                                                {% else %}
+                                                    <span>{% translate "Former user" %}</span>
+                                                {% endif %}
+                                            </span>
                                         </td>
 
                                         <td data-label="{% translate 'Climb' %}">
-                                            <a class="activity-route" href="{% url 'climbs:route_detail' ascent.climbing_route_id %}">
-                                                {{ ascent.climbing_route.name }}
-                                            </a>
-                                            <a class="activity-wall" href="{% url 'climbs:wall_detail' ascent.climbing_route.wall_id %}">
-                                                {{ ascent.climbing_route.wall.name }}
-                                            </a>
+                                            <span class="activity-climb">
+                                                <a
+                                                    class="activity-route"
+                                                    href="{% url 'climbs:route_detail' ascent.climbing_route_id %}"
+                                                >
+                                                    {{ ascent.climbing_route.name }}
+                                                </a>
+
+                                                <a
+                                                    class="activity-wall"
+                                                    href="{% url 'climbs:wall_detail' ascent.climbing_route.wall_id %}"
+                                                >
+                                                    {{ ascent.climbing_route.wall.name }}
+                                                </a>
+                                            </span>
                                         </td>
 
                                         <td data-label="{% translate 'Grade' %}">
@@ -89,14 +120,18 @@
                 {% else %}
                     <div class="empty-state">
                         <h3>{% translate "No ascents recorded" %}</h3>
-                        <p>{% translate "The latest community ascents will appear here." %}</p>
+                        <p>
+                            {% translate "The latest community ascents will appear here." %}
+                        </p>
                     </div>
                 {% endif %}
             </section>
 
             <aside class="home-sidebar" aria-labelledby="popular-climbs-heading">
                 <div class="section-heading section-heading-bordered">
-                    <h2 id="popular-climbs-heading">{% translate "Most climbed" %}</h2>
+                    <h2 id="popular-climbs-heading">
+                        {% translate "Most climbed" %}
+                    </h2>
                     <a href="{% url 'climbs:route_list' %}?sort=ascents">
                         {% translate "View all" %} →
                     </a>
@@ -109,6 +144,7 @@
                                 <span class="popular-rank">
                                     {{ forloop.counter|stringformat:"02d" }}
                                 </span>
+
                                 <div>
                                     <a href="{% url 'climbs:route_detail' climbing_route.pk %}">
                                         {{ climbing_route.name }}
@@ -119,6 +155,7 @@
                                         {% translate "ascents" %}
                                     </span>
                                 </div>
+
                                 <strong class="grade-inline{% if climbing_route.is_project %} grade-project{% endif %}">
                                     {{ climbing_route.display_grade }}
                                 </strong>
@@ -128,7 +165,9 @@
                 {% else %}
                     <div class="empty-state">
                         <h3>{% translate "No active climbs" %}</h3>
-                        <p>{% translate "Climbs will appear here after they are added." %}</p>
+                        <p>
+                            {% translate "Climbs will appear here after they are added." %}
+                        </p>
                     </div>
                 {% endif %}
             </aside>

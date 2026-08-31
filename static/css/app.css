@@ -354,6 +354,19 @@ input {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.88rem;
+  table-layout: fixed;
+}
+
+.activity-table th:first-child {
+  width: 48%;
+}
+
+.activity-table th:nth-child(2) {
+  width: 27%;
+}
+
+.activity-table th:last-child {
+  width: 25%;
 }
 
 .activity-table th {
@@ -367,14 +380,27 @@ input {
 
 .activity-table td {
   padding: 0.7rem 0.55rem;
+  vertical-align: middle;
   border-bottom: 1px solid var(--color-border);
 }
 
 .activity-table td:first-child {
+  font-weight: 600;
+}
+
+.activity-climber {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 0.55rem;
-  font-weight: 600;
+}
+
+.activity-climber > a,
+.activity-climber > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .avatar-placeholder {
@@ -394,6 +420,11 @@ input {
 .activity-wall {
   display: block;
   text-decoration: none;
+}
+
+.activity-climb {
+  display: block;
+  min-width: 0;
 }
 
 .activity-route {
