@@ -139,6 +139,11 @@ def test_route_list_shows_continuous_type_split_histogram(
     assert response.context["maximum_grade_count"] == 2
     content = response.content.decode()
     assert 'class="histogram-stacked-bar' in content
+    assert 'data-histogram-filter="all"' in content
+    assert 'data-histogram-filter="route"' in content
+    assert 'data-histogram-filter="boulder"' in content
+    assert 'data-route-count="1"' in content
+    assert 'data-boulder-count="1"' in content
     assert "Total climbs by grade" in content
     assert "Routes" in content and "Boulders" in content
 
