@@ -7,10 +7,6 @@ L’applicazione consente di catalogare pareti, vie e boulder, associare immagin
 annotazioni grafiche, raccogliere valutazioni e gradi percepiti e mostrare statistiche
 personali e collettive.
 
-Il progetto è una riscrittura indipendente dell’applicazione ClimbingSide originale.
-Il codice e il database della precedente applicazione Flask non vengono modificati né
-importati.
-
 ## Indice
 
 - [Funzionalità](#funzionalità)
@@ -949,10 +945,3 @@ Northflank senza condividere secret o credenziali.
 - ulteriori miglioramenti all’editor delle annotazioni;
 - valutazione di una modalità installabile/PWA per l’uso in palestra.
 
-## Note finali
-
-- Il progetto non importa dati dalla vecchia palestra.
-- SQLite è destinato allo sviluppo, non alla produzione.
-- I file multimediali non devono essere salvati nel filesystem effimero del container.
-- Ogni nuova dipendenza deve avere uno scopo chiaro.
-- Prima di ogni release eseguire test, lint, type checking e controllo delle migrazioni.
