@@ -3,7 +3,7 @@ from collections.abc import Callable
 
 import pytest
 from django.core import mail
-from django.test import Client
+from django.test import Client, override_settings
 from django.urls import reverse
 
 from apps.accounts.models import User
@@ -148,6 +148,19 @@ def test_password_reset_does_not_reveal_unknown_email(client: Client) -> None:
     assert response.status_code == 302
     assert response.headers["Location"] == reverse("accounts:password_reset_done")
     assert len(mail.outbox) == 0
+
+
+@pytest.mark.django_db
+@override_settings(BYPASS_EMAIL_VERIFICATION=True)
+def test_password_reset_redirects_to_login_while_email_is_bypassed(client: Client) -> None:
+    response = client.get(
+        reverse("accounts:password_reset"),
+        follow=True,
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+
+    assert response.redirect_chain == [(reverse("accounts:login"), 302)]
+    assert "Password recovery by email is temporarily unavailable" in response.content.decode()
 
 
 @pytest.mark.django_db

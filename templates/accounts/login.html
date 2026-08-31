@@ -18,8 +18,14 @@
                 </button>
             </form>
             <div class="form-footer form-footer-stack">
-                <a href="{% url 'accounts:password_reset' %}">{% translate "Forgot your password?" %}</a>
-                <a href="{% url 'accounts:resend_verification' %}">{% translate "Resend verification email" %}</a>
+                {% if email_verification_bypassed %}
+                    <span class="temporary-notice">
+                        {% translate "Email verification and password recovery are temporarily unavailable. Contact an administrator if you need help accessing your account." %}
+                    </span>
+                {% else %}
+                    <a href="{% url 'accounts:password_reset' %}">{% translate "Forgot your password?" %}</a>
+                    <a href="{% url 'accounts:resend_verification' %}">{% translate "Resend verification email" %}</a>
+                {% endif %}
                 <span>
                     {% translate "No account yet?" %}
                     <a href="{% url 'accounts:register' %}">{% translate "Register" %}</a>

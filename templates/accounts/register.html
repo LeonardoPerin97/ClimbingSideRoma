@@ -10,6 +10,11 @@
             <p class="eyebrow">ClimbingSide</p>
             <h1>{% translate "Create your account" %}</h1>
             <p>{% translate "Register to save your ascents and track your progress." %}</p>
+            {% if email_verification_bypassed %}
+                <div class="temporary-notice" role="status">
+                    {% translate "Email verification is temporarily disabled. Your account will be active immediately." %}
+                </div>
+            {% endif %}
             <form method="post" novalidate>
                 {% csrf_token %}
                 {% include "components/form.html" %}

@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from apps.accounts.models import User
 from apps.accounts.roles import Role, assign_role
-from apps.climbs.models import ClimbingRoute, Wall
+from apps.climbs.models import Ascent, ClimbingRoute, Wall
 
 
 @pytest.mark.django_db
@@ -92,6 +92,78 @@ def test_route_list_combines_search_and_catalogue_filters(
     )
 
     assert list(response.context["page"].object_list) == [expected]
+
+
+@pytest.mark.django_db
+def test_route_list_shows_continuous_type_split_histogram(
+    client: Client,
+    route_factory: Callable[..., ClimbingRoute],
+) -> None:
+    route_factory(name="Route 5a", official_grade="5a")
+    route_factory(
+        name="Boulder 5a",
+        official_grade="5a",
+        discipline=ClimbingRoute.Discipline.BOULDER,
+    )
+    route_factory(name="Route 6a", official_grade="6a")
+    route_factory(
+        name="Boulder project",
+        official_grade="",
+        is_project=True,
+        discipline=ClimbingRoute.Discipline.BOULDER,
+    )
+
+    response = client.get(reverse("climbs:route_list"), HTTP_ACCEPT_LANGUAGE="en")
+    distribution = response.context["grade_distribution"]
+
+    assert [bucket.label for bucket in distribution] == [
+        "5a",
+        "5a+",
+        "5b",
+        "5b+",
+        "5c",
+        "5c+",
+        "6a",
+        "Project",
+    ]
+    assert (distribution[0].total, distribution[0].routes, distribution[0].boulders) == (
+        2,
+        1,
+        1,
+    )
+    assert (distribution[-1].total, distribution[-1].routes, distribution[-1].boulders) == (
+        1,
+        0,
+        1,
+    )
+    assert response.context["maximum_grade_count"] == 2
+    content = response.content.decode()
+    assert 'class="histogram-stacked-bar' in content
+    assert "Total climbs by grade" in content
+    assert "Routes" in content and "Boulders" in content
+
+
+@pytest.mark.django_db
+def test_route_list_highlights_only_current_user_completed_routes(
+    client: Client,
+    user_factory: Callable[..., User],
+    route_factory: Callable[..., ClimbingRoute],
+    ascent_factory: Callable[..., Ascent],
+) -> None:
+    user = user_factory(username="catalogue-climber")
+    completed = route_factory(name="Completed catalogue route")
+    untouched = route_factory(name="Untouched catalogue route")
+    ascent_factory(user=user, climbing_route=completed)
+    client.force_login(user)
+
+    response = client.get(reverse("climbs:route_list"), {"sort": "name"})
+    routes = list(response.context["page"].object_list)
+
+    assert routes[0] == completed
+    assert routes[0].completed_by_user is True
+    assert routes[1] == untouched
+    assert routes[1].completed_by_user is False
+    assert response.content.decode().count("is-completed") == 1
 
 
 @pytest.mark.django_db

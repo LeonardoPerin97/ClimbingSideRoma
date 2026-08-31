@@ -727,6 +727,18 @@ meter::-webkit-meter-optimum-value {
   text-align: center;
 }
 
+.temporary-notice {
+  display: block;
+  margin: 1rem 0;
+  padding: 0.75rem;
+  color: #594000;
+  background: #fff4c7;
+  border-left: 0.25rem solid #e5a018;
+  font-size: 0.88rem;
+  font-weight: 650;
+  text-align: left;
+}
+
 .form-footer-stack {
   display: grid;
   gap: 0.5rem;
@@ -1303,6 +1315,67 @@ meter::-webkit-meter-optimum-value {
   border: 0;
 }
 
+.histogram-stacked-bar {
+  display: flex;
+  width: 1.8rem;
+  height: var(--histogram-height);
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-chart-dark);
+  border-bottom: 0;
+}
+
+.histogram-stacked-bar.is-zero {
+  height: 0;
+  border: 0;
+}
+
+.histogram-segment {
+  min-height: 0;
+  flex-grow: var(--segment-count);
+}
+
+.histogram-segment.is-route,
+.histogram-legend-swatch.is-route {
+  background: var(--color-chart);
+}
+
+.histogram-segment.is-boulder,
+.histogram-legend-swatch.is-boulder {
+  background: #a8dcf4;
+}
+
+.discipline-histogram-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.1rem;
+  margin-top: 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.discipline-histogram-legend span {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.histogram-legend-swatch {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 1px solid var(--color-chart-dark);
+}
+
+.catalogue-histogram-card {
+  margin-bottom: 2rem;
+}
+
+.catalogue-histogram-card h2 {
+  margin-top: 0;
+}
+
 .histogram-label {
   align-self: end;
   padding-bottom: 0.25rem;
@@ -1478,7 +1551,15 @@ meter::-webkit-meter-optimum-value {
 }
 
 .profile-statistics-grid {
-  grid-template-columns: minmax(0, 1.35fr) minmax(15rem, 0.65fr);
+  grid-template-columns: 1fr;
+}
+
+.profile-primary-histogram {
+  margin-top: 0.75rem;
+}
+
+.profile-secondary-statistics {
+  margin-top: 1rem;
 }
 
 .statistics-grid h3,

@@ -36,6 +36,7 @@ from .grades import (
 from .media_services import delete_route_image, save_route_image
 from .models import Ascent, ClimbingRoute, RouteImage, Wall
 from .statistics import (
+    continuous_discipline_grade_distribution,
     continuous_french_grade_distribution,
     continuous_perceived_grade_distribution,
 )
@@ -227,12 +228,45 @@ def route_list(request: HttpRequest) -> HttpResponse:
     status = request.GET.get("status", "active")
     sort = request.GET.get("sort", "grade")
 
-    climbing_routes = ClimbingRoute.objects.select_related("wall").annotate(
+    catalogue_routes = _status_filter(ClimbingRoute.objects.all(), status)
+    grade_counts: dict[str, dict[str, int]] = {}
+    for row in (
+        catalogue_routes.filter(is_project=False)
+        .order_by()
+        .values("official_grade", "discipline")
+        .annotate(count=Count("id"))
+    ):
+        grade_counts.setdefault(row["official_grade"], {})[row["discipline"]] = row["count"]
+    project_counts = {
+        row["discipline"]: row["count"]
+        for row in catalogue_routes.filter(is_project=True)
+        .order_by()
+        .values("discipline")
+        .annotate(count=Count("id"))
+    }
+    grade_distribution = continuous_discipline_grade_distribution(
+        grade_counts,
+        project_counts=project_counts,
+    )
+
+    climbing_routes = catalogue_routes.select_related("wall").annotate(
         grade_order=grade_order_expression(),
         ascent_count=Count("ascents"),
         average_rating=Avg("ascents__rating"),
     )
-    climbing_routes = _status_filter(climbing_routes, status)
+    if request.user.is_authenticated:
+        climbing_routes = climbing_routes.annotate(
+            completed_by_user=Exists(
+                Ascent.objects.filter(
+                    user=request.user,
+                    climbing_route_id=OuterRef("pk"),
+                )
+            )
+        )
+    else:
+        climbing_routes = climbing_routes.annotate(
+            completed_by_user=Value(False, output_field=BooleanField())
+        )
     if search:
         climbing_routes = climbing_routes.filter(name__icontains=search)
     if grade == "project":
@@ -283,6 +317,11 @@ def route_list(request: HttpRequest) -> HttpResponse:
             "selected_discipline": discipline,
             "status": status,
             "sort": sort,
+            "grade_distribution": grade_distribution,
+            "maximum_grade_count": max(
+                (bucket.total for bucket in grade_distribution),
+                default=0,
+            ),
         },
     )
 

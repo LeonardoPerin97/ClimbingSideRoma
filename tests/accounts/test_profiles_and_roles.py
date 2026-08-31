@@ -145,6 +145,26 @@ def test_public_profile_is_visible_but_does_not_expose_email(
 
 
 @pytest.mark.django_db
+def test_public_profile_places_histogram_before_profile_information(
+    client: Client,
+    user_factory: Callable[..., User],
+) -> None:
+    user = user_factory(username="ordered-public-profile")
+
+    response = client.get(
+        reverse("accounts:public_profile", args=[user.username]),
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+    content = response.content.decode()
+
+    assert content.index('id="climbing-statistics-heading"') < content.index(
+        'id="profile-information-heading"'
+    )
+    assert "Number of ascents" in content
+    assert "Completed routes" not in content
+
+
+@pytest.mark.django_db
 def test_inactive_profile_is_not_public(client: Client) -> None:
     user = User.objects.create_user(
         username="inactive-profile",

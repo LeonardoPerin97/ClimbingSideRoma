@@ -72,6 +72,17 @@
             <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
         </form>
 
+        <section class="profile-card catalogue-histogram-card" aria-labelledby="catalogue-grade-heading">
+            <h2 id="catalogue-grade-heading">{% translate "Total climbs by grade" %}</h2>
+            {% if grade_distribution %}
+                {% translate "Scrollable catalogue-grade histogram" as histogram_scroll_label %}
+                {% translate "Catalogue climbs grouped by official grade and type" as histogram_content_label %}
+                {% include "components/discipline_grade_histogram.html" with buckets=grade_distribution maximum_count=maximum_grade_count histogram_scroll_label=histogram_scroll_label histogram_content_label=histogram_content_label %}
+            {% else %}
+                <p class="muted-text">{% translate "No grades are available for the selected catalogue status." %}</p>
+            {% endif %}
+        </section>
+
         {% if page.object_list %}
             <div class="result-count">
                 {% blocktranslate count total=page.paginator.count %}{{ total }} climbing route{% plural %}{{ total }} climbing routes{% endblocktranslate %}

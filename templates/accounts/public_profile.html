@@ -15,13 +15,14 @@
             {% endif %}
             </div>
         </header>
-        <div class="profile-card account-card compact-account-card">
+        {% include "components/climbing_profile_stats.html" %}
+        <div class="profile-card account-card compact-account-card profile-account-footer" aria-labelledby="profile-information-heading">
+            <h2 id="profile-information-heading">{% translate "Profile information" %}</h2>
             <dl class="profile-data">
                 <div><dt>{% translate "Role" %}</dt><dd>{{ role }}</dd></div>
                 <div><dt>{% translate "Member since" %}</dt><dd>{{ profile_user.date_joined|date:"DATE_FORMAT" }}</dd></div>
             </dl>
         </div>
-        {% include "components/climbing_profile_stats.html" %}
     </div>
 </section>
 {% endblock %}

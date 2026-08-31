@@ -5,6 +5,7 @@ import environ
 BASE_DIR = Path(__file__).resolve().parents[2]
 
 env = environ.Env(
+    DJANGO_BYPASS_EMAIL_VERIFICATION=(bool, False),
     DJANGO_DEBUG=(bool, False),
     DJANGO_DEFAULT_LANGUAGE=(str, "it"),
     DJANGO_LOG_LEVEL=(str, "INFO"),
@@ -86,6 +87,7 @@ LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "accounts:profile"
 LOGOUT_REDIRECT_URL = "core:home"
 PASSWORD_RESET_TIMEOUT = 86_400
+BYPASS_EMAIL_VERIFICATION = env.bool("DJANGO_BYPASS_EMAIL_VERIFICATION")
 
 LOGIN_FAILURE_LIMIT = env.int("LOGIN_FAILURE_LIMIT", default=5)
 LOGIN_LOCKOUT_MINUTES = env.int("LOGIN_LOCKOUT_MINUTES", default=15)

@@ -1,0 +1,35 @@
+{% load i18n %}
+
+<div class="discipline-histogram-legend" aria-label="{% translate 'Histogram legend' %}">
+    <span><i class="histogram-legend-swatch is-route" aria-hidden="true"></i>{% translate "Routes" %}</span>
+    <span><i class="histogram-legend-swatch is-boulder" aria-hidden="true"></i>{% translate "Boulders" %}</span>
+</div>
+<div class="histogram-scroll" tabindex="0" aria-label="{{ histogram_scroll_label }}">
+    <div class="grade-histogram">
+        <div class="histogram-y-axis" aria-hidden="true">
+            <span>{{ maximum_count }}</span>
+            <span>0</span>
+        </div>
+        <div class="histogram-plot" role="list" aria-label="{{ histogram_content_label }}">
+            {% for bucket in buckets %}
+                <div
+                    class="histogram-column"
+                    role="listitem"
+                    aria-label="{% blocktranslate with grade=bucket.label total=bucket.total routes=bucket.routes boulders=bucket.boulders %}Grade {{ grade }}: {{ total }} total, {{ routes }} routes, {{ boulders }} boulders{% endblocktranslate %}"
+                >
+                    <span class="histogram-value" aria-hidden="true">{{ bucket.total }}</span>
+                    <span class="histogram-track" aria-hidden="true">
+                        <span
+                            class="histogram-stacked-bar{% if not bucket.total %} is-zero{% endif %}"
+                            style="--histogram-height: {% widthratio bucket.total maximum_count 100 %}%;"
+                        >
+                            {% if bucket.boulders %}<span class="histogram-segment is-boulder" style="--segment-count: {{ bucket.boulders }};"></span>{% endif %}
+                            {% if bucket.routes %}<span class="histogram-segment is-route" style="--segment-count: {{ bucket.routes }};"></span>{% endif %}
+                        </span>
+                    </span>
+                    <span class="histogram-label" aria-hidden="true">{{ bucket.label }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

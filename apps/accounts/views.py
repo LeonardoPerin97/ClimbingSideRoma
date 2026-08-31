@@ -1,6 +1,7 @@
 import logging
-from typing import cast
+from typing import Any, cast
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
@@ -38,13 +39,33 @@ def register(request: HttpRequest) -> HttpResponse:
     if request.method == "POST" and form.is_valid():
         with transaction.atomic():
             user = form.save()
+            if settings.BYPASS_EMAIL_VERIFICATION:
+                user.is_active = True
+                user.save(update_fields=["is_active"])
             assign_role(user, Role.USER)
+        if settings.BYPASS_EMAIL_VERIFICATION:
+            logger.warning("Email verification bypassed for user_id=%s", user.pk)
+            messages.success(
+                request,
+                _(
+                    "Account created. You can log in now; email verification is temporarily "
+                    "disabled."
+                ),
+            )
+            return redirect("accounts:login")
         try:
             send_verification_email(user=user, request=request)
         except Exception:
             logger.exception("Verification email delivery failed for user_id=%s", user.pk)
         return redirect("accounts:verification_sent")
-    return render(request, "accounts/register.html", {"form": form})
+    return render(
+        request,
+        "accounts/register.html",
+        {
+            "form": form,
+            "email_verification_bypassed": settings.BYPASS_EMAIL_VERIFICATION,
+        },
+    )
 
 
 def verification_sent(request: HttpRequest) -> HttpResponse:
@@ -53,12 +74,17 @@ def verification_sent(request: HttpRequest) -> HttpResponse:
 
 @require_http_methods(["GET", "POST"])
 def resend_verification(request: HttpRequest) -> HttpResponse:
+    if settings.BYPASS_EMAIL_VERIFICATION:
+        messages.warning(
+            request,
+            _("Email verification is temporarily disabled. You can log in directly."),
+        )
+        return redirect("accounts:login")
     form = VerificationResendForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         user = User.objects.filter(
             email__iexact=form.cleaned_data["email"],
             email_verified_at__isnull=True,
-            is_active=False,
         ).first()
         if user:
             try:
@@ -95,6 +121,11 @@ def verify_email(request: HttpRequest, uidb64: str, token: str) -> HttpResponse:
 class ClimbingSideLoginView(auth_views.LoginView):
     template_name = "accounts/login.html"
     redirect_authenticated_user = True
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["email_verification_bypassed"] = settings.BYPASS_EMAIL_VERIFICATION
+        return context
 
     def post(self, request: HttpRequest, *args: object, **kwargs: object) -> HttpResponse:
         username = request.POST.get("username", "")[:150]
@@ -204,6 +235,23 @@ class PasswordResetView(auth_views.PasswordResetView):
     html_email_template_name = "accounts/email/password_reset_email.html"
     subject_template_name = "accounts/email/password_reset_subject.txt"
     success_url = reverse_lazy("accounts:password_reset_done")
+
+    def dispatch(
+        self,
+        request: HttpRequest,
+        *args: object,
+        **kwargs: object,
+    ) -> HttpResponse:
+        if settings.BYPASS_EMAIL_VERIFICATION:
+            messages.warning(
+                request,
+                _(
+                    "Password recovery by email is temporarily unavailable. Contact an "
+                    "administrator if you cannot log in."
+                ),
+            )
+            return redirect("accounts:login")
+        return cast(HttpResponse, super().dispatch(request, *args, **kwargs))
 
 
 class PasswordResetDoneView(auth_views.PasswordResetDoneView):

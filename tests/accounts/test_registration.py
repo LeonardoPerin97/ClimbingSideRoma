@@ -3,7 +3,7 @@ from collections.abc import Callable
 
 import pytest
 from django.core import mail
-from django.test import Client
+from django.test import Client, override_settings
 from django.urls import reverse
 
 from apps.accounts.models import User
@@ -38,6 +38,28 @@ def test_registration_creates_inactive_user_and_sends_verification_email(
     assert mail.outbox[0].to == ["leonardo@example.com"]
     assert "Strong-Test-Password" not in mail.outbox[0].body
     assert reverse("accounts:login") not in mail.outbox[0].body
+
+
+@pytest.mark.django_db
+@override_settings(BYPASS_EMAIL_VERIFICATION=True)
+def test_registration_bypass_activates_user_without_sending_email(
+    client: Client,
+) -> None:
+    response = client.post(
+        reverse("accounts:register"),
+        REGISTRATION_DATA,
+        follow=True,
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+
+    user = User.objects.get(username="Leonardo")
+    assert response.redirect_chain == [(reverse("accounts:login"), 302)]
+    assert user.is_active
+    assert not user.email_is_verified
+    assert len(mail.outbox) == 0
+    content = response.content.decode()
+    assert "Account created. You can log in now" in content
+    assert "password recovery are temporarily unavailable" in content
 
 
 @pytest.mark.django_db
@@ -106,6 +128,19 @@ def test_resend_response_does_not_reveal_account_existence(client: Client) -> No
     assert message in response_unknown.content.decode()
     assert message in response_existing.content.decode()
     assert len(mail.outbox) == 1
+
+
+@pytest.mark.django_db
+@override_settings(BYPASS_EMAIL_VERIFICATION=True)
+def test_verification_resend_redirects_to_login_while_bypassed(client: Client) -> None:
+    response = client.get(
+        reverse("accounts:resend_verification"),
+        follow=True,
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+
+    assert response.redirect_chain == [(reverse("accounts:login"), 302)]
+    assert "Email verification is temporarily disabled" in response.content.decode()
 
 
 @pytest.mark.django_db

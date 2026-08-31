@@ -26,6 +26,8 @@ Incrementi 1, 2, 3, 4, 5, 6, 7, 8 e 9 completati:
 - logo ClimbingSide nella navigazione e home dedicata a Climbing Side Roma;
 - catalogo pubblico di pareti, vie e boulder;
 - ricerca, filtri, ordinamento per grado francese e paginazione;
+- elenco generale con istogramma continuo del totale per grado, suddiviso tra vie e
+  boulder, e righe completate dall'utente evidenziate;
 - dettaglio parete con riepilogo, filtro per tipo, ordinamenti bidirezionali,
   grado medio proposto, vie personali evidenziate e istogramma dei gradi;
 - dettaglio via con grado ufficiale in evidenza, riepilogo della propria ripetizione,
@@ -48,7 +50,7 @@ Incrementi 1, 2, 3, 4, 5, 6, 7, 8 e 9 completati:
 - visualizzazione pubblica dell'immagine con annotazione responsive;
 - filesystem locale in sviluppo e Cloudinary in produzione;
 - profili con grado massimo, istogramma dei gradi, pareti e ripetizioni ordinabili per
-  data o grado ufficiale;
+  data o grado ufficiale, con istogramma in apertura e informazioni del profilo in fondo;
 - elenco utenti ordinabile per nome, vie completate e grado massimo;
 - dashboard pubblica con statistiche collettive per tipo, grado, parete e mese;
 - dashboard operativa riservata agli amministratori;
@@ -163,8 +165,27 @@ In produzione sono obbligatori almeno:
 - `DATABASE_URL` PostgreSQL;
 - `DJANGO_ALLOWED_HOSTS`;
 - `DJANGO_CSRF_TRUSTED_ORIGINS`;
-- configurazione SMTP per le email;
+- configurazione SMTP per le email, salvo bypass temporaneo esplicitamente attivato;
 - `CLOUDINARY_URL` per l'archiviazione esterna delle immagini.
+
+### Bypass temporaneo della verifica email
+
+Se il servizio SMTP non è disponibile, è possibile attivare temporaneamente:
+
+```text
+DJANGO_BYPASS_EMAIL_VERIFICATION=true
+```
+
+Con il bypass attivo i nuovi account sono immediatamente utilizzabili, ma l'indirizzo
+email resta correttamente indicato come non verificato. Il reinvio della verifica e il
+recupero password via email vengono disabilitati; un amministratore può reimpostare
+manualmente una password dal pannello Django. In produzione viene usato un backend email
+fittizio e le variabili SMTP non sono obbligatorie.
+
+Il bypass è disattivato per impostazione predefinita. Dopo aver ripristinato l'SMTP,
+impostare la variabile a `false`, configurare le variabili `EMAIL_*` e riavviare i
+servizi dipendenti. Gli utenti attivati durante il bypass potranno richiedere una vera
+verifica email.
 
 In sviluppo i file vengono salvati nella cartella locale `media/`, esclusa da Git e dal
 contesto di build Docker. In produzione il backend `CloudinaryMediaStorage` usa l'SDK
@@ -182,7 +203,8 @@ Se il database non è raggiungibile restituisce HTTP 503 senza esporre dettagli 
 
 ## Flussi account disponibili
 
-- `/register/`: registrazione; l'account resta inattivo fino alla verifica email;
+- `/register/`: registrazione; normalmente l'account resta inattivo fino alla verifica
+  email, oppure viene attivato subito quando è abilitato il bypass temporaneo;
 - `/register/resend/`: nuovo invio del link senza rivelare se l'account esiste;
 - `/login/` e `/logout/`: accesso e uscita, con logout solo tramite richiesta POST;
 - `/password-reset/`: recupero password;

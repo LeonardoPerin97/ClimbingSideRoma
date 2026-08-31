@@ -23,10 +23,16 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = env("EMAIL_HOST")  # noqa: F405
-EMAIL_PORT = env.int("EMAIL_PORT", default=587)  # noqa: F405
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")  # noqa: F405
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # noqa: F405
-EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)  # noqa: F405
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="ClimbingSide <no-reply@example.com>")  # noqa: F405
+if BYPASS_EMAIL_VERIFICATION:  # noqa: F405
+    EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = env("EMAIL_HOST")  # noqa: F405
+    EMAIL_PORT = env.int("EMAIL_PORT", default=587)  # noqa: F405
+    EMAIL_HOST_USER = env("EMAIL_HOST_USER")  # noqa: F405
+    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # noqa: F405
+    EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)  # noqa: F405
+    DEFAULT_FROM_EMAIL = env(  # noqa: F405
+        "DEFAULT_FROM_EMAIL",
+        default="ClimbingSide <no-reply@example.com>",
+    )

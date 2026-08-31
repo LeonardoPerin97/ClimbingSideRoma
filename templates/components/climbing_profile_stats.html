@@ -6,27 +6,28 @@
         {% if can_manage_ascents %}<a class="button button-primary" href="{% url 'climbs:ascent_create' %}">{% translate "Record ascent" %}</a>{% endif %}
     </div>
 
+    <article class="profile-card profile-histogram-card profile-primary-histogram">
+        <h3>{% translate "Grade distribution" %}</h3>
+        {% if grade_distribution %}
+            {% translate "Scrollable completed-grade histogram" as histogram_scroll_label %}
+            {% translate "Completed climbs grouped by official grade" as histogram_content_label %}
+            {% include "components/grade_histogram.html" with buckets=grade_distribution maximum_count=maximum_grade_count histogram_scroll_label=histogram_scroll_label histogram_content_label=histogram_content_label %}
+        {% else %}<p class="muted-text">{% translate "No grades available yet." %}</p>{% endif %}
+        {% if project_count %}
+            <p class="histogram-note">
+                {% blocktranslate count count=project_count %}{{ count }} completed Project is not included in the histogram.{% plural %}{{ count }} completed Projects are not included in the histogram.{% endblocktranslate %}
+            </p>
+        {% endif %}
+    </article>
+
     <div class="summary-grid">
-        <article><span>{% translate "Completed routes" %}</span><strong>{{ ascent_count }}</strong></article>
+        <article><span>{% translate "Number of ascents" %}</span><strong>{{ ascent_count }}</strong></article>
         <article><span>{% translate "Maximum grade" %}</span><strong>{{ highest_grade }}</strong></article>
         <article><span>{% translate "Routes" %}</span><strong>{{ discipline_counts.route }}</strong></article>
         <article><span>{% translate "Boulder" %}</span><strong>{{ discipline_counts.boulder }}</strong></article>
     </div>
 
-    <div class="statistics-grid profile-statistics-grid">
-        <article class="profile-card profile-histogram-card">
-            <h3>{% translate "Grade distribution" %}</h3>
-            {% if grade_distribution %}
-                {% translate "Scrollable completed-grade histogram" as histogram_scroll_label %}
-                {% translate "Completed climbs grouped by official grade" as histogram_content_label %}
-                {% include "components/grade_histogram.html" with buckets=grade_distribution maximum_count=maximum_grade_count histogram_scroll_label=histogram_scroll_label histogram_content_label=histogram_content_label %}
-            {% else %}<p class="muted-text">{% translate "No grades available yet." %}</p>{% endif %}
-            {% if project_count %}
-                <p class="histogram-note">
-                    {% blocktranslate count count=project_count %}{{ count }} completed Project is not included in the histogram.{% plural %}{{ count }} completed Projects are not included in the histogram.{% endblocktranslate %}
-                </p>
-            {% endif %}
-        </article>
+    <div class="statistics-grid profile-statistics-grid profile-secondary-statistics">
         <article class="profile-card">
             <h3>{% translate "Routes by wall" %}</h3>
             {% if wall_distribution %}
@@ -37,7 +38,7 @@
         </article>
     </div>
 
-    <div class="section-heading"><h2>{% translate "Completed routes" %}</h2></div>
+    <div class="section-heading"><h2>{% translate "Number of ascents" %}</h2></div>
     <form class="filter-bar user-ascent-filters" method="get">
         <div>
             <label for="user-ascent-discipline">{% translate "Type" %}</label>
@@ -70,7 +71,7 @@
                 <p>{% translate "Try selecting all types." %}</p>
             {% else %}
                 <h3>{% translate "No ascents recorded" %}</h3>
-                <p>{% translate "Completed routes will appear here." %}</p>
+                <p>{% translate "Ascents will appear here." %}</p>
             {% endif %}
         </div>
     {% endif %}

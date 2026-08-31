@@ -32,6 +32,11 @@ class CollectiveGradeBucket:
     routes: int
     boulders: int
 
+    @property
+    def count(self) -> int:
+        """Expose the total using the common histogram bucket interface."""
+        return self.total
+
 
 @dataclass(frozen=True)
 class WallDisciplineBucket:
@@ -80,6 +85,48 @@ def continuous_perceived_grade_distribution(
         StatisticBucket(format_perceived_grade(value), counts.get(value, 0))
         for value in range(min(populated_values), max(populated_values) + 1)
     ]
+
+
+def continuous_discipline_grade_distribution(
+    counts: Mapping[str, Mapping[str, int]],
+    *,
+    project_counts: Mapping[str, int] | None = None,
+) -> list[CollectiveGradeBucket]:
+    """Return a continuous French-grade series split into routes and boulders."""
+    populated_indexes = [
+        FRENCH_GRADE_INDEX[grade]
+        for grade, discipline_counts in counts.items()
+        if grade in FRENCH_GRADE_INDEX and any(discipline_counts.values())
+    ]
+    buckets: list[CollectiveGradeBucket] = []
+    if populated_indexes:
+        for index in range(min(populated_indexes), max(populated_indexes) + 1):
+            grade = FRENCH_GRADE_BASES[index]
+            discipline_counts = counts.get(grade, {})
+            route_count = discipline_counts.get(ClimbingRoute.Discipline.ROUTE, 0)
+            boulder_count = discipline_counts.get(ClimbingRoute.Discipline.BOULDER, 0)
+            buckets.append(
+                CollectiveGradeBucket(
+                    label=grade,
+                    total=route_count + boulder_count,
+                    routes=route_count,
+                    boulders=boulder_count,
+                )
+            )
+
+    project_counts = project_counts or {}
+    project_routes = project_counts.get(ClimbingRoute.Discipline.ROUTE, 0)
+    project_boulders = project_counts.get(ClimbingRoute.Discipline.BOULDER, 0)
+    if project_routes or project_boulders:
+        buckets.append(
+            CollectiveGradeBucket(
+                label="Project",
+                total=project_routes + project_boulders,
+                routes=project_routes,
+                boulders=project_boulders,
+            )
+        )
+    return buckets
 
 
 def _month_start(month: date, offset: int) -> date:
