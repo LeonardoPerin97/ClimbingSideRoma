@@ -2,12 +2,21 @@ from collections.abc import Callable
 from datetime import date
 
 import pytest
+from django.template.loader import render_to_string
 from django.test import Client
 from django.urls import reverse
 
 from apps.accounts.models import User
 from apps.climbs.grades import encode_perceived_grade
 from apps.climbs.models import Ascent, ClimbingRoute, Wall
+
+
+def test_star_rating_component_supports_fractional_values() -> None:
+    content = render_to_string("components/star_rating.html", {"rating": 2.5})
+
+    assert content.count("★★★★★") == 2
+    assert 'style="--rating-fill: 50%;"' in content
+    assert "2,5/5" in content
 
 
 @pytest.mark.django_db
@@ -230,6 +239,10 @@ def test_route_detail_places_current_user_ascent_data_next_to_edit_action(
     assert 'class="my-ascent-summary"' in content
     assert "6a.3" in content
     assert "★ 4/5" in content
+    assert "data-star-rating" in content
+    assert 'data-rating="4"' in content
+    assert 'style="--rating-fill: 80%;"' in content
+    assert "★ 4/5 rating" not in content
     assert "Flash" in content
     assert reverse("climbs:ascent_edit", args=[ascent.pk]) in content
     assert reverse("climbs:ascent_delete", args=[ascent.pk]) in content

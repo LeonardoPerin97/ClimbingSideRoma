@@ -1,0 +1,18 @@
+{% load i18n %}
+
+{% widthratio rating 5 100 as rating_percentage %}
+{% with displayed_rating=rating|floatformat:"-1" %}
+    <span
+        class="star-rating"
+        role="img"
+        aria-label="{% blocktranslate with rating=displayed_rating %}{{ rating }} out of 5 stars{% endblocktranslate %}"
+        data-star-rating
+        data-rating="{{ rating }}"
+    >
+        <span class="star-rating-glyphs" aria-hidden="true">
+            <span class="star-rating-empty">★★★★★</span>
+            <span class="star-rating-filled" style="--rating-fill: {{ rating_percentage }}%;">★★★★★</span>
+        </span>
+        <span class="star-rating-value" aria-hidden="true">{{ displayed_rating }}/5</span>
+    </span>
+{% endwith %}

@@ -423,6 +423,40 @@ input {
   white-space: nowrap;
 }
 
+.star-rating {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  color: var(--color-muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.star-rating-glyphs {
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+.star-rating-empty {
+  color: #c8c8c3;
+}
+
+.star-rating-filled {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--rating-fill);
+  overflow: hidden;
+  color: #f4b223;
+  white-space: nowrap;
+}
+
+.star-rating-value {
+  color: var(--color-muted);
+}
+
 .popular-list {
   padding: 0;
   margin: 0;

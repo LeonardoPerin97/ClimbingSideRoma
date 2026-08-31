@@ -14,7 +14,7 @@
         {% endif %}
         <div class="ascent-meta">
             <span>{{ ascent.date|date:"DATE_FORMAT" }}</span>
-            <span class="rating-stars">{% blocktranslate with rating=ascent.rating %}★ {{ rating }}/5 rating{% endblocktranslate %}</span>
+            {% include "components/star_rating.html" with rating=ascent.rating %}
             <span>{{ ascent.display_attempts }}</span>
         </div>
     </div>
