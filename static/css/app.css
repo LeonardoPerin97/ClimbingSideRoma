@@ -2074,7 +2074,7 @@ meter::-webkit-meter-optimum-value {
   }
 
   .activity-table .activity-wall::before {
-    content: "Â· ";
+    content: "\00B7\00A0";
   }
 
   .activity-table small {
