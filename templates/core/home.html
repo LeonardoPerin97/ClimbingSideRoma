@@ -38,6 +38,7 @@
                     <h2 id="recent-ascents-heading">{% translate "Recent ascents" %}</h2>
                     <a href="{% url 'climbs:user_list' %}">{% translate "View climbers" %} →</a>
                 </div>
+
                 {% if recent_ascents %}
                     <div class="table-scroll">
                         <table class="activity-table">
@@ -46,30 +47,39 @@
                                     <th scope="col">{% translate "Climber" %}</th>
                                     <th scope="col">{% translate "Climb" %}</th>
                                     <th scope="col">{% translate "Grade" %}</th>
-                                    <th scope="col">{% translate "Rating" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for ascent in recent_ascents %}
                                     <tr>
                                         <td data-label="{% translate 'Climber' %}">
-                                            <span class="avatar-placeholder" aria-hidden="true">{{ ascent.user.username|first|upper }}</span>
+                                            <span class="avatar-placeholder" aria-hidden="true">
+                                                {{ ascent.user.username|first|upper }}
+                                            </span>
+
                                             {% if ascent.user.is_active %}
-                                                <a href="{% url 'accounts:public_profile' ascent.user.username %}">{{ ascent.user.username }}</a>
+                                                <a href="{% url 'accounts:public_profile' ascent.user.username %}">
+                                                    {{ ascent.user.username }}
+                                                </a>
                                             {% else %}
                                                 {% translate "Former user" %}
                                             {% endif %}
                                         </td>
+
                                         <td data-label="{% translate 'Climb' %}">
-                                            <a class="activity-route" href="{% url 'climbs:route_detail' ascent.climbing_route_id %}">{{ ascent.climbing_route.name }}</a>
-                                            <a class="activity-wall" href="{% url 'climbs:wall_detail' ascent.climbing_route.wall_id %}">{{ ascent.climbing_route.wall.name }}</a>
+                                            <a class="activity-route" href="{% url 'climbs:route_detail' ascent.climbing_route_id %}">
+                                                {{ ascent.climbing_route.name }}
+                                            </a>
+                                            <a class="activity-wall" href="{% url 'climbs:wall_detail' ascent.climbing_route.wall_id %}">
+                                                {{ ascent.climbing_route.wall.name }}
+                                            </a>
                                         </td>
+
                                         <td data-label="{% translate 'Grade' %}">
-                                            <span class="grade-inline">{{ ascent.climbing_route.display_grade }}</span>
+                                            <span class="grade-inline">
+                                                {{ ascent.climbing_route.display_grade }}
+                                            </span>
                                             <small>{{ ascent.display_proposed_grade }}</small>
-                                        </td>
-                                        <td data-label="{% translate 'Rating' %}">
-                                            <span class="rating-stars" aria-label="{% blocktranslate with rating=ascent.rating %}{{ rating }} out of 5 stars{% endblocktranslate %}">★ {{ ascent.rating }}/5</span>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -87,18 +97,31 @@
             <aside class="home-sidebar" aria-labelledby="popular-climbs-heading">
                 <div class="section-heading section-heading-bordered">
                     <h2 id="popular-climbs-heading">{% translate "Most climbed" %}</h2>
-                    <a href="{% url 'climbs:route_list' %}?sort=ascents">{% translate "View all" %} →</a>
+                    <a href="{% url 'climbs:route_list' %}?sort=ascents">
+                        {% translate "View all" %} →
+                    </a>
                 </div>
+
                 {% if popular_routes %}
                     <ol class="popular-list">
                         {% for climbing_route in popular_routes %}
                             <li>
-                                <span class="popular-rank">{{ forloop.counter|stringformat:"02d" }}</span>
+                                <span class="popular-rank">
+                                    {{ forloop.counter|stringformat:"02d" }}
+                                </span>
                                 <div>
-                                    <a href="{% url 'climbs:route_detail' climbing_route.pk %}">{{ climbing_route.name }}</a>
-                                    <span>{{ climbing_route.wall.name }} · {{ climbing_route.ascent_count }} {% translate "ascents" %}</span>
+                                    <a href="{% url 'climbs:route_detail' climbing_route.pk %}">
+                                        {{ climbing_route.name }}
+                                    </a>
+                                    <span>
+                                        {{ climbing_route.wall.name }} ·
+                                        {{ climbing_route.ascent_count }}
+                                        {% translate "ascents" %}
+                                    </span>
                                 </div>
-                                <strong class="grade-inline{% if climbing_route.is_project %} grade-project{% endif %}">{{ climbing_route.display_grade }}</strong>
+                                <strong class="grade-inline{% if climbing_route.is_project %} grade-project{% endif %}">
+                                    {{ climbing_route.display_grade }}
+                                </strong>
                             </li>
                         {% endfor %}
                     </ol>
