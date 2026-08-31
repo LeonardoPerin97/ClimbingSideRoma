@@ -1981,47 +1981,107 @@ meter::-webkit-meter-optimum-value {
     grid-template-columns: 1fr;
   }
 
-  .activity-table,
-  .activity-table tbody,
-  .activity-table tr,
-  .activity-table td {
-    display: block;
+  .activity-table {
+    display: table;
     width: 100%;
+    font-size: 0.82rem;
   }
 
   .activity-table thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    position: static;
+    display: table-header-group;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+  }
+
+  .activity-table tbody {
+    display: table-row-group;
+    width: auto;
   }
 
   .activity-table tr {
-    padding: 0.85rem 0;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .activity-table td,
-  .activity-table td:first-child {
-    display: grid;
-    grid-template-columns: minmax(5rem, 0.35fr) 1fr;
-    gap: 0.75rem;
-    align-items: center;
-    padding: 0.25rem 0;
+    display: table-row;
+    width: auto;
+    padding: 0;
     border: 0;
   }
 
+  .activity-table th,
+  .activity-table td,
+  .activity-table td:first-child {
+    display: table-cell;
+  }
+
   .activity-table td::before {
-    content: attr(data-label);
-    color: var(--color-muted);
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
+    display: none;
+    content: none;
+  }
+
+  .activity-table th:first-child {
+    width: 34%;
+  }
+
+  .activity-table th:nth-child(2) {
+    width: 42%;
+  }
+
+  .activity-table th:last-child {
+    width: 24%;
+  }
+
+  .activity-table th,
+  .activity-table td {
+    padding: 0.6rem 0.3rem;
   }
 
   .activity-table .avatar-placeholder {
     display: none;
+  }
+
+  .activity-table .activity-climb,
+  .activity-table .activity-climber {
+    overflow: hidden;
+  }
+
+  .activity-table td:last-child {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .activity-table .activity-climb {
+    display: flex;
+    min-width: 0;
+    gap: 0.3rem;
+    align-items: baseline;
+    white-space: nowrap;
+  }
+
+  .activity-table .activity-route {
+    min-width: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .activity-table .activity-wall {
+    display: inline;
+    flex: 0 0 auto;
+    color: var(--color-muted);
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+
+  .activity-table .activity-wall::before {
+    content: "Â· ";
+  }
+
+  .activity-table small {
+    display: inline;
+    margin: 0 0 0 0.25rem;
+    font-size: 0.7rem;
+    line-height: 1;
   }
 
   .site-footer .container {
