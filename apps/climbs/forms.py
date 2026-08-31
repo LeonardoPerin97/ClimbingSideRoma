@@ -149,7 +149,10 @@ class RouteAnnotationForm(forms.Form):
             "annotations",
             empty_route_annotation(),
         )
-        self.route_image.full_clean()
+        # The image was validated before upload. Revalidating it while only the
+        # JSON annotation changes would require reading the stored Cloudinary
+        # asset again, which remote storage intentionally does not support.
+        self.route_image.full_clean(exclude=("image",))
         self.route_image.save(update_fields=("annotations", "updated_at"))
         return self.route_image
 

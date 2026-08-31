@@ -2,6 +2,7 @@ import json
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 import pytest
 from django.core.exceptions import ValidationError
@@ -203,6 +204,32 @@ def test_invalid_annotation_is_not_saved(
 
     assert response.status_code == 200
     assert route_image.annotations == {"version": 1, "markers": []}
+
+
+@pytest.mark.django_db
+def test_annotation_save_does_not_revalidate_stored_image(
+    client: Client,
+    user_factory: Callable[..., User],
+    route_image_factory: Callable[..., RouteImage],
+) -> None:
+    route_setter = user_factory()
+    assign_role(route_setter, Role.ROUTE_SETTER)
+    route_image = route_image_factory(uploaded_by=route_setter)
+    client.force_login(route_setter)
+
+    with patch.object(
+        route_image.image.storage,
+        "size",
+        side_effect=NotImplementedError("Remote storage does not expose file size."),
+    ):
+        response = client.post(
+            reverse("climbs:route_annotation_edit", args=[route_image.climbing_route_id]),
+            {"annotations": json.dumps(ANNOTATION)},
+        )
+
+    route_image.refresh_from_db()
+    assert response.status_code == 302
+    assert route_image.annotations == ANNOTATION
 
 
 @pytest.mark.django_db(transaction=True)
