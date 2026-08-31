@@ -1,199 +1,368 @@
 # ClimbingSide Roma
 
-ClimbingSide Roma è un’applicazione web Django per gestire il catalogo di una palestra
-di arrampicata e registrare le ripetizioni degli utenti.
+ClimbingSide Roma è un’applicazione web per gestire le vie di una palestra di
+arrampicata e il diario delle ripetizioni dei suoi utenti.
 
-L’applicazione consente di catalogare pareti, vie e boulder, associare immagini e
-annotazioni grafiche, raccogliere valutazioni e gradi percepiti e mostrare statistiche
-personali e collettive.
+Il sistema permette di catalogare pareti, vie e boulder, registrare le salite,
+raccogliere valutazioni e gradi percepiti, mostrare statistiche personali e collettive
+e gestire immagini annotate delle vie.
+
+L’applicazione è progettata per una sola palestra ed è realizzata come monolite Django
+server-rendered, con un’architettura modulare, PostgreSQL in produzione e JavaScript
+leggero per le interazioni che lo richiedono.
 
 ## Indice
 
+- [Obiettivi del progetto](#obiettivi-del-progetto)
 - [Funzionalità](#funzionalità)
-- [Regole applicative](#regole-applicative)
-- [Ruoli e permessi](#ruoli-e-permessi)
-- [Stack tecnologico](#stack-tecnologico)
+- [Regole di dominio](#regole-di-dominio)
 - [Architettura](#architettura)
+- [Stack tecnologico](#stack-tecnologico)
+- [Flussi principali del codice](#flussi-principali-del-codice)
 - [Struttura del repository](#struttura-del-repository)
+- [Mappa dei moduli](#mappa-dei-moduli)
 - [Modello dei dati](#modello-dei-dati)
+- [Ruoli e autorizzazioni](#ruoli-e-autorizzazioni)
+- [Interfaccia e internazionalizzazione](#interfaccia-e-internazionalizzazione)
+- [URL principali](#url-principali)
 - [Installazione locale](#installazione-locale)
 - [Configurazione](#configurazione)
 - [Email e verifica degli account](#email-e-verifica-degli-account)
 - [Immagini e annotazioni](#immagini-e-annotazioni)
-- [Test e qualità](#test-e-qualità)
+- [Test e qualità del codice](#test-e-qualità-del-codice)
+- [Sicurezza](#sicurezza)
 - [Deployment su Northflank](#deployment-su-northflank)
-- [Aggiornamento dell’applicazione](#aggiornamento-dellapplicazione)
-- [Backup e ripristino](#backup-e-ripristino)
-- [Risoluzione dei problemi](#risoluzione-dei-problemi)
+- [Operazioni e manutenzione](#operazioni-e-manutenzione)
 - [Sviluppi futuri](#sviluppi-futuri)
+
+## Obiettivi del progetto
+
+ClimbingSide Roma risponde a quattro esigenze principali:
+
+1. **Catalogo della palestra**: rappresentare pareti, vie e boulder in modo ordinato e
+   consultabile da smartphone.
+2. **Diario personale**: permettere a ogni utente di registrare e aggiornare le proprie
+   ripetizioni.
+3. **Informazioni collettive**: aggregare valutazioni, gradi proposti e statistiche
+   dell’intera community.
+4. **Gestione operativa**: fornire a route setter e amministratori strumenti sicuri per
+   mantenere il catalogo e le immagini.
+
+Il progetto non dipende dal codice o dal database della precedente applicazione Flask e
+non prevede l’importazione dei dati della vecchia palestra.
 
 ## Funzionalità
 
-### Account
+### Account e profili
 
 - registrazione con username, email e lingua preferita;
-- verifica dell’indirizzo email tramite link a scadenza;
-- login case-insensitive e logout tramite richiesta `POST`;
-- protezione dai tentativi ripetuti di accesso;
+- verifica dell’indirizzo email;
+- login case-insensitive e logout sicuro;
 - recupero e modifica della password;
+- protezione dai tentativi ripetuti di login;
 - profilo personale modificabile;
 - profilo pubblico senza esposizione dell’email;
-- interfaccia selezionabile in italiano o inglese;
-- elenco pubblico dei climber ordinabile per nome, numero di ripetizioni e grado massimo.
+- selezione persistente della lingua italiana o inglese;
+- elenco pubblico dei climber ordinabile per nome, numero di ripetizioni e grado
+  massimo.
 
 ### Pareti
 
-- elenco pubblico delle pareti;
-- ricerca e ordinamento;
+- elenco pubblico con ricerca, ordinamento e paginazione;
 - conteggio delle vie attive e delle ripetizioni;
-- dettaglio della parete con distinzione tra vie e boulder;
+- dettaglio della parete con totali distinti per vie e boulder;
 - filtro per tipo;
 - ordinamento crescente e decrescente per nome, grado, ripetizioni e valutazione media;
-- grado ufficiale e grado medio proposto;
+- visualizzazione del grado ufficiale e del grado medio proposto;
 - istogramma continuo delle vie per grado, inclusi i Project;
-- evidenziazione gialla delle vie completate dall’utente autenticato;
-- archiviazione e ripristino senza perdita dello storico.
+- evidenziazione delle vie completate dall’utente autenticato;
+- creazione, modifica, archiviazione, ripristino e cancellazione controllata.
 
 ### Vie e boulder
 
-- catalogo pubblico paginato;
-- ricerca per nome;
+- catalogo pubblico con ricerca per nome;
 - filtri per parete, tipo, grado e stato;
 - ordinamento per nome, difficoltà, numero di ripetizioni e valutazione media;
-- istogramma continuo del catalogo per grado;
-- selezione interattiva dell’istogramma: tutte, solo vie o solo boulder;
-- dettaglio con grado ufficiale, parete, tipo e route setter;
-- numero di ripetizioni, valutazione media e grado medio proposto;
-- distribuzione completa dei gradi decimali proposti;
+- istogramma continuo per grado suddiviso tra vie e boulder;
+- selezione interattiva del grafico: tutte, solo vie o solo boulder;
+- dettaglio con nome, grado ufficiale, parete, tipo e route setter;
+- immagine e annotazione grafica del percorso;
+- numero di ripetizioni e valutazione media;
+- grado medio proposto e distribuzione completa dei gradi decimali;
 - elenco delle ripetizioni dalla più recente alla meno recente;
-- evidenziazione nel catalogo delle vie già completate dall’utente;
-- creazione e modifica da parte di RouteSetter e Admin;
-- archiviazione conservativa e cancellazione permanente protetta.
+- evidenziazione nel catalogo delle vie completate dall’utente;
+- archiviazione conservativa delle vie non più presenti in palestra.
 
 ### Ripetizioni
 
-Ogni ripetizione contiene:
+Ogni utente può registrare una ripetizione specificando:
 
-- utente;
 - via o boulder;
 - data;
-- valutazione intera da 1 a 5;
-- grado francese percepito con decimale da 0 a 9;
-- risultato dei tentativi: Onsight, Flash, numero di tentativi oppure N.D.;
-- data di creazione e ultima modifica.
+- valutazione da 1 a 5;
+- grado francese percepito;
+- decimale del grado da 0 a 9;
+- Onsight, Flash, numero di tentativi oppure N.D.
 
-Ogni utente può registrare una sola ripetizione per via. La ripetizione può essere
-modificata o eliminata esclusivamente dal proprietario. Negli elenchi la valutazione è
-rappresentata da cinque stelle grigie con riempimento giallo proporzionale e dal solo
-valore numerico, senza etichette ridondanti.
+È consentita una sola ripetizione per coppia utente/via. Il proprietario può modificarla
+o eliminarla. Le valutazioni negli elenchi sono rappresentate da cinque stelle con base
+grigia e riempimento giallo proporzionale, accompagnate dal valore numerico.
 
-### Profili e statistiche
+### Statistiche
 
-- numero totale di ripetizioni;
-- massimo grado ufficiale completato;
-- distinzione tra vie e boulder;
-- filtro delle ripetizioni per tipo;
-- ordinamento per data o grado;
-- istogramma delle vie completate per grado;
+Le statistiche personali comprendono:
+
+- numero di ripetizioni;
+- grado massimo ufficiale;
+- distribuzione delle vie completate per grado;
+- conteggio distinto di vie e boulder;
 - distribuzione per parete;
-- statistiche collettive per tipo, grado, parete e mese;
-- mesi senza attività mostrati esplicitamente;
-- informazioni dell’account collocate in fondo al profilo privato.
+- elenco filtrabile e ordinabile delle ripetizioni.
+
+Le statistiche collettive comprendono:
+
+- numero di pareti, vie, boulder, Project, utenti e ripetizioni;
+- massimo grado ufficiale attivo;
+- distribuzione delle vie per grado e tipo;
+- distribuzione delle vie per parete;
+- ripetizioni registrate negli ultimi dodici mesi.
 
 ### Home
 
-La home mostra:
+La home presenta una sintesi immediata della palestra:
 
 - numero di vie attive, pareti, climber e ripetizioni;
-- ultime ripetizioni con Climber, Climb e Grade;
-- cinque vie più ripetute;
-- immagine hero ricavata dall’immagine aggiornata più recentemente di una via attiva.
+- ripetizioni recenti con climber, via e grado;
+- vie più ripetute;
+- collegamenti rapidi al catalogo e alla registrazione di una ripetizione;
+- immagine hero derivata dall’immagine aggiornata più recentemente di una via attiva.
 
 ### Amministrazione
 
-- Django Admin per utenti autorizzati;
-- dashboard operativa `/management/` riservata agli Admin;
-- gestione di utenti, ruoli, pareti, vie e immagini;
-- registro di audit non modificabile per le operazioni amministrative importanti;
-- cancellazioni permanenti con conferma esplicita e protezione dei dati collegati.
+- dashboard operativa riservata agli amministratori;
+- Django Admin configurato per i modelli applicativi;
+- gestione di utenti e ruoli;
+- gestione di pareti, vie, immagini e annotazioni;
+- registro di audit in sola lettura;
+- conferme esplicite per le operazioni distruttive;
+- protezione dei dati storici collegati.
 
-## Regole applicative
+## Regole di dominio
+
+Le regole seguenti definiscono il comportamento centrale dell’applicazione.
+
+### Palestra e pareti
 
 - L’installazione rappresenta una sola palestra.
-- Una parete può contenere contemporaneamente vie e boulder.
+- Una parete può contenere sia vie sia boulder.
+- Le pareti non utilizzate vengono archiviate.
+- Il nome di una parete è univoco senza distinzione tra maiuscole e minuscole.
+
+### Vie
+
+- Il termine `ClimbingRoute` identifica una via di arrampicata ed evita ambiguità con
+  le route HTTP.
 - Il campo `Tipo` distingue `Vie` e `Boulder`.
-- I nomi di pareti e vie sono univoci senza distinzione tra maiuscole e minuscole.
-- Una via può non avere alcun route setter oppure averne uno o più.
+- Il nome della via è univoco senza distinzione tra maiuscole e minuscole.
 - Il grado ufficiale usa la scala francese da `4a` a `9c`.
-- Un `Project` rappresenta una via non ancora liberata o graduata e non possiede un grado
+- Un `Project` è una via non ancora liberata o graduata e non possiede un grado
   ufficiale.
-- Non vengono memorizzate date di apertura o rimozione.
-- Le vie storiche vengono archiviate, non eliminate automaticamente.
-- Profili e ripetizioni sono pubblici; email e informazioni riservate non lo sono.
-- Le date future non sono accettate per le ripetizioni.
-- Una via con ripetizioni non può essere eliminata definitivamente.
+- Una via può non avere route setter oppure averne uno o più.
+- Non vengono gestite date di apertura o rimozione.
+- Le vie storiche vengono archiviate invece di essere eliminate.
 
-## Ruoli e permessi
+### Ripetizioni
 
-I ruoli sono implementati tramite gruppi e permessi Django, senza ID utente hardcoded.
-I gruppi vengono creati e sincronizzati dopo le migrazioni.
+- Ogni utente può registrare una sola ripetizione della stessa via.
+- La ripetizione può essere modificata o eliminata solo dal proprietario.
+- La data non può essere futura.
+- La valutazione è un intero compreso tra 1 e 5.
+- Il grado percepito combina grado francese e decimale da 0 a 9.
+- Il numero di tentativi è obbligatorio solo quando viene selezionato il relativo tipo.
+- Profili e ripetizioni sono pubblici; email e informazioni riservate restano private.
 
-| Operazione | User | RouteSetter | Admin |
-|---|:---:|:---:|:---:|
-| Consultare catalogo e statistiche | ✓ | ✓ | ✓ |
-| Creare, modificare o eliminare le proprie ripetizioni | ✓ | ✓ | ✓ |
-| Creare e modificare vie | — | ✓ | ✓ |
-| Archiviare e ripristinare vie | — | ✓ | ✓ |
-| Caricare, sostituire e annotare immagini | — | ✓ | ✓ |
-| Eliminare definitivamente immagini | — | — | ✓ |
-| Gestire pareti | — | — | ✓ |
-| Gestire utenti e ruoli | — | — | ✓ |
-| Cancellazioni permanenti | — | — | ✓ |
-| Accedere al Django Admin | — | — | ✓ |
+### Conservazione dei dati
 
-I controlli vengono applicati nel backend. Nascondere un pulsante nell’interfaccia non è
-considerato un controllo di autorizzazione.
-
-## Stack tecnologico
-
-- Python 3.12–3.14;
-- Django 5.2 LTS;
-- PostgreSQL 17 in produzione e nello sviluppo Docker;
-- SQLite per sviluppo locale rapido e test semplici;
-- template Django server-rendered;
-- JavaScript leggero senza frontend separato;
-- CSS mobile-first;
-- Cloudinary per le immagini in produzione;
-- WhiteNoise per i file statici;
-- Gunicorn come application server;
-- `uv` per dipendenze e ambiente virtuale;
-- pytest, Ruff, mypy e pre-commit;
-- GitHub Actions per CI;
-- Docker e Docker Compose;
-- Northflank come piattaforma di deployment attuale.
-
-La versione applicativa dichiarata in `pyproject.toml` è `0.9.0`.
+- L’archiviazione è preferita alla cancellazione permanente.
+- La cancellazione permanente è riservata agli amministratori.
+- Pareti e vie devono essere già archiviate prima della cancellazione.
+- La conferma richiede l’inserimento esatto del nome.
+- Una via con ripetizioni non può essere eliminata perché la relazione è protetta.
 
 ## Architettura
 
-L’applicazione utilizza un monolite Django modulare. Il rendering avviene sul server e
-JavaScript viene usato solo per interazioni mirate, come menu mobile, campi dinamici,
-grafici interattivi e annotazione delle immagini.
+ClimbingSide utilizza un **monolite Django modulare**. Questa scelta mantiene nello
+stesso progetto autenticazione, modelli relazionali, form, template, pannello
+amministrativo e operazioni CRUD, evitando la complessità di un frontend separato.
 
 ```mermaid
 flowchart TD
-    Browser[Browser mobile o desktop] --> Django[Django e template]
-    Django --> PostgreSQL[(PostgreSQL)]
-    Django --> Cloudinary[Cloudinary immagini]
-    Django --> SMTP[Servizio SMTP]
-    Northflank[Northflank health check] --> Django
+    Browser[Browser] --> Views[Viste Django]
+    Views --> Forms[Form e validazione]
+    Forms --> Models[Modelli di dominio]
+    Models --> Database[(PostgreSQL)]
+    Views --> Templates[Template e componenti]
+    Templates --> Browser
+    Views --> Services[Servizi applicativi]
+    Services --> Cloudinary[Cloudinary]
+    Services --> SMTP[SMTP]
 ```
 
-Le responsabilità sono separate in tre applicazioni:
+### Applicazioni Django
 
-- `accounts`: utenti, autenticazione, profili, lingua, ruoli e rate limiting;
-- `climbs`: pareti, vie, ripetizioni, immagini, annotazioni e statistiche di dominio;
-- `core`: home, dashboard, audit, health check, logging e storage Cloudinary.
+Il codice è suddiviso per responsabilità:
+
+- `apps.accounts`: autenticazione, utenti, profili, lingua, ruoli e rate limiting;
+- `apps.climbs`: dominio dell’arrampicata, cataloghi, ripetizioni, immagini e statistiche;
+- `apps.core`: home, dashboard, audit, health check, storage e logging.
+
+### Livelli del codice
+
+#### Modelli
+
+I modelli rappresentano lo stato persistente e contengono:
+
+- relazioni tra entità;
+- vincoli di database;
+- indici;
+- validazione indipendente dall’interfaccia;
+- proprietà di visualizzazione semplici.
+
+#### Form
+
+I form Django gestiscono:
+
+- conversione e validazione dell’input;
+- messaggi di errore;
+- esclusione delle vie già ripetute dall’utente;
+- coerenza tra Project e grado ufficiale;
+- coerenza tra tipo di tentativo e numero di tentativi;
+- validazione sicura delle immagini;
+- normalizzazione delle annotazioni JSON.
+
+#### Viste
+
+Le viste coordinano il flusso HTTP:
+
+- verificano autenticazione e permessi;
+- costruiscono query ottimizzate;
+- istanziano e validano i form;
+- eseguono transazioni;
+- registrano eventi di audit;
+- producono redirect e messaggi di conferma;
+- forniscono il contesto ai template.
+
+#### Servizi
+
+La logica con effetti esterni è isolata in moduli dedicati:
+
+- invio delle email di verifica;
+- caricamento e cancellazione delle immagini;
+- adapter Cloudinary;
+- registrazione dell’audit;
+- calcolo delle statistiche;
+- generazione e verifica dei token.
+
+#### Template e componenti
+
+I template estendono `templates/base.html` e riutilizzano componenti condivisi per:
+
+- form;
+- paginazione;
+- schede delle vie;
+- schede delle ripetizioni;
+- istogrammi;
+- valutazioni a stelle;
+- statistiche dei profili.
+
+La logica complessa resta in Python e non viene delegata ai template.
+
+#### JavaScript
+
+JavaScript è utilizzato soltanto dove migliora l’esperienza utente:
+
+- menu mobile;
+- selettore della lingua;
+- campi dinamici Project e tentativi;
+- filtro interattivo degli istogrammi;
+- editor vettoriale delle annotazioni.
+
+L’applicazione continua a funzionare come sito server-rendered e non richiede un sistema
+di build frontend.
+
+## Stack tecnologico
+
+| Componente | Tecnologia | Responsabilità |
+|---|---|---|
+| Linguaggio | Python 3.12–3.14 | Logica applicativa e strumenti di sviluppo |
+| Framework | Django 5.2 LTS | HTTP, autenticazione, ORM, form, template e admin |
+| Database | PostgreSQL 17 | Persistenza relazionale in produzione |
+| Database locale | SQLite | Avvio rapido senza servizi esterni |
+| Server WSGI | Gunicorn | Esecuzione dell’applicazione in produzione |
+| File statici | WhiteNoise | Pubblicazione di CSS, JavaScript e asset versionati |
+| Immagini | Pillow e Cloudinary | Validazione, memorizzazione e distribuzione degli upload |
+| Configurazione | django-environ | Lettura tipizzata delle variabili d’ambiente |
+| Dipendenze | uv | Risoluzione, lock e installazione riproducibile |
+| Test | pytest, pytest-django, coverage | Test automatici e misurazione della copertura |
+| Qualità | Ruff, mypy, pre-commit | Lint, formattazione e controllo dei tipi |
+| CI | GitHub Actions | Controlli automatici su push e pull request |
+| Container | Docker | Build riproducibile per sviluppo e produzione |
+
+Il frontend non usa Node.js né un framework JavaScript. HTML viene prodotto dai
+template Django, lo stile è CSS nativo e gli script sono JavaScript senza dipendenze.
+
+## Flussi principali del codice
+
+### Registrazione
+
+1. `RegistrationForm` valida username, email, lingua e password.
+2. L’utente viene creato tramite il modello personalizzato `accounts.User`.
+3. La password viene hashata dal sistema Django.
+4. Il ruolo `User` viene assegnato tramite un gruppo Django.
+5. Se la verifica email è attiva, l’account resta inattivo e viene inviato un token.
+6. Il link valido imposta `email_verified_at` e attiva l’utente.
+
+### Login
+
+1. Il backend autentica lo username senza distinzione tra maiuscole e minuscole.
+2. Il rate limiter calcola un identificatore hash basato su username e origine della
+   richiesta.
+3. Dopo la soglia configurata, l’accesso viene bloccato temporaneamente.
+4. Un login riuscito elimina il relativo contatore di errori.
+
+### Registrazione di una ripetizione
+
+1. La vista richiede autenticazione e permesso `add_ascent`.
+2. `AscentForm` mostra solo le vie non ancora registrate dall’utente.
+3. Il form valida data, rating, grado percepito e tentativi.
+4. Il modello applica nuovamente i vincoli essenziali.
+5. Il database impedisce duplicati per utente e via.
+6. La ripetizione viene salvata e diventa visibile nei profili e nelle statistiche.
+
+### Consultazione del catalogo
+
+1. La vista interpreta ricerca, filtri, ordinamento e pagina.
+2. Le query usano `select_related`, aggregazioni e annotazioni Django.
+3. Per gli utenti autenticati una sottoquery `Exists` identifica le vie completate.
+4. Il risultato viene paginato a 20 elementi.
+5. Il template renderizza schede, filtri e statistiche senza query aggiuntive.
+
+### Caricamento di un’immagine
+
+1. La vista verifica il permesso sul modello `RouteImage`.
+2. Il form controlla dimensione, formato dichiarato e contenuto reale.
+3. Il servizio salva il record e il file in una transazione controllata.
+4. In produzione il file viene inviato a Cloudinary.
+5. Un eventuale file sostituito viene eliminato solo dopo il commit del database.
+6. L’operazione viene registrata nell’audit log.
+
+### Salvataggio dell’annotazione
+
+1. L’editor converte i marcatori in coordinate normalizzate.
+2. Il JSON viene inserito in un campo nascosto del form.
+3. Il backend verifica versione, struttura, tipi, coordinate e numerazione.
+4. Viene aggiornato solo il campo `annotations` del record `RouteImage`.
+5. L’immagine originale rimane invariata.
 
 ## Struttura del repository
 
@@ -201,106 +370,365 @@ Le responsabilità sono separate in tre applicazioni:
 climbingside/
 ├── apps/
 │   ├── accounts/
-│   │   ├── admin.py          # gestione utenti e ruoli nel Django Admin
-│   │   ├── backends.py       # login case-insensitive
-│   │   ├── forms.py          # registrazione e modifica profilo
-│   │   ├── middleware.py     # lingua preferita dell’utente
+│   │   ├── admin.py          # utenti e ruoli nel Django Admin
+│   │   ├── backends.py       # autenticazione case-insensitive
+│   │   ├── forms.py          # registrazione e profilo
+│   │   ├── middleware.py     # applicazione della lingua preferita
 │   │   ├── models.py         # User e LoginAttempt
-│   │   ├── rate_limit.py     # blocco temporaneo dei login ripetuti
-│   │   ├── roles.py          # gruppi, ruoli e permessi
-│   │   ├── services.py       # invio email di verifica
+│   │   ├── rate_limit.py     # limitazione dei tentativi di login
+│   │   ├── roles.py          # ruoli, gruppi e permessi
+│   │   ├── services.py       # invio email
+│   │   ├── signals.py        # sincronizzazione permessi post-migrate
 │   │   ├── tokens.py         # token di verifica email
-│   │   ├── urls.py           # URL account
-│   │   └── views.py          # registrazione, login e profili
+│   │   ├── urls.py
+│   │   └── views.py
 │   ├── climbs/
-│   │   ├── admin.py          # amministrazione del dominio
-│   │   ├── annotations.py    # formato e validazione dell’annotazione JSON
-│   │   ├── forms.py          # form pareti, vie, ripetizioni e immagini
-│   │   ├── grades.py         # scala francese e ordinamento dei gradi
-│   │   ├── images.py         # validazione sicura dei file caricati
-│   │   ├── media_services.py # salvataggio e rimozione controllata immagini
-│   │   ├── models.py         # Wall, ClimbingRoute, Ascent e RouteImage
-│   │   ├── statistics.py     # aggregazioni e istogrammi
-│   │   ├── urls.py           # URL catalogo e CRUD
-│   │   └── views.py          # viste pubbliche e operative
+│   │   ├── admin.py
+│   │   ├── annotations.py    # schema delle annotazioni
+│   │   ├── forms.py
+│   │   ├── grades.py         # scala francese e ordinamento
+│   │   ├── images.py         # validazione degli upload
+│   │   ├── media_services.py # ciclo di vita dei file
+│   │   ├── models.py         # Wall, ClimbingRoute, Ascent, RouteImage
+│   │   ├── statistics.py     # aggregazioni statistiche
+│   │   ├── urls.py
+│   │   └── views.py
 │   └── core/
 │       ├── admin.py          # audit log in sola lettura
-│       ├── audit.py          # registrazione eventi amministrativi
-│       ├── health.py         # controllo Django + database
+│       ├── audit.py
+│       ├── forms.py          # stile condiviso dei form
+│       ├── health.py         # health check database
 │       ├── models.py         # AuditLogEntry
-│       ├── storage.py        # adapter Cloudinary
-│       ├── urls.py           # home, statistiche, management e health
-│       └── views.py          # viste generali
+│       ├── storage.py        # backend Cloudinary
+│       ├── urls.py
+│       └── views.py
 ├── config/
 │   ├── settings/
-│   │   ├── base.py           # impostazioni condivise
-│   │   ├── development.py    # sviluppo locale
-│   │   ├── test.py           # test automatici
-│   │   └── production.py     # produzione, HTTPS, SMTP e Cloudinary
-│   ├── logging.py            # log JSON strutturati
-│   ├── urls.py               # router principale
+│   │   ├── base.py           # configurazione condivisa
+│   │   ├── development.py    # sviluppo
+│   │   ├── test.py           # test
+│   │   └── production.py     # produzione
+│   ├── logging.py            # formatter JSON
+│   ├── urls.py               # URL root
 │   ├── asgi.py
 │   └── wsgi.py
-├── locale/                   # traduzioni italiane compilate
+├── locale/                   # traduzioni gettext
 ├── static/
-│   ├── css/app.css           # design system e layout responsive
-│   ├── images/               # logo e asset versionati
+│   ├── css/app.css           # stile responsive
+│   ├── images/               # logo e asset statici
 │   └── js/
-│       ├── app.js            # interazioni generali e grafici
+│       ├── app.js            # interazioni generali
 │       └── route-annotation.js
 ├── templates/
-│   ├── accounts/             # pagine account
-│   ├── climbs/               # cataloghi, dettagli e form
-│   ├── components/           # componenti riutilizzabili
-│   ├── core/                 # home e dashboard
-│   └── base.html             # layout e navigazione condivisi
+│   ├── accounts/
+│   ├── climbs/
+│   ├── components/
+│   ├── core/
+│   └── base.html
 ├── tests/
 │   ├── accounts/
 │   ├── climbs/
 │   └── core/
-├── .github/workflows/ci.yml  # GitHub Actions
-├── .env.example              # esempio senza credenziali
-├── compose.yml               # sviluppo locale con PostgreSQL
-├── Dockerfile                # immagine di produzione
+├── .github/workflows/ci.yml
+├── .env.example
+├── .pre-commit-config.yaml
+├── compose.yml
+├── Dockerfile
 ├── manage.py
-├── pyproject.toml            # dipendenze e configurazione strumenti
-└── uv.lock                   # dipendenze bloccate e riproducibili
+├── pyproject.toml
+└── uv.lock
 ```
 
-Le migrazioni si trovano nelle cartelle `migrations/` delle singole applicazioni.
+Ogni applicazione Django contiene inoltre una cartella `migrations/` con l’evoluzione
+versionata dello schema del database.
+
+## Mappa dei moduli
+
+Questa sezione indica dove cercare una responsabilità e come i moduli collaborano.
+
+### Entrata e configurazione
+
+| File | Responsabilità | Collegamenti principali |
+|---|---|---|
+| `manage.py` | Punto di ingresso dei comandi Django | Carica il modulo indicato da `DJANGO_SETTINGS_MODULE` |
+| `config/urls.py` | Router HTTP principale | Include gli URL di `accounts`, `climbs` e `core` |
+| `config/settings/base.py` | Configurazione condivisa | Registra app, middleware, database, template, storage e autenticazione |
+| `config/settings/development.py` | Impostazioni locali | Estende `base.py` con comportamento adatto allo sviluppo |
+| `config/settings/test.py` | Ambiente isolato dei test | Usato automaticamente da pytest-django |
+| `config/settings/production.py` | Sicurezza e servizi di produzione | Richiede PostgreSQL, Cloudinary e configurazione SMTP o bypass |
+| `config/wsgi.py` | Entrata sincrona dell’applicazione | Caricata da Gunicorn |
+| `config/asgi.py` | Entrata ASGI | Disponibile per server o funzionalità asincrone future |
+| `config/logging.py` | Formatter JSON | Usato dalla configurazione di logging in produzione |
+
+### Applicazione `accounts`
+
+| File | Responsabilità | Collegamenti principali |
+|---|---|---|
+| `models.py` | Modello utente personalizzato e tentativi di login | Referenziato da `AUTH_USER_MODEL` e dalle ripetizioni |
+| `forms.py` | Registrazione, aggiornamento profilo e reinvio verifica | Valida unicità case-insensitive e usa `StyledFormMixin` |
+| `views.py` | Flussi di account e profili | Usa form, token, rate limiter, servizi email e statistiche personali |
+| `urls.py` | URL di autenticazione e profilo | Incluso alla radice da `config/urls.py` |
+| `backends.py` | Login case-insensitive | Registrato in `AUTHENTICATION_BACKENDS` |
+| `rate_limit.py` | Blocco temporaneo dei login ripetuti | Legge e aggiorna `LoginAttempt` |
+| `roles.py` | Definizione di User, RouteSetter e Admin | Crea gruppi e assegna permessi Django |
+| `signals.py` | Sincronizzazione automatica dei ruoli | Richiama `sync_role_permissions` dopo le migrazioni |
+| `tokens.py` | Token firmati per la verifica email | Utilizzato dalle viste e dai link inviati per email |
+| `services.py` | Composizione e invio della verifica email | Renderizza i template email e usa il backend configurato |
+| `middleware.py` | Lingua preferita dell’utente | Attiva la lingua salvata dopo l’autenticazione |
+| `admin.py` | Gestione sicura degli utenti | Integra ruoli e audit nel Django Admin |
+
+### Applicazione `climbs`
+
+| File | Responsabilità | Collegamenti principali |
+|---|---|---|
+| `models.py` | Pareti, vie, ripetizioni e immagini | Definisce relazioni, vincoli, indici e validazione di dominio |
+| `forms.py` | Form CRUD, ripetizioni, upload e annotazioni | Usa gradi, validatori immagine e parser delle annotazioni |
+| `views.py` | Cataloghi, dettagli e mutazioni del dominio | Coordina permessi, query, form, transazioni, audit e template |
+| `urls.py` | URL di pareti, vie, immagini e ripetizioni | Collega ogni endpoint alla relativa vista |
+| `grades.py` | Scala francese e grado decimale | Fornisce ordinamento, codifica e presentazione dei gradi |
+| `statistics.py` | Statistiche personali e collettive | Produce bucket continui usati dagli istogrammi e dalle dashboard |
+| `images.py` | Sicurezza degli upload | Verifica nome, formato, dimensioni, pixel e animazioni |
+| `media_services.py` | Ciclo di vita delle immagini | Coordina database e storage durante sostituzione o cancellazione |
+| `annotations.py` | Contratto JSON delle annotazioni | Normalizza e valida marcatori e coordinate |
+| `templatetags/climbs_tags.py` | Filtri di presentazione dei gradi | Usato esclusivamente nei template |
+| `admin.py` | Gestione del dominio nel Django Admin | Ottimizza query, applica vincoli di cancellazione e registra audit |
+| `management/commands/seed_demo.py` | Dati locali dimostrativi | Crea dataset non sensibile in modo idempotente |
+
+### Applicazione `core`
+
+| File | Responsabilità | Collegamenti principali |
+|---|---|---|
+| `views.py` | Home, statistiche, dashboard e lingua | Interroga `climbs.statistics` e renderizza le pagine generali |
+| `health.py` | Stato dell’applicazione | Verifica il database e risponde su `/healthz/` |
+| `models.py` | Registro di audit | Riceve eventi dalle operazioni amministrative |
+| `audit.py` | API per scrivere eventi di audit | Chiamata dalle viste e dalle classi Admin |
+| `storage.py` | Adapter Django per Cloudinary | Implementa salvataggio, URL, esistenza e cancellazione dei file |
+| `forms.py` | Stile condiviso dei controlli | Ereditato dai form delle altre applicazioni |
+| `urls.py` | URL delle pagine generali | Incluso da `config/urls.py` |
+| `admin.py` | Consultazione dell’audit | Impedisce modifica e cancellazione degli eventi |
+
+### Presentazione
+
+| Percorso | Responsabilità |
+|---|---|
+| `templates/base.html` | Struttura HTML comune, navigazione, messaggi e caricamento degli asset |
+| `templates/accounts/` | Pagine e messaggi email dei flussi account |
+| `templates/climbs/` | Cataloghi, dettagli, form e conferme del dominio |
+| `templates/core/` | Home e dashboard |
+| `templates/components/` | Form, paginazione, schede, stelle e istogrammi riutilizzabili |
+| `static/css/app.css` | Design system, layout responsive e stati dei componenti |
+| `static/js/app.js` | Interazioni generali e filtro degli istogrammi |
+| `static/js/route-annotation.js` | Editor delle annotazioni sopra l’immagine |
+| `locale/it/LC_MESSAGES/` | Catalogo delle traduzioni italiane |
+
+### Test e infrastruttura
+
+| Percorso | Responsabilità |
+|---|---|
+| `tests/accounts/` | Autenticazione, account, profili e ruoli |
+| `tests/climbs/` | Modelli, CRUD, permessi, ripetizioni, immagini e statistiche |
+| `tests/core/` | Home, dashboard, storage, audit e health check |
+| `pyproject.toml` | Metadati, dipendenze e configurazione degli strumenti |
+| `uv.lock` | Versioni risolte per installazioni riproducibili |
+| `compose.yml` | Ambiente locale con applicazione e PostgreSQL |
+| `Dockerfile` | Immagine di produzione e comando Gunicorn |
+| `.github/workflows/ci.yml` | Pipeline di qualità e test |
+| `.env.example` | Elenco documentato delle variabili senza valori sensibili |
 
 ## Modello dei dati
 
-| Entità | Scopo e campi principali |
-|---|---|
-| `User` | Utente Django personalizzato con username, email univoca, lingua preferita e data di verifica email |
-| `LoginAttempt` | Contatore temporaneo dei login falliti con identificatore sottoposto a hash |
-| `Wall` | Parete con nome univoco e stato attivo/archiviato |
-| `ClimbingRoute` | Via o boulder con nome, parete, tipo, grado ufficiale, Project, route setter e stato |
-| `Ascent` | Ripetizione autonoma con utente, via, data, rating, grado proposto, tentativi e timestamp |
-| `RouteImage` | Unica immagine della via con annotazione JSON versionata e autore del caricamento |
-| `AuditLogEntry` | Evento amministrativo con attore, azione, entità, identificativo, metadati non sensibili e timestamp |
+```mermaid
+erDiagram
+    USER ||--o{ ASCENT : registra
+    WALL ||--o{ CLIMBING_ROUTE : contiene
+    USER }o--o{ CLIMBING_ROUTE : imposta
+    CLIMBING_ROUTE ||--o{ ASCENT : riceve
+    CLIMBING_ROUTE ||--o| ROUTE_IMAGE : possiede
+    USER ||--o{ ROUTE_IMAGE : carica
+    USER ||--o{ AUDIT_LOG_ENTRY : esegue
+```
 
-Relazioni principali:
+### `User`
 
-- `Wall 1 → N ClimbingRoute`;
-- `User N ↔ N ClimbingRoute` per i route setter;
-- `User 1 → N Ascent`;
-- `ClimbingRoute 1 → N Ascent`;
-- `ClimbingRoute 1 → 0..1 RouteImage`.
+Estende `AbstractUser` e aggiunge:
 
-Vincoli rilevanti:
+- email obbligatoria e univoca;
+- lingua preferita;
+- data di verifica email.
 
-- una sola ripetizione per coppia utente/via;
-- rating compreso tra 1 e 5;
+Username ed email sono univoci anche senza distinzione tra maiuscole e minuscole.
+
+### `LoginAttempt`
+
+Memorizza lo stato del rate limiting:
+
+- identificatore hash;
+- numero di errori;
+- primo errore;
+- scadenza del blocco;
+- ultimo aggiornamento.
+
+Non salva password né username in chiaro.
+
+### `Wall`
+
+Rappresenta una parete:
+
+- nome;
+- stato archiviato.
+
+### `ClimbingRoute`
+
+Rappresenta una via o un boulder:
+
+- nome;
+- parete;
+- tipo;
+- grado ufficiale;
+- flag Project;
+- route setter opzionali;
+- stato archiviato.
+
+### `Ascent`
+
+Rappresenta una ripetizione:
+
+- utente;
+- via;
+- data;
+- rating;
+- grado proposto codificato;
+- tipo e numero di tentativi;
+- data di creazione;
+- data di ultima modifica.
+
+Il grado proposto viene memorizzato come intero che combina la posizione del grado
+francese e il decimale. La presentazione leggibile viene gestita da `grades.py`.
+
+### `RouteImage`
+
+Rappresenta l’unica immagine associabile a una via:
+
+- relazione one-to-one con `ClimbingRoute`;
+- riferimento al file;
+- annotazione JSON;
+- utente che ha caricato il file;
+- timestamp.
+
+### `AuditLogEntry`
+
+Registra operazioni amministrative:
+
+- attore;
+- azione;
+- tipo e identificativo dell’entità;
+- metadati tecnici non sensibili;
+- timestamp.
+
+Il modello è consultabile nel Django Admin ma non può essere modificato o cancellato
+tramite l’interfaccia amministrativa.
+
+### Vincoli e indici
+
+I vincoli principali sono applicati nel database:
+
+- unicità di username, email, pareti e vie;
+- una ripetizione per utente e via;
+- rating tra 1 e 5;
 - grado percepito entro la scala supportata;
-- tentativi coerenti con il tipo selezionato;
-- Project senza grado ufficiale e vie non Project con grado obbligatorio;
-- protezione delle relazioni storiche tramite `PROTECT`;
-- indici dedicati alle principali query di catalogo e statistiche.
+- coerenza tra Project e grado ufficiale;
+- coerenza tra tipo e numero di tentativi.
 
-Non esiste un modello `Gym` perché la versione corrente è progettata per una sola
-palestra.
+Gli indici coprono stato e tipo delle vie, parete, grado ufficiale, utente/data,
+via/data e campi principali dell’audit.
+
+## Ruoli e autorizzazioni
+
+I ruoli sono implementati attraverso gruppi e permessi Django. Non vengono utilizzati
+ID utente fissi.
+
+| Operazione | User | RouteSetter | Admin |
+|---|:---:|:---:|:---:|
+| Consultare catalogo e statistiche | ✓ | ✓ | ✓ |
+| Gestire le proprie ripetizioni | ✓ | ✓ | ✓ |
+| Creare e modificare vie | — | ✓ | ✓ |
+| Archiviare e ripristinare vie | — | ✓ | ✓ |
+| Caricare, sostituire e annotare immagini | — | ✓ | ✓ |
+| Eliminare immagini | — | — | ✓ |
+| Gestire pareti | — | — | ✓ |
+| Gestire utenti e ruoli | — | — | ✓ |
+| Eseguire cancellazioni permanenti | — | — | ✓ |
+| Accedere al Django Admin | — | — | ✓ |
+
+I gruppi `User`, `RouteSetter` e `Admin` e i relativi permessi vengono sincronizzati dal
+segnale `post_migrate`.
+
+Le viste controllano i permessi prima di eseguire qualsiasi operazione. I controlli
+visivi nei template servono soltanto a migliorare l’interfaccia e non sostituiscono
+l’autorizzazione backend.
+
+## Interfaccia e internazionalizzazione
+
+L’interfaccia è:
+
+- mobile-first;
+- responsive;
+- server-rendered;
+- utilizzabile senza un frontend separato;
+- basata su un unico foglio di stile;
+- costruita con template e componenti riutilizzabili;
+- dotata di stati vuoti, errori, conferme e messaggi di successo;
+- navigabile tramite tastiera;
+- compatibile con etichette e ruoli ARIA nei componenti interattivi.
+
+I titoli utilizzano Barlow Condensed e il testo Barlow, caricati da Google Fonts con
+fallback di sistema.
+
+La lingua predefinita è italiana. I testi sorgente sono traducibili tramite Django
+gettext e l’interfaccia supporta italiano e inglese.
+
+File principali:
+
+```text
+locale/it/LC_MESSAGES/django.po
+locale/it/LC_MESSAGES/django.mo
+```
+
+Dopo aver modificato testi traducibili:
+
+```bash
+uv run python manage.py makemessages -l it
+uv run python manage.py compilemessages
+```
+
+La compilazione richiede GNU gettext.
+
+## URL principali
+
+| URL | Accesso | Descrizione |
+|---|---|---|
+| `/` | pubblico | Home |
+| `/register/` | pubblico | Registrazione |
+| `/login/` | pubblico | Login |
+| `/logout/` | autenticato, POST | Logout |
+| `/password-reset/` | pubblico | Recupero password |
+| `/account/` | autenticato | Profilo personale |
+| `/account/edit/` | autenticato | Modifica profilo |
+| `/users/` | pubblico | Elenco climber |
+| `/users/<username>/` | pubblico | Profilo pubblico |
+| `/walls/` | pubblico | Elenco pareti |
+| `/walls/<id>/` | pubblico | Dettaglio parete |
+| `/routes/` | pubblico | Catalogo vie e boulder |
+| `/routes/<id>/` | pubblico | Dettaglio via |
+| `/routes/<id>/image/` | RouteSetter/Admin | Immagine della via |
+| `/routes/<id>/annotation/` | RouteSetter/Admin | Editor annotazione |
+| `/ascents/new/` | autenticato | Nuova ripetizione |
+| `/ascents/<id>/edit/` | proprietario | Modifica ripetizione |
+| `/ascents/<id>/delete/` | proprietario | Elimina ripetizione |
+| `/statistics/` | pubblico | Statistiche collettive |
+| `/management/` | Admin | Dashboard operativa |
+| `/admin/` | Admin | Django Admin |
+| `/healthz/` | infrastruttura/pubblico | Health check |
 
 ## Installazione locale
 
@@ -309,15 +737,22 @@ palestra.
 - Python 3.12, 3.13 o 3.14;
 - [`uv`](https://docs.astral.sh/uv/);
 - Git;
-- Docker Desktop o Docker Engine, facoltativo.
+- Docker, facoltativo.
 
-### Avvio rapido con SQLite
+### Clone e dipendenze
 
 ```bash
 git clone https://github.com/LeonardoPerin97/ClimbingSideRoma.git
 cd ClimbingSideRoma
 cp .env.example .env
 uv sync --frozen --group dev
+```
+
+### Avvio con SQLite
+
+Lasciare `DATABASE_URL` assente o commentata nel file `.env`.
+
+```bash
 uv run python manage.py migrate
 uv run python manage.py createsuperuser
 uv run python manage.py runserver
@@ -325,24 +760,12 @@ uv run python manage.py runserver
 
 Aprire `http://127.0.0.1:8000/`.
 
-Per usare SQLite, lasciare `DATABASE_URL` commentata o assente in `.env`.
+In sviluppo:
 
-### Dati dimostrativi
-
-```bash
-uv run python manage.py seed_demo --dry-run
-uv run python manage.py seed_demo
-```
-
-`--dry-run` convalida l’operazione e annulla la transazione. Il comando reale è
-idempotente e può essere eseguito più volte senza duplicare i dati.
-
-Gli utenti demo:
-
-- non sono amministratori;
-- usano indirizzi `example.invalid`;
-- possiedono password inutilizzabili;
-- non devono essere utilizzati come account reali.
+- il database predefinito è SQLite;
+- le immagini vengono salvate in `media/`;
+- le email vengono stampate nel terminale;
+- `DEBUG` è attivo.
 
 ### Avvio con PostgreSQL e Docker
 
@@ -362,48 +785,60 @@ docker compose logs -f web
 docker compose stop
 ```
 
-Il volume `postgres_data` conserva il database tra gli arresti dei container.
+PostgreSQL utilizza il volume nominato `postgres_data`.
+
+### Dati dimostrativi
+
+```bash
+uv run python manage.py seed_demo --dry-run
+uv run python manage.py seed_demo
+```
+
+Il dry-run verifica l’operazione e annulla la transazione. Il comando effettivo è
+idempotente e non duplica i dati se eseguito più volte.
+
+Gli utenti demo usano indirizzi `example.invalid`, non sono amministratori e possiedono
+password inutilizzabili.
 
 ## Configurazione
 
-Le impostazioni sono lette dalle variabili d’ambiente con `django-environ`.
-In locale possono essere inserite in `.env`; in produzione devono essere salvate nel
-secret store della piattaforma.
+La configurazione è suddivisa in:
 
-Non commettere mai:
+- `config.settings.base`: impostazioni condivise;
+- `config.settings.development`: sviluppo locale;
+- `config.settings.test`: test automatici;
+- `config.settings.production`: produzione.
 
-- `.env`;
-- password o token;
-- database SQLite;
-- dump PostgreSQL;
-- file caricati dagli utenti;
-- credenziali Cloudinary o SMTP.
+Le variabili vengono lette con `django-environ`. In locale possono essere salvate in
+`.env`; in produzione devono essere configurate nel secret store della piattaforma.
 
 ### Variabili principali
 
-| Variabile | Necessaria | Descrizione |
-|---|:---:|---|
-| `DJANGO_SETTINGS_MODULE` | sì | `config.settings.development`, `test` o `production` |
-| `DJANGO_SECRET_KEY` | sì in produzione | Chiave segreta lunga e casuale |
-| `DJANGO_DEBUG` | sì | Deve essere `false` in produzione |
-| `DJANGO_ALLOWED_HOSTS` | sì | Host separati da virgola, senza `https://` |
-| `DJANGO_CSRF_TRUSTED_ORIGINS` | produzione | Origini complete con `https://` |
-| `DATABASE_URL` | produzione | Connessione PostgreSQL |
-| `DATABASE_CONN_MAX_AGE` | no | Durata connessioni persistenti, default 60 secondi |
-| `DJANGO_DEFAULT_LANGUAGE` | no | `it` oppure `en`, default `it` |
-| `DJANGO_LOG_LEVEL` | no | Livello di logging, default `INFO` |
-| `DJANGO_BYPASS_EMAIL_VERIFICATION` | no | Bypass temporaneo della verifica email |
-| `LOGIN_FAILURE_LIMIT` | no | Numero massimo di errori login, default 5 |
-| `LOGIN_LOCKOUT_MINUTES` | no | Durata del blocco, default 15 minuti |
-| `CLOUDINARY_URL` | produzione | Credenziali Cloudinary nel formato previsto dall’SDK |
-| `DJANGO_SECURE_SSL_REDIRECT` | produzione | Forza HTTPS, normalmente `true` |
-| `DJANGO_HSTS_SECONDS` | produzione | Durata HSTS; usare con cautela durante il primo setup |
-| `EMAIL_HOST` | se bypass disattivo | Server SMTP |
-| `EMAIL_PORT` | se bypass disattivo | Generalmente 587 |
-| `EMAIL_HOST_USER` | se bypass disattivo | Utente SMTP |
-| `EMAIL_HOST_PASSWORD` | se bypass disattivo | Password o API key SMTP |
-| `EMAIL_USE_TLS` | se bypass disattivo | Generalmente `true` |
-| `DEFAULT_FROM_EMAIL` | se bypass disattivo | Mittente visualizzato |
+| Variabile | Descrizione |
+|---|---|
+| `DJANGO_SETTINGS_MODULE` | Modulo di configurazione Django |
+| `DJANGO_SECRET_KEY` | Chiave crittografica dell’applicazione |
+| `DJANGO_DEBUG` | Debug; deve essere `false` in produzione |
+| `DJANGO_ALLOWED_HOSTS` | Host consentiti separati da virgola |
+| `DJANGO_CSRF_TRUSTED_ORIGINS` | Origini HTTPS autorizzate per CSRF |
+| `DATABASE_URL` | Connessione al database |
+| `DATABASE_CONN_MAX_AGE` | Durata delle connessioni persistenti |
+| `DJANGO_DEFAULT_LANGUAGE` | Lingua predefinita, `it` o `en` |
+| `DJANGO_LOG_LEVEL` | Livello dei log |
+| `DJANGO_BYPASS_EMAIL_VERIFICATION` | Bypass temporaneo delle email |
+| `LOGIN_FAILURE_LIMIT` | Soglia degli errori di login |
+| `LOGIN_LOCKOUT_MINUTES` | Durata del blocco login |
+| `CLOUDINARY_URL` | Configurazione Cloudinary |
+| `DJANGO_SECURE_SSL_REDIRECT` | Redirect obbligatorio a HTTPS |
+| `DJANGO_HSTS_SECONDS` | Durata della policy HSTS |
+| `EMAIL_HOST` | Host SMTP |
+| `EMAIL_PORT` | Porta SMTP |
+| `EMAIL_HOST_USER` | Utente SMTP |
+| `EMAIL_HOST_PASSWORD` | Password o API key SMTP |
+| `EMAIL_USE_TLS` | Abilitazione TLS SMTP |
+| `DEFAULT_FROM_EMAIL` | Mittente delle email applicative |
+
+Un esempio completo senza dati sensibili è disponibile in `.env.example`.
 
 Per generare una chiave segreta:
 
@@ -411,64 +846,64 @@ Per generare una chiave segreta:
 python -c "import secrets; print(secrets.token_urlsafe(50))"
 ```
 
-### Esempio di host in produzione
+### File esclusi dal repository
 
-```text
-DJANGO_ALLOWED_HOSTS=example.code.run,localhost,127.0.0.1
-DJANGO_CSRF_TRUSTED_ORIGINS=https://example.code.run
-```
+`.gitignore` esclude:
 
-`127.0.0.1` e `localhost` sono necessari anche per alcuni controlli interni della
-piattaforma. In `DJANGO_ALLOWED_HOSTS` non va inserito lo schema; nelle origini CSRF lo
-schema HTTPS è obbligatorio.
+- `.env` e sue varianti;
+- ambienti virtuali;
+- database SQLite;
+- coverage e cache degli strumenti;
+- file statici raccolti;
+- cartella media;
+- configurazioni locali degli editor.
+
+Non devono essere versionati secret, database, dump o file caricati dagli utenti.
 
 ## Email e verifica degli account
 
-### Comportamento normale
+### Flusso normale
 
-1. L’utente completa la registrazione.
-2. L’account viene creato inattivo.
-3. Django invia un link di verifica.
-4. Il link attiva l’account e registra la data di verifica.
-5. Il recupero password utilizza lo stesso servizio SMTP.
+La produzione usa il backend SMTP Django. Sono necessarie le variabili `EMAIL_*` e un
+mittente autorizzato dal provider.
 
-La registrazione e il reinvio non rivelano pubblicamente se un indirizzo è già presente.
-In sviluppo le email vengono stampate nel terminale tramite il backend console.
+Alla registrazione:
+
+1. l’account viene creato inattivo;
+2. viene inviato un link firmato;
+3. il link verifica l’email e attiva l’account;
+4. l’utente può effettuare il login.
+
+Lo stesso servizio SMTP gestisce il recupero password.
 
 ### Bypass temporaneo
 
-Se l’SMTP non è ancora disponibile:
+Per ambienti in cui l’SMTP non è disponibile:
 
 ```text
 DJANGO_BYPASS_EMAIL_VERIFICATION=true
 ```
 
-Con il bypass attivo:
+Con il bypass:
 
 - i nuovi account vengono attivati immediatamente;
-- l’email resta indicata come non verificata;
-- nessuna email viene inviata;
-- reinvio verifica e recupero password via email vengono disabilitati;
-- un Admin può modificare manualmente la password dal Django Admin.
+- l’email rimane non verificata;
+- verifica, reinvio e recupero password via email sono disabilitati;
+- un amministratore può gestire manualmente l’account dal Django Admin.
 
-Il bypass non attiva automaticamente gli account inattivi creati in precedenza. Un
-Admin può aprire l’utente nel Django Admin, selezionare `Active` e salvare.
+Il bypass deve essere disattivato quando il servizio SMTP è operativo:
 
-Per ripristinare il flusso normale:
+```text
+DJANGO_BYPASS_EMAIL_VERIFICATION=false
+```
 
-1. configurare tutte le variabili SMTP;
-2. impostare `DJANGO_BYPASS_EMAIL_VERIFICATION=false`;
-3. riavviare i servizi dipendenti;
-4. effettuare un test con un indirizzo controllato.
-
-Le password SMTP e le app password vanno copiate esattamente come generate e conservate
-solo nel secret store e in un password manager personale.
+Gli account inattivi creati prima del bypass non vengono attivati automaticamente.
 
 ## Immagini e annotazioni
 
-Ogni via può avere una sola immagine.
+### Validazione delle immagini
 
-Formati ammessi:
+Sono accettati:
 
 - JPEG;
 - PNG;
@@ -476,85 +911,83 @@ Formati ammessi:
 
 Limiti:
 
-- massimo 8 MB;
-- massimo 12.000 pixel per lato;
-- massimo 36 megapixel complessivi;
-- corrispondenza obbligatoria tra estensione, content type e contenuto reale.
+- 8 MB;
+- 12.000 pixel per lato;
+- 36 megapixel complessivi;
+- una sola immagine per via.
 
-In sviluppo i file vengono salvati in `media/`. In produzione il backend
-`CloudinaryMediaStorage` carica le immagini su Cloudinary e nel database conserva solo
-l’identificativo del file.
+Il backend verifica:
 
-L’annotazione:
+- estensione;
+- content type dichiarato;
+- formato rilevato da Pillow;
+- dimensioni;
+- numero di frame;
+- coerenza tra formato ed estensione.
 
-- non modifica l’immagine originale;
-- è salvata come JSON versionato;
-- utilizza coordinate normalizzate tra 0 e 1;
-- resta allineata durante il ridimensionamento responsive;
-- supporta partenza sinistra, partenza destra, movimenti numerati e top;
-- consente trascinamento, selezione, annullamento e cancellazione;
-- accetta al massimo 100 marcatori.
+Il nome salvato include un UUID e non riutilizza il nome originale dell’utente.
 
-Partenze e top possono comparire una sola volta. I movimenti vengono rinumerati in modo
-consecutivo. Sostituire l’immagine azzera l’annotazione perché le coordinate potrebbero
-non essere più valide.
+### Storage
 
-Durante il salvataggio dell’annotazione Django valida il JSON senza tentare di scaricare
-nuovamente l’immagine da Cloudinary. La validazione completa del file avviene al momento
-del caricamento.
+- sviluppo: `FileSystemStorage` nella cartella `media/`;
+- produzione: `CloudinaryMediaStorage`.
 
-## URL principali
+Il database conserva il riferimento all’immagine, mentre i byte sono gestiti dal
+servizio esterno.
 
-| URL | Descrizione |
-|---|---|
-| `/` | Home |
-| `/register/` | Registrazione |
-| `/login/` | Login |
-| `/logout/` | Logout POST |
-| `/account/` | Profilo personale |
-| `/users/` | Elenco climber |
-| `/users/<username>/` | Profilo pubblico |
-| `/walls/` | Elenco pareti |
-| `/walls/<id>/` | Dettaglio parete |
-| `/routes/` | Catalogo vie e boulder |
-| `/routes/<id>/` | Dettaglio via |
-| `/routes/<id>/image/` | Caricamento o sostituzione immagine |
-| `/routes/<id>/annotation/` | Editor annotazione |
-| `/ascents/new/` | Nuova ripetizione |
-| `/ascents/<id>/edit/` | Modifica ripetizione |
-| `/ascents/<id>/delete/` | Eliminazione ripetizione |
-| `/statistics/` | Statistiche collettive |
-| `/management/` | Dashboard Admin |
-| `/admin/` | Django Admin |
-| `/healthz/` | Health check applicazione e database |
+### Annotazioni
 
-## Traduzioni
+L’immagine originale non viene alterata. L’annotazione è un documento JSON con:
 
-I testi sorgente dei template sono in inglese e la traduzione italiana si trova in
-`locale/it/LC_MESSAGES/django.po`.
+- versione dello schema;
+- elenco dei marcatori;
+- tipo;
+- coordinate normalizzate;
+- numero progressivo per i movimenti.
 
-Dopo aver modificato testi traducibili:
+Tipi supportati:
+
+- partenza sinistra;
+- partenza destra;
+- movimento;
+- top.
+
+Il server accetta al massimo 100 marcatori, coordinate comprese tra 0 e 1 e movimenti
+numerati consecutivamente. Partenze e top sono unici.
+
+## Test e qualità del codice
+
+### Suite automatica
 
 ```bash
-uv run python manage.py makemessages -l it
-uv run python manage.py compilemessages
+uv run pytest
 ```
 
-La compilazione richiede GNU gettext. Il selettore lingua salva la preferenza per gli
-utenti autenticati e usa il cookie Django per gli utenti anonimi.
-
-## Test e qualità
-
-Installare le dipendenze di sviluppo:
-
-```bash
-uv sync --frozen --group dev
-```
-
-Eseguire tutti i controlli:
+Con coverage:
 
 ```bash
 uv run pytest --cov --cov-report=term-missing
+```
+
+La suite copre:
+
+- modelli e vincoli;
+- autenticazione e profili;
+- verifica email e password reset;
+- rate limiting;
+- ruoli e permessi;
+- CRUD di pareti e vie;
+- ripetizioni;
+- statistiche e ordinamenti;
+- immagini e Cloudinary;
+- annotazioni;
+- CSRF e accessi non autorizzati;
+- audit e dashboard;
+- health check.
+
+### Lint, formattazione e type checking
+
+```bash
 uv run ruff check .
 uv run ruff format --check .
 uv run mypy apps config
@@ -562,27 +995,12 @@ uv run python manage.py makemigrations --check --dry-run
 uv run python manage.py check
 ```
 
-Per applicare automaticamente formattazione e correzioni sicure:
+Per applicare le correzioni automatiche:
 
 ```bash
 uv run ruff check . --fix
 uv run ruff format .
 ```
-
-I test coprono:
-
-- modelli e vincoli;
-- registrazione, verifica email, login, logout e password;
-- rate limiting;
-- ruoli e autorizzazioni;
-- CRUD di pareti e vie;
-- creazione, modifica ed eliminazione delle ripetizioni;
-- statistiche e ordinamenti;
-- caricamento e cancellazione immagini;
-- annotazioni con storage locale e remoto;
-- CSRF e accessi non autorizzati;
-- audit e dashboard amministrativa;
-- health check e storage Cloudinary.
 
 ### Pre-commit
 
@@ -591,113 +1009,114 @@ uv run pre-commit install
 uv run pre-commit run --all-files
 ```
 
-### GitHub Actions
+### Continuous Integration
 
-La workflow `.github/workflows/ci.yml` viene eseguita su push verso `main` e sulle pull
-request.
+`.github/workflows/ci.yml` definisce due job:
 
-- job `quality`: Ruff e mypy con Python 3.14;
-- job `tests`: pytest e controlli Django con Python 3.12 e 3.14 e PostgreSQL 17.
+- `quality`: Ruff e mypy con Python 3.14;
+- `tests`: pytest, controllo migrazioni e Django check con Python 3.12 e 3.14 su
+  PostgreSQL 17.
+
+La CI viene eseguita sui push a `main` e sulle pull request.
 
 ## Sicurezza
 
-- password gestite e hashate dal sistema di autenticazione Django;
+### Autenticazione
+
+- password hashate dal framework;
+- validatori password Django;
+- token firmati e a scadenza;
+- sessioni Django con cookie `HttpOnly` e `SameSite=Lax`;
+- cookie `Secure` in produzione;
+- rate limiting del login;
+- logout esclusivamente tramite POST.
+
+### Autorizzazione
+
+- gruppi e permessi Django;
+- controlli backend su ogni mutazione;
+- verifica della proprietà delle ripetizioni;
+- Django Admin disponibile solo agli amministratori;
+- audit delle operazioni privilegiate.
+
+### HTTP
+
+- protezione CSRF;
+- redirect HTTPS;
+- HSTS configurabile;
+- protezione clickjacking;
+- `Content-Type` sniffing disabilitato;
+- referrer policy restrittiva;
+- supporto corretto del proxy HTTPS.
+
+### Dati e file
+
 - secret esclusivamente in variabili d’ambiente;
-- CSRF attivo su tutti i form;
-- logout consentito solo tramite POST;
-- autorizzazioni verificate nel backend;
-- cookie di sessione e CSRF sicuri in produzione;
-- redirect HTTPS, HSTS e intestazioni di sicurezza;
-- login rate-limited tramite identificatori sottoposti a hash;
-- validazione backend di file, annotazioni, date, gradi e tentativi;
-- query ottimizzate con `select_related`, annotazioni e paginazione;
-- transazioni per operazioni critiche;
-- cancellazioni distruttive con conferma;
-- log JSON senza corpi delle richieste o credenziali;
-- audit persistente e in sola lettura;
-- database e media esclusi dal repository.
-
-## Health check
-
-```http
-GET /healthz/
-```
-
-Risposta corretta:
-
-```json
-{"status": "ok"}
-```
-
-Se PostgreSQL non è raggiungibile, l’endpoint restituisce HTTP 503:
-
-```json
-{"status": "unavailable"}
-```
-
-Non vengono restituiti dettagli sensibili sull’errore.
-
-In produzione `/healthz/` è escluso dal redirect HTTPS interno tramite:
-
-```python
-SECURE_REDIRECT_EXEMPT = [r"^healthz/$"]
-```
-
-Questo consente a Northflank di interrogare l’endpoint in HTTP sulla rete interna senza
-disabilitare HTTPS per le pagine pubbliche.
+- database e media esclusi da Git;
+- validazione approfondita degli upload;
+- transazioni per le operazioni critiche;
+- vincoli di database;
+- cancellazioni protette;
+- log senza password, token o corpi delle richieste.
 
 ## Deployment su Northflank
 
-La configurazione seguente è adatta al sandbox Northflank usato per test e piccoli
-carichi. Prima dell’utilizzo reale in palestra verificare limiti, disponibilità, backup
-e condizioni del piano corrente.
+Il deployment utilizza:
 
-### 1. Repository GitHub
+- repository GitHub;
+- combined service Northflank;
+- build tramite Dockerfile;
+- PostgreSQL come addon;
+- Secret Group per la configurazione;
+- Cloudinary per le immagini;
+- job dedicato alle migrazioni;
+- health check HTTP.
 
-1. Pubblicare il progetto su GitHub.
-2. Collegare GitHub a Northflank.
-3. Creare un progetto Northflank.
-4. Creare un combined service collegato al repository e al branch `main`.
-5. Selezionare il `Dockerfile` nella radice come metodo di build.
-6. Abilitare CI e CD.
+### 1. Servizio web
 
-Il Dockerfile installa soltanto le dipendenze di produzione, raccoglie i file statici e
-avvia Gunicorn sulla porta indicata da `PORT`, con fallback `8000`.
+Creare un combined service collegato al repository e al branch `main`.
+
+Configurazione:
+
+```text
+Build type: Dockerfile
+Port: 8000
+Protocol: HTTP
+CI: enabled
+CD: enabled
+```
+
+Il container esegue:
+
+```bash
+gunicorn config.wsgi:application \
+  --bind 0.0.0.0:${PORT:-8000} \
+  --workers 2 \
+  --threads 2 \
+  --timeout 60
+```
 
 ### 2. PostgreSQL
 
-1. Creare un addon PostgreSQL.
-2. Attendere che risulti operativo.
-3. Collegare la sua `DATABASE_URL` al servizio web tramite Secret Group o variabile
-   runtime.
-4. Non copiare la connessione in file versionati.
+Creare un addon PostgreSQL e rendere disponibile la sua `DATABASE_URL` al servizio web
+e al job delle migrazioni.
 
-### 3. Cloudinary
+La configurazione di produzione rifiuta database diversi da PostgreSQL.
 
-1. Creare un account e un cloud Cloudinary.
-2. Copiare `CLOUDINARY_URL` nel Secret Group Northflank.
-3. Non inserire API key o API secret nel repository.
+### 3. Secret Group
 
-Formato previsto:
-
-```text
-cloudinary://API_KEY:API_SECRET@CLOUD_NAME
-```
-
-### 4. Secret Group
-
-Variabili consigliate per il servizio web:
+Configurazione minima:
 
 ```text
 DJANGO_SETTINGS_MODULE=config.settings.production
-DJANGO_SECRET_KEY=<chiave-casuale>
+DJANGO_SECRET_KEY=<secret-lungo-e-casuale>
 DJANGO_DEBUG=false
 DJANGO_ALLOWED_HOSTS=<hostname>.code.run,localhost,127.0.0.1
 DJANGO_CSRF_TRUSTED_ORIGINS=https://<hostname>.code.run
 DJANGO_DEFAULT_LANGUAGE=it
 DJANGO_LOG_LEVEL=INFO
-DATABASE_URL=<variabile-dell-addon-postgresql>
-CLOUDINARY_URL=<secret-cloudinary>
+DATABASE_URL=<connessione-postgresql>
+CLOUDINARY_URL=<configurazione-cloudinary>
 DJANGO_SECURE_SSL_REDIRECT=true
 DJANGO_HSTS_SECONDS=0
 DJANGO_BYPASS_EMAIL_VERIFICATION=true
@@ -705,34 +1124,39 @@ LOGIN_FAILURE_LIMIT=5
 LOGIN_LOCKOUT_MINUTES=15
 ```
 
-Durante la prima configurazione è prudente mantenere `DJANGO_HSTS_SECONDS=0`. Dopo aver
-verificato stabilmente HTTPS, host e dominio, è possibile impostare:
+In `DJANGO_ALLOWED_HOSTS` gli host non includono lo schema. Le origini CSRF includono
+invece `https://`.
+
+Durante la prima configurazione può essere prudente utilizzare:
+
+```text
+DJANGO_HSTS_SECONDS=0
+```
+
+Dopo aver verificato dominio e HTTPS:
 
 ```text
 DJANGO_HSTS_SECONDS=31536000
 ```
 
-Se l’SMTP funziona, impostare il bypass a `false` e aggiungere le variabili `EMAIL_*`.
+Quando l’SMTP è configurato, impostare il bypass email a `false` e aggiungere le
+variabili `EMAIL_*`.
 
-### 5. Porta e dominio pubblico
+### 4. Cloudinary
 
-Configurare una porta pubblica:
+Configurare:
 
 ```text
-Port: 8000
-Protocol: HTTP
+CLOUDINARY_URL=cloudinary://API_KEY:API_SECRET@CLOUD_NAME
 ```
 
-Northflank termina HTTPS sul proxy pubblico e inoltra HTTP a Gunicorn nella rete
-interna.
+Il valore deve essere memorizzato come secret e non deve apparire nei log o nel
+repository.
 
-Dopo aver generato il dominio, aggiornare `DJANGO_ALLOWED_HOSTS` e
-`DJANGO_CSRF_TRUSTED_ORIGINS` con il vero hostname.
+### 5. Migrazioni
 
-### 6. Migrazioni
-
-Creare un job, ad esempio `climbingside-migrate`, che utilizzi l’ultima build del
-servizio e lo stesso Secret Group.
+Creare un job `climbingside-migrate` basato sulla stessa immagine e sullo stesso Secret
+Group del servizio web.
 
 Comando:
 
@@ -740,38 +1164,33 @@ Comando:
 python manage.py migrate --noinput
 ```
 
-Eseguire il job prima del primo avvio e dopo ogni release che contiene migrazioni. Se il
-job è configurato per avviarsi automaticamente al cambio immagine, controllare comunque
-il risultato prima di considerare concluso il deployment.
+Il job deve essere eseguito prima del primo avvio e per ogni release che contiene nuove
+migrazioni.
 
-### 7. Primo amministratore senza shell
+### 6. Primo amministratore
 
-Se il piano non offre accesso shell, usare temporaneamente un job.
-
-Aggiungere come secret:
+Se non è disponibile una shell, utilizzare temporaneamente un job con:
 
 ```text
-DJANGO_SUPERUSER_PASSWORD=<password-temporanea-sicura>
+DJANGO_SUPERUSER_PASSWORD=<password-temporanea>
 ```
 
-Impostare temporaneamente il comando:
+Comando:
 
 ```bash
-python manage.py createsuperuser --noinput --username <username> --email <email>
+python manage.py createsuperuser \
+  --noinput \
+  --username <username> \
+  --email <email>
 ```
 
-Dopo l’esecuzione riuscita:
+Dopo la creazione:
 
-1. rimuovere `DJANGO_SUPERUSER_PASSWORD` dal Secret Group;
-2. ripristinare il comando del job:
-
-   ```bash
-   python manage.py migrate --noinput
-   ```
-
+1. rimuovere `DJANGO_SUPERUSER_PASSWORD`;
+2. ripristinare il comando `python manage.py migrate --noinput`;
 3. verificare l’accesso a `/admin/`.
 
-### 8. Readiness probe
+### 7. Health check
 
 Configurazione consigliata:
 
@@ -787,161 +1206,131 @@ Configurazione consigliata:
 | Max failures | 5 |
 | Success threshold | 1 |
 
-La probe HTTP è preferibile alla sola TCP perché verifica Gunicorn, Django e la
-connessione a PostgreSQL.
+L’endpoint verifica anche il collegamento al database:
 
-### 9. Verifica del deployment
+```json
+{"status": "ok"}
+```
 
-Controllare:
+In caso di database non disponibile restituisce HTTP 503 senza dettagli sensibili.
 
-1. build completata;
-2. commit distribuito uguale all’ultimo commit GitHub;
-3. job migrazioni riuscito;
-4. pod `Ready`;
-5. `/healthz/` restituisce `{"status":"ok"}`;
-6. login e pagine principali funzionano;
-7. caricamento immagine raggiunge Cloudinary;
-8. registrazione ed email funzionano oppure il bypass è dichiaratamente attivo.
+`production.py` esclude `/healthz/` dal redirect HTTPS interno, consentendo alla probe
+di utilizzare HTTP sulla rete del container senza indebolire le pagine pubbliche.
 
-## Aggiornamento dell’applicazione
+### 8. Verifica della release
 
-Prima di modificare una copia locale:
+Una release è pronta quando:
+
+- GitHub Actions è verde;
+- la build Northflank è riuscita;
+- il commit distribuito corrisponde a `main`;
+- le migrazioni sono state applicate;
+- il pod risulta `Ready`;
+- `/healthz/` restituisce HTTP 200;
+- statici e pagine principali vengono caricati;
+- PostgreSQL e Cloudinary sono raggiungibili;
+- il flusso email funziona oppure il bypass è esplicitamente attivo.
+
+## Operazioni e manutenzione
+
+### Aggiornare il codice
 
 ```bash
 git pull --rebase origin main
-```
-
-Dopo le modifiche:
-
-```bash
 uv run pytest
 uv run ruff check .
 uv run ruff format --check .
 uv run mypy apps config
 uv run python manage.py makemigrations --check --dry-run
 uv run python manage.py check
-git status
 git add -A
-git commit -m "Descrizione sintetica della modifica"
+git commit -m "Descrizione della modifica"
 git push origin main
 ```
 
-Con CI e CD attivi, Northflank costruisce e distribuisce il nuovo commit. Un semplice
-restart riavvia l’immagine esistente e non sostituisce un build mancante o fallito.
+Con CI e CD attivi, Northflank costruisce e distribuisce il nuovo commit.
 
-Non usare `git push --force` per risolvere un rifiuto `fetch first`. Integrare prima il
-remoto:
+### Creare una migrazione
+
+Dopo una modifica intenzionale ai modelli:
 
 ```bash
-git pull --rebase origin main
-git push origin main
+uv run python manage.py makemigrations
+uv run python manage.py migrate
+uv run pytest
 ```
 
-In caso di conflitto, eseguire `git status`, risolvere i file indicati e non cancellare
-modifiche remote senza averle verificate.
+Le migrazioni devono essere versionate insieme al codice.
 
-## Backup e ripristino
+### File statici
 
-Il database e le immagini richiedono strategie separate.
+Il Dockerfile esegue `collectstatic` durante la build. WhiteNoise utilizza nomi con hash
+e compressione per servire CSS, JavaScript e immagini statiche.
 
-### PostgreSQL
+### Logging e audit
 
-Esempio con strumenti PostgreSQL installati:
+In produzione i log sono JSON e contengono:
+
+- timestamp;
+- livello;
+- logger;
+- messaggio;
+- stack trace per le eccezioni.
+
+Non vengono serializzati corpi delle richieste o credenziali.
+
+L’audit applicativo registra creazioni, modifiche, archiviazioni, ripristini,
+cancellazioni, cambi ruolo e operazioni sulle immagini.
+
+### Backup PostgreSQL
+
+Esempio con gli strumenti PostgreSQL:
 
 ```bash
-pg_dump --format=custom --no-owner --file=climbingside.dump "$DATABASE_URL"
+pg_dump \
+  --format=custom \
+  --no-owner \
+  --file=climbingside.dump \
+  "$DATABASE_URL"
+```
+
+Ripristino in un database di test:
+
+```bash
 createdb climbingside_restore_test
-pg_restore --no-owner --dbname=climbingside_restore_test climbingside.dump
+pg_restore \
+  --no-owner \
+  --dbname=climbingside_restore_test \
+  climbingside.dump
 ```
 
-Regole consigliate:
+I backup devono essere cifrati, conservati fuori dal servizio applicativo e verificati
+periodicamente con un ripristino di prova.
 
-- creare backup automatici regolari;
-- cifrare i dump;
-- conservarli fuori dal servizio applicativo;
-- limitare l’accesso;
-- provare periodicamente un ripristino in un ambiente separato;
-- non commettere mai i dump su GitHub.
-
-### Cloudinary
-
-Il database contiene identificativi e annotazioni, non i byte delle immagini. Verificare
-quindi anche la politica di conservazione, backup o versionamento disponibile nel piano
-Cloudinary utilizzato.
-
-## Risoluzione dei problemi
-
-### `service "web" is not running`
-
-```bash
-docker compose ps
-docker compose logs web
-docker compose up -d --build
-```
-
-### `Invalid HTTP_HOST header: 127.0.0.1:8000`
-
-Assicurarsi che la variabile includa:
-
-```text
-DJANGO_ALLOWED_HOSTS=<hostname-pubblico>,localhost,127.0.0.1
-```
-
-### Readiness HTTP in timeout
-
-Verificare:
-
-- porta `8000`;
-- path `/healthz/`;
-- `127.0.0.1` negli host consentiti;
-- presenza di `SECURE_REDIRECT_EXEMPT = [r"^healthz/$"]`;
-- raggiungibilità di PostgreSQL;
-- Secret Group applicato al servizio web.
-
-La probe TCP può essere usata temporaneamente per verificare che Gunicorn sia in
-ascolto, ma non sostituisce il controllo applicativo e del database.
-
-### Il nuovo commit è su GitHub ma il sito non cambia
-
-1. confrontare il commit GitHub con `Currently deployed` su Northflank;
-2. verificare che CI e CD siano attivi;
-3. controllare build e deployment;
-4. verificare che il pod sia `Ready`;
-5. usare `Ctrl + F5` o una finestra anonima per escludere la cache degli asset.
-
-### `git push` rifiutato con `fetch first`
-
-```bash
-git pull --rebase origin main
-git push origin main
-```
-
-Non usare `--force` senza una ragione verificata.
-
-### Le email non arrivano
-
-- controllare che il bypass sia `false`;
-- verificare host, porta, TLS, username, password e mittente SMTP;
-- controllare log applicativi e pannello del provider;
-- verificare dominio mittente, SPF, DKIM e DMARC quando richiesti;
-- non stampare password o API key nei log;
-- usare temporaneamente il bypass se il provider non è ancora configurato.
-
-### Errore 500 salvando un’annotazione
-
-La versione corrente evita di rivalidare il file remoto durante il salvataggio del JSON.
-Verificare di avere la versione aggiornata di `apps/climbs/forms.py` e consultare i log
-Northflank senza condividere secret o credenziali.
+Il database contiene riferimenti alle immagini e annotazioni, ma non i file Cloudinary.
+La strategia di conservazione deve quindi includere anche il servizio media.
 
 ## Sviluppi futuri
 
 - configurazione SMTP definitiva e disattivazione del bypass;
-- dominio personalizzato indipendente dalla piattaforma;
-- backup PostgreSQL automatizzati e test periodici di ripristino;
-- monitoraggio uptime, errori e utilizzo risorse;
-- procedura controllata di anonimizzazione o eliminazione account;
-- esportazione dei propri dati;
-- eventuale supporto a valutazioni con mezze stelle, previa decisione sul modello dati;
-- ulteriori miglioramenti all’editor delle annotazioni;
-- valutazione di una modalità installabile/PWA per l’uso in palestra.
+- dominio personalizzato;
+- backup PostgreSQL automatizzati;
+- monitoraggio di uptime, errori e risorse;
+- esportazione dei dati personali;
+- procedura controllata di anonimizzazione o eliminazione degli account;
+- valutazioni con mezze stelle, se adottate anche nel modello dati;
+- ulteriori strumenti per l’editor delle annotazioni;
+- eventuale modalità PWA per l’utilizzo in palestra.
 
+## Principi di contribuzione
+
+- mantenere separati dominio, presentazione ed effetti esterni;
+- usare type hints nel codice Python;
+- aggiungere test per ogni comportamento modificato;
+- non inserire logica complessa nei template;
+- evitare query N+1;
+- usare transazioni per operazioni che coinvolgono più record o servizi;
+- non aggiungere dipendenze prive di uno scopo concreto;
+- non inserire secret, database o file caricati nel repository;
+- mantenere coerenti italiano e inglese;
+- eseguire l’intera suite di qualità prima di ogni push.
