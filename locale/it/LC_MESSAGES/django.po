@@ -1116,8 +1116,8 @@ msgid "Breadcrumb"
 msgstr "Percorso di navigazione"
 
 #: templates/climbs/route_detail.html:27 templates/climbs/route_detail.html:130
-msgid "Official grade"
-msgstr "Grado ufficiale"
+msgid "Grade"
+msgstr "Grado"
 
 #: templates/climbs/route_detail.html:36
 msgid "Route summary"
