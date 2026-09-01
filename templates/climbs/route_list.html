@@ -10,7 +10,7 @@
             <div>
                 <p class="eyebrow">{% translate "Gym catalogue" %}</p>
                 <h1>{% translate "Climbing routes" %}</h1>
-                <p>{% translate "Search routes and boulders by wall, type and French grade." %}</p>
+                <p>{% translate "Search routes and boulders by wall, type and grade." %}</p>
             </div>
             {% if perms.climbs.add_climbingroute %}
                 <a class="button button-primary" href="{% url 'climbs:route_create' %}">{% translate "Add climbing route" %}</a>

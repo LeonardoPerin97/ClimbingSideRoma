@@ -1328,8 +1328,8 @@ msgid "Gym catalogue"
 msgstr "Catalogo della palestra"
 
 #: templates/climbs/route_list.html:13
-msgid "Search routes and boulders by wall, type and French grade."
-msgstr "Cerca vie e boulder per parete, tipo e grado francese."
+msgid "Search routes and boulders by wall, type and grade."
+msgstr "Cerca vie e boulder per parete, tipo e grado."
 
 #: templates/climbs/route_list.html:22 templates/climbs/user_list.html:18
 #: templates/climbs/wall_list.html:22
