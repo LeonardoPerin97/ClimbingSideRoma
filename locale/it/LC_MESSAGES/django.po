@@ -315,7 +315,11 @@ msgstr "Vie"
 
 #: apps/climbs/models.py:38 templates/climbs/wall_detail.html:38
 #: templates/components/climbing_profile_stats.html:27
-msgid "Boulder"
+#: templates/components/discipline_grade_histogram.html:5
+#: templates/core/statistics_dashboard.html:18
+#: templates/core/statistics_dashboard.html:37
+#: templates/core/statistics_dashboard.html:72
+msgid "Boulders"
 msgstr "Boulder"
 
 #: apps/climbs/models.py:48
@@ -1652,13 +1656,6 @@ msgstr "Le ripetizioni compariranno qui."
 #: templates/components/discipline_grade_histogram.html:3
 msgid "Histogram legend"
 msgstr "Legenda dell'istogramma"
-
-#: templates/components/discipline_grade_histogram.html:5
-#: templates/core/statistics_dashboard.html:18
-#: templates/core/statistics_dashboard.html:37
-#: templates/core/statistics_dashboard.html:72
-msgid "Boulders"
-msgstr "Boulder"
 
 #: templates/components/discipline_grade_histogram.html:18
 #, python-format
