@@ -1054,13 +1054,20 @@ meter::-webkit-meter-optimum-value {
 }
 
 .wall-stat-ascents {
+  /*
   color: rgb(255 255 255 / 72%);
   background: var(--color-ink);
   border-color: var(--color-ink);
+  */
+  color: var(--color-muted);
+  background: var(--color-soft);
 }
 
 .wall-stat-ascents strong {
+  /*
   color: var(--color-accent);
+  */
+  color: var(--color-ink);
 }
 
 .catalog-list {
