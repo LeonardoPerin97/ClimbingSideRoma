@@ -1116,6 +1116,8 @@ msgid "Breadcrumb"
 msgstr "Percorso di navigazione"
 
 #: templates/climbs/route_detail.html:27 templates/climbs/route_detail.html:130
+#: templates/climbs/route_list.html:44 templates/core/home.html:48
+#: templates/core/home.html:67 templates/core/statistics_dashboard.html:34
 msgid "Grade"
 msgstr "Grado"
 
@@ -1349,11 +1351,6 @@ msgstr "Tutte le pareti"
 msgid "All types"
 msgstr "Tutti i tipi"
 
-#: templates/climbs/route_list.html:44 templates/core/home.html:48
-#: templates/core/home.html:67 templates/core/statistics_dashboard.html:34
-msgid "Grade"
-msgstr "Grado"
-
 #: templates/climbs/route_list.html:46
 msgid "All grades"
 msgstr "Tutti i gradi"
@@ -1377,10 +1374,12 @@ msgid "Order by"
 msgstr "Ordina per"
 
 #: templates/climbs/route_list.html:64 templates/climbs/wall_detail.html:65
+#: templates/components/climbing_profile_stats.html:57
 msgid "Grade: easiest first"
 msgstr "Grado: dal più facile"
 
 #: templates/climbs/route_list.html:65 templates/climbs/wall_detail.html:66
+#: templates/components/climbing_profile_stats.html:58
 msgid "Grade: hardest first"
 msgstr "Grado: dal più difficile"
 
@@ -1550,6 +1549,7 @@ msgid "Number of ascents"
 msgstr "Numero di ripetizioni"
 
 #: templates/components/climbing_profile_stats.html:41
+#: templates/core/statistics_dashboard.html:109
 msgid "Ascents"
 msgstr "Ripetizioni"
 
@@ -1636,14 +1636,6 @@ msgstr "Data: dalla più recente"
 #: templates/components/climbing_profile_stats.html:56
 msgid "Date: oldest first"
 msgstr "Data: dalla meno recente"
-
-#: templates/components/climbing_profile_stats.html:57
-msgid "Grade: easiest first"
-msgstr "Grado: dal più facile"
-
-#: templates/components/climbing_profile_stats.html:58
-msgid "Grade: hardest first"
-msgstr "Grado: dal più difficile"
 
 #: templates/components/climbing_profile_stats.html:70
 msgid "No completed climbs for this type"
@@ -1911,10 +1903,6 @@ msgstr "Ripetizioni negli ultimi 12 mesi"
 #: templates/core/statistics_dashboard.html:108
 msgid "Month"
 msgstr "Mese"
-
-#: templates/core/statistics_dashboard.html:109
-msgid "Ascents"
-msgstr "Ripetizioni"
 
 #, python-format
 #~ msgid "%(count)s Project is not included in the histogram."
