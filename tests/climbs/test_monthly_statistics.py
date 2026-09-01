@@ -230,8 +230,8 @@ def test_monthly_summary_is_translated_on_both_profiles_and_keeps_account_info_l
     assert content.index("profile-primary-histogram") < content.index(
         'id="monthly-summary-heading"'
     )
-    assert content.index('id="monthly-summary-heading"') < content.index("user-ascent-filters")
-    assert content.index("user-ascent-filters") < content.index(f'id="{footer_heading}"')
+    assert content.index("user-ascent-filters") < content.index('id="monthly-summary-heading"')
+    assert content.index('id="monthly-summary-heading"') < content.index(f'id="{footer_heading}"')
     assert 'role="region"' in content
     assert 'tabindex="0"' in content
     assert 'scope="colgroup"' in content
@@ -241,12 +241,12 @@ def test_monthly_summary_is_translated_on_both_profiles_and_keeps_account_info_l
         assert "Andamento mensile" in content
         assert "Marzo 2026" in content
         assert "Aggiornato al 15 Marzo 2026" in content
-        assert "Sono incluse le vie archiviate." in content
+        assert "Ultimi 12 mesi." in content
         assert "Last 12 months" not in content
     else:
         assert "Monthly activity" in content
         assert "March 2026" in content
-        assert "Archived climbs are included." in content
+        assert "Last 12 months." in content
     if profile_kind == "public":
         assert owner.email not in content
 

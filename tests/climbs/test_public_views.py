@@ -251,6 +251,148 @@ def test_wall_detail_exposes_disciplines_and_grade_distribution(
     ]
     assert response.context["maximum_grade_count"] == 1
     assert response.context["project_count"] == 1
+    content = response.content.decode()
+    assert "data-discipline-histogram" in content
+    assert 'data-histogram-filter="all"' in content
+    assert 'data-histogram-filter="route"' in content
+    assert 'data-histogram-filter="boulder"' in content
+    assert 'class="histogram-stacked-bar is-zero"' in content
+    assert "Vie per grado" in content
+
+
+@pytest.mark.django_db
+def test_wall_histogram_counts_both_types_projects_and_only_its_own_climbs(
+    client: Client,
+    wall_factory: Callable[..., Wall],
+    route_factory: Callable[..., ClimbingRoute],
+    ascent_factory: Callable[..., Ascent],
+) -> None:
+    wall = wall_factory()
+    repeated_route = route_factory(wall=wall, official_grade="5a")
+    route_factory(wall=wall, official_grade="5a")
+    route_factory(wall=wall, official_grade="5a", discipline=ClimbingRoute.Discipline.BOULDER)
+    route_factory(wall=wall, official_grade="6a", discipline=ClimbingRoute.Discipline.BOULDER)
+    route_factory(wall=wall, is_project=True, official_grade="")
+    route_factory(
+        wall=wall, is_project=True, official_grade="", discipline=ClimbingRoute.Discipline.BOULDER
+    )
+    route_factory(official_grade="9c")
+    route_factory(is_project=True, official_grade="")
+    for _ in range(3):
+        ascent_factory(climbing_route=repeated_route)
+
+    response = client.get(reverse("climbs:wall_detail", args=[wall.pk]))
+    distribution = response.context["grade_distribution"]
+
+    assert response.status_code == 200
+    assert [
+        (bucket.label, bucket.total, bucket.routes, bucket.boulders) for bucket in distribution
+    ] == [
+        ("5a", 3, 2, 1),
+        ("5a+", 0, 0, 0),
+        ("5b", 0, 0, 0),
+        ("5b+", 0, 0, 0),
+        ("5c", 0, 0, 0),
+        ("5c+", 0, 0, 0),
+        ("6a", 1, 0, 1),
+        ("Project", 2, 1, 1),
+    ]
+    assert response.context["maximum_grade_count"] == 3
+    assert response.context["project_count"] == 2
+    assert (
+        sum(bucket.total for bucket in distribution) == response.context["total_route_count"] == 6
+    )
+    assert response.context["total_ascent_count"] == 3
+    content = response.content.decode()
+    assert 'data-route-count="2"' in content
+    assert 'data-boulder-count="1"' in content
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("status", ["", "all", "invalid"])
+def test_wall_histogram_respects_the_archived_routes_option(
+    client: Client,
+    wall_factory: Callable[..., Wall],
+    route_factory: Callable[..., ClimbingRoute],
+    status: str,
+) -> None:
+    wall = wall_factory()
+    route_factory(wall=wall, official_grade="5a")
+    route_factory(
+        wall=wall,
+        official_grade="5c",
+        discipline=ClimbingRoute.Discipline.BOULDER,
+        is_archived=True,
+    )
+    route_factory(wall=wall, is_project=True, official_grade="", is_archived=True)
+    route_factory(
+        wall=wall,
+        is_project=True,
+        official_grade="",
+        discipline=ClimbingRoute.Discipline.BOULDER,
+        is_archived=True,
+    )
+    route_factory(official_grade="9c", is_archived=True)
+
+    response = client.get(reverse("climbs:wall_detail", args=[wall.pk]), {"status": status})
+    distribution = response.context["grade_distribution"]
+
+    assert response.status_code == 200
+    if status == "all":
+        assert [bucket.label for bucket in distribution] == [
+            "5a",
+            "5a+",
+            "5b",
+            "5b+",
+            "5c",
+            "Project",
+        ]
+        assert (distribution[-2].routes, distribution[-2].boulders) == (0, 1)
+        assert (distribution[-1].routes, distribution[-1].boulders) == (1, 1)
+        assert response.context["project_count"] == 2
+        assert response.context["maximum_grade_count"] == 2
+        assert response.context["total_route_count"] == 4
+    else:
+        assert [(bucket.label, bucket.total) for bucket in distribution] == [("5a", 1)]
+        assert response.context["project_count"] == 0
+        assert response.context["maximum_grade_count"] == 1
+        assert response.context["total_route_count"] == 1
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("only_projects", [False, True])
+def test_wall_histogram_handles_empty_walls_and_project_only_walls(
+    client: Client,
+    wall_factory: Callable[..., Wall],
+    route_factory: Callable[..., ClimbingRoute],
+    only_projects: bool,
+) -> None:
+    wall = wall_factory()
+    if only_projects:
+        route_factory(
+            wall=wall,
+            is_project=True,
+            official_grade="",
+            discipline=ClimbingRoute.Discipline.BOULDER,
+        )
+
+    response = client.get(reverse("climbs:wall_detail", args=[wall.pk]), HTTP_ACCEPT_LANGUAGE="en")
+    distribution = response.context["grade_distribution"]
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    if only_projects:
+        assert [(bucket.label, bucket.routes, bucket.boulders) for bucket in distribution] == [
+            ("Project", 0, 1)
+        ]
+        assert response.context["maximum_grade_count"] == 1
+        assert 'data-histogram-filter="route"' in content
+        assert 'data-histogram-filter="boulder"' in content
+    else:
+        assert distribution == []
+        assert response.context["maximum_grade_count"] == 0
+        assert "No routes are available on this wall." in content
+        assert "data-discipline-histogram" not in content
 
 
 @pytest.mark.django_db
@@ -277,6 +419,10 @@ def test_wall_detail_filters_discipline_without_changing_wall_summary(
     assert response.context["total_route_count"] == 2
     assert response.context["discipline_counts"] == {"route": 1, "boulder": 1}
     assert response.context["selected_discipline"] == ClimbingRoute.Discipline.BOULDER
+    unfiltered = client.get(reverse("climbs:wall_detail", args=[wall.pk]))
+    assert response.context["grade_distribution"] == unfiltered.context["grade_distribution"]
+    assert response.context["grade_distribution"][0].routes == 1
+    assert response.context["grade_distribution"][-1].boulders == 1
 
 
 @pytest.mark.django_db

@@ -37,7 +37,6 @@ from .media_services import delete_route_image, save_route_image
 from .models import Ascent, ClimbingRoute, RouteImage, Wall
 from .statistics import (
     continuous_discipline_grade_distribution,
-    continuous_french_grade_distribution,
     continuous_perceived_grade_distribution,
 )
 
@@ -119,17 +118,24 @@ def wall_detail(request: HttpRequest, pk: int) -> HttpResponse:
         row["discipline"]: row["count"]
         for row in catalogue_routes.order_by().values("discipline").annotate(count=Count("id"))
     }
-    grade_counts_raw = {
-        row["official_grade"]: row["count"]
-        for row in catalogue_routes.filter(is_project=False)
+    grade_counts: dict[str, dict[str, int]] = {}
+    for row in (
+        catalogue_routes.filter(is_project=False)
         .order_by()
-        .values("official_grade")
+        .values("official_grade", "discipline")
+        .annotate(count=Count("id"))
+    ):
+        grade_counts.setdefault(row["official_grade"], {})[row["discipline"]] = row["count"]
+    project_counts = {
+        row["discipline"]: row["count"]
+        for row in catalogue_routes.filter(is_project=True)
+        .order_by()
+        .values("discipline")
         .annotate(count=Count("id"))
     }
-    project_count = catalogue_routes.filter(is_project=True).count()
-    grade_distribution = continuous_french_grade_distribution(
-        grade_counts_raw,
-        project_count=project_count,
+    grade_distribution = continuous_discipline_grade_distribution(
+        grade_counts,
+        project_counts=project_counts,
     )
 
     climbing_routes = catalogue_routes.select_related("wall").annotate(
@@ -206,10 +212,10 @@ def wall_detail(request: HttpRequest, pk: int) -> HttpResponse:
             "discipline_counts": discipline_counts,
             "grade_distribution": grade_distribution,
             "maximum_grade_count": max(
-                (bucket.count for bucket in grade_distribution),
+                (bucket.total for bucket in grade_distribution),
                 default=0,
             ),
-            "project_count": project_count,
+            "project_count": sum(project_counts.values()),
             "total_route_count": catalogue_routes.count(),
             "total_ascent_count": wall.climbing_routes.aggregate(total=Count("ascents"))["total"],
             "disciplines": ClimbingRoute.Discipline.choices,
