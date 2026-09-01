@@ -1,0 +1,48 @@
+{% load i18n %}
+
+<article class="profile-card profile-monthly-summary" aria-labelledby="monthly-summary-heading">
+    <h3 id="monthly-summary-heading">{% translate "Monthly activity" %}</h3>
+    <p class="muted-text" id="monthly-summary-description">
+        {% translate "Last 12 months, including the current month. Based on ascent dates, for all types." %}
+        {% blocktranslate with date=monthly_summary_as_of|date:"DATE_FORMAT" %}Updated through {{ date }}.{% endblocktranslate %}
+    </p>
+    <p class="muted-text monthly-scroll-hint" id="monthly-summary-scroll-hint">{% translate "On small screens, scroll horizontally to see every column." %}</p>
+    <div class="table-scroll monthly-summary-scroll" role="region" aria-labelledby="monthly-summary-heading" aria-describedby="monthly-summary-description monthly-summary-scroll-hint monthly-summary-note" tabindex="0">
+        <table class="monthly-summary-table">
+            <caption class="sr-only">{% translate "Monthly ascent counts and maximum official grades, split into routes and boulders." %}</caption>
+            <colgroup span="1"></colgroup>
+            <colgroup span="1"></colgroup>
+            <colgroup span="2"></colgroup>
+            <colgroup span="2"></colgroup>
+            <thead>
+                <tr>
+                    <th rowspan="2" scope="col">{% translate "Month" %}</th>
+                    <th rowspan="2" scope="col">{% translate "Total ascents" %}</th>
+                    <th colspan="2" scope="colgroup">{% translate "Routes" %}</th>
+                    <th colspan="2" scope="colgroup">{% translate "Boulder" %}</th>
+                </tr>
+                <tr>
+                    <th scope="col">{% translate "Ascents" %}</th>
+                    <th scope="col">{% translate "Maximum grade" %}</th>
+                    <th scope="col">{% translate "Ascents" %}</th>
+                    <th scope="col">{% translate "Maximum grade" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for month in monthly_summary %}
+                    <tr{% if not month.total %} class="monthly-summary-empty"{% endif %}>
+                        <th scope="row"><time datetime="{{ month.month|date:'Y-m' }}">{{ month.month|date:"F Y" }}</time></th>
+                        <td><strong>{{ month.total }}</strong></td>
+                        <td>{{ month.route_count }}</td>
+                        <td>{{ month.route_max_grade }}</td>
+                        <td>{{ month.boulder_count }}</td>
+                        <td>{{ month.boulder_max_grade }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <p class="histogram-note" id="monthly-summary-note">
+        {% translate "The maximum is calculated separately for each month and type, using the current official grade, not the proposed grade. Archived climbs are included. Projects count as ascents but do not contribute to the maximum grade; a dash means no graded ascents." %}
+    </p>
+</article>

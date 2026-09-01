@@ -1904,6 +1904,41 @@ msgstr "Ripetizioni negli ultimi 12 mesi"
 msgid "Month"
 msgstr "Mese"
 
+
+#: templates/components/monthly_ascent_summary.html
+msgid "Monthly activity"
+msgstr "Andamento mensile"
+
+#: templates/components/monthly_ascent_summary.html
+msgid "Last 12 months, including the current month. Based on ascent dates, for all types."
+msgstr "Ultimi 12 mesi, incluso quello corrente. In base alle date delle ripetizioni, per tutti i tipi."
+
+#: templates/components/monthly_ascent_summary.html
+#, python-format
+msgid "Updated through %(date)s."
+msgstr "Aggiornato al %(date)s."
+
+#: templates/components/monthly_ascent_summary.html
+msgid "On small screens, scroll horizontally to see every column."
+msgstr "Su schermi piccoli, scorri in orizzontale per vedere tutte le colonne."
+
+#: templates/components/monthly_ascent_summary.html
+msgid "Monthly ascent counts and maximum official grades, split into routes and boulders."
+msgstr "Numero di ripetizioni e gradi massimi ufficiali per mese, distinti tra vie e boulder."
+
+#: templates/components/monthly_ascent_summary.html
+msgid ""
+"The maximum is calculated separately for each month and type, using the current "
+"official grade, not the proposed grade. Archived climbs are included. Projects "
+"count as ascents but do not contribute to the maximum grade; a dash means no "
+"graded ascents."
+msgstr ""
+"Il massimo è calcolato separatamente per ogni mese e tipo, usando il grado "
+"ufficiale attuale, non quello proposto. Sono incluse le vie archiviate. I Project "
+"contano nelle ripetizioni ma non nel grado massimo; il trattino indica l'assenza "
+"di ripetizioni con un grado."
+
+
 #, python-format
 #~ msgid "%(count)s Project is not included in the histogram."
 #~ msgid_plural "%(count)s Projects are not included in the histogram."

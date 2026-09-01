@@ -117,7 +117,8 @@ Le statistiche personali comprendono:
 - distribuzione delle vie completate per grado;
 - conteggio distinto di vie e boulder;
 - distribuzione per parete;
-- elenco filtrabile e ordinabile delle ripetizioni.
+- elenco filtrabile e ordinabile delle ripetizioni;
+- andamento mensile: ripetizioni totali e, separatamente per vie e boulder, numero di ripetizioni e grado massimo di ciascun mese negli ultimi dodici mesi.
 
 Le statistiche collettive comprendono:
 

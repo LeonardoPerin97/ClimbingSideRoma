@@ -1,11 +1,12 @@
 from collections import Counter
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from datetime import date
 from typing import Any
 
 from django.db.models import Count, Max, Q
 from django.db.models.functions import Lower, TruncMonth
+from django.utils import timezone
 
 from apps.accounts.models import User
 
@@ -50,6 +51,19 @@ class WallDisciplineBucket:
 class MonthlyAscentBucket:
     month: date
     count: int
+
+
+@dataclass(frozen=True)
+class MonthlyClimbingSummary:
+    month: date
+    route_count: int
+    route_max_grade: str
+    boulder_count: int
+    boulder_max_grade: str
+
+    @property
+    def total(self) -> int:
+        return self.route_count + self.boulder_count
 
 
 def continuous_french_grade_distribution(
@@ -133,6 +147,49 @@ def _month_start(month: date, offset: int) -> date:
     month_index = month.year * 12 + month.month - 1 + offset
     year, zero_based_month = divmod(month_index, 12)
     return date(year, zero_based_month + 1, 1)
+
+
+def user_monthly_ascent_summary(
+    ascents: Iterable[Ascent],
+    *,
+    today: date,
+) -> list[MonthlyClimbingSummary]:
+    """Summarize the last 12 calendar months, newest first, by ascent date.
+
+    Maxima use current official grades, independently for each month and type.
+    Archived climbs still count; Projects count without contributing a grade.
+    Pass ascents with their climbing routes already loaded to avoid N+1 queries.
+    """
+    current_month = today.replace(day=1)
+    first_month = _month_start(current_month, -11)
+    counts: Counter[tuple[date, str]] = Counter()
+    maximum_grades: dict[tuple[date, str], int] = {}
+
+    for ascent in ascents:
+        if not first_month <= ascent.date <= today:
+            continue
+        climbing_route = ascent.climbing_route
+        key = (ascent.date.replace(day=1), climbing_route.discipline)
+        counts[key] += 1
+        if not climbing_route.is_project:
+            grade_index = FRENCH_GRADE_INDEX.get(climbing_route.official_grade, -1)
+            maximum_grades[key] = max(maximum_grades.get(key, -1), grade_index)
+
+    summaries: list[MonthlyClimbingSummary] = []
+    for offset in range(0, -12, -1):
+        month = _month_start(current_month, offset)
+        route_key = (month, ClimbingRoute.Discipline.ROUTE)
+        boulder_key = (month, ClimbingRoute.Discipline.BOULDER)
+        summaries.append(
+            MonthlyClimbingSummary(
+                month=month,
+                route_count=counts[route_key],
+                route_max_grade=format_grade_index(maximum_grades.get(route_key)),
+                boulder_count=counts[boulder_key],
+                boulder_max_grade=format_grade_index(maximum_grades.get(boulder_key)),
+            )
+        )
+    return summaries
 
 
 def collective_statistics_context(*, today: date) -> dict[str, Any]:
@@ -252,6 +309,7 @@ def user_climbing_context(
     *,
     ascent_sort: str = "date_desc",
     ascent_discipline: str = "",
+    today: date | None = None,
 ) -> dict[str, Any]:
     ascents_queryset = (
         Ascent.objects.filter(user=user)
@@ -280,6 +338,8 @@ def user_climbing_context(
         ascent_sort = "date_desc"
         ascents_queryset = ascents_queryset.order_by("-date", "-created_at")
     all_ascents = list(ascents_queryset)
+    statistics_today = today if today is not None else timezone.localdate()
+    monthly_summary = user_monthly_ascent_summary(all_ascents, today=statistics_today)
     if ascent_discipline in ClimbingRoute.Discipline.values:
         selected_discipline = ascent_discipline
         ascents = [
@@ -337,4 +397,6 @@ def user_climbing_context(
         ),
         "project_count": project_count,
         "wall_distribution": wall_distribution,
+        "monthly_summary": monthly_summary,
+        "monthly_summary_as_of": statistics_today,
     }

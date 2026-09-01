@@ -1676,6 +1676,56 @@ meter::-webkit-meter-optimum-value {
   margin-top: 1rem;
 }
 
+.profile-monthly-summary {
+  margin-top: 1rem;
+  min-width: 0;
+}
+
+.profile-monthly-summary h3 {
+  margin-top: 0;
+}
+
+.monthly-summary-scroll:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+.monthly-summary-table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.monthly-summary-table th,
+.monthly-summary-table td {
+  padding: 0.65rem 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.monthly-summary-table thead {
+  background: var(--color-soft);
+}
+
+.monthly-summary-table thead th[scope="colgroup"] {
+  border-bottom: 3px solid var(--color-chart);
+}
+
+.monthly-summary-table tbody th {
+  text-align: left;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.monthly-summary-table .monthly-summary-empty {
+  color: var(--color-muted);
+}
+
+.monthly-scroll-hint {
+  font-size: 0.85rem;
+}
+
 .statistics-grid h3,
 .account-card h2 {
   margin-top: 0;
