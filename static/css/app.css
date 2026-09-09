@@ -1143,8 +1143,7 @@ meter::-webkit-meter-optimum-value {
   background: #e4e8e4;
 }
 
-.grade-chip,
-.route-grade-large {
+.grade-chip {
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -1158,22 +1157,6 @@ meter::-webkit-meter-optimum-value {
   min-width: 3.2rem;
   min-height: 2.4rem;
   padding: 0.35rem 0.5rem;
-}
-
-.route-grade-large {
-  min-width: 4.5rem;
-  min-height: 0;
-  padding: 0.15rem 0.65rem 0.25rem;
-  color: #202020;
-  background: var(--color-accent);
-  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
-  font-size: clamp(2.8rem, 7vw, 5rem);
-  line-height: 0.88;
-}
-
-.route-grade-large.grade-project {
-  padding: 0.35rem 0.75rem;
-  font-size: clamp(1.65rem, 5vw, 3rem);
 }
 
 .grade-project {
@@ -1545,6 +1528,14 @@ meter::-webkit-meter-optimum-value {
   font-size: clamp(2.7rem, 7vw, 5rem);
   line-height: 0.92;
   overflow-wrap: anywhere;
+}
+
+.route-title-grade {
+  white-space: nowrap;
+}
+
+.route-title-separator {
+  color: var(--color-muted);
 }
 
 .route-detail-header > div > p {
@@ -2248,11 +2239,6 @@ meter::-webkit-meter-optimum-value {
     width: 100%;
     justify-content: space-between;
     text-align: left;
-  }
-
-  .route-grade-large {
-    min-width: 3.8rem;
-    font-size: clamp(2.5rem, 12vw, 3.8rem);
   }
 
   .page-header {

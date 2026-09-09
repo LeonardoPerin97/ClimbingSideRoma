@@ -21,26 +21,26 @@
                     {% if climbing_route.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
                 </div>
                 <div class="route-title-row">
-                    <h1>{{ climbing_route.name }}</h1>
-                    <div
-                        class="route-grade-large{% if climbing_route.is_project %} grade-project{% endif %}"
-                        aria-label="{% translate 'Official grade' %}: {{ climbing_route.display_grade }}"
-                    >
-                        {{ climbing_route.display_grade }}
-                    </div>
+                    <h1>
+                        {{ climbing_route.name }}
+                        <span class="route-title-grade">
+                            <span class="route-title-separator" aria-hidden="true">·</span>
+                            {{ climbing_route.display_grade }}
+                        </span>
+                    </h1>
                 </div>
                 <p><a class="list-name-link" href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a></p>
             </div>
         </header>
 
         <dl class="route-summary" aria-label="{% translate 'Route summary' %}">
-            <div><dt>{% translate "Total ascents" %}</dt><dd>{{ climbing_route.ascent_count }}</dd></div>
+            <div><dt>{% translate "Ascents" %}</dt><dd>{{ climbing_route.ascent_count }}</dd></div>
             <div>
-                <dt>{% translate "Average proposed grade" %}</dt>
+                <dt>{% translate "Proposed grade" %}</dt>
                 <dd>{{ average_proposed_grade }}</dd>
             </div>
             <div>
-                <dt>{% translate "Average rating" %}</dt>
+                <dt>{% translate "Beauty" %}</dt>
                 <dd class="rating-stars">{% if climbing_route.average_rating %}★ {{ climbing_route.average_rating|floatformat:1 }}/5{% else %}—{% endif %}</dd>
             </div>
         </dl>

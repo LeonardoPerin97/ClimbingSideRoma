@@ -1,3 +1,5 @@
+
+<!--
 {% load i18n %}
 
 <article class="profile-card profile-monthly-summary" aria-labelledby="monthly-summary-heading">
@@ -6,9 +8,7 @@
         {% translate "Last 12 months." %}
         {% blocktranslate with date=monthly_summary_as_of|date:"DATE_FORMAT" %}Updated through {{ date }}.{% endblocktranslate %}
     </p>
-    <!--
-    <p class="muted-text monthly-scroll-hint" id="monthly-summary-scroll-hint">{% translate "On small screens, scroll horizontally to see every column." %}</p>
-    -->
+
     <div class="table-scroll monthly-summary-scroll" role="region" aria-labelledby="monthly-summary-heading" aria-describedby="monthly-summary-description monthly-summary-scroll-hint monthly-summary-note" tabindex="0">
         <table class="monthly-summary-table">
             <caption class="sr-only">{% translate "Monthly ascent counts and maximum official grades, split into routes and boulders." %}</caption>
@@ -44,9 +44,6 @@
             </tbody>
         </table>
     </div>
-    <!--
-    <p class="histogram-note" id="monthly-summary-note">
-        {% translate "The maximum is calculated separately for each month and type, using the current official grade, not the proposed grade. Archived climbs are included. Projects count as ascents but do not contribute to the maximum grade; a dash means no graded ascents." %}
-    </p>
-    -->
+
 </article>
+-->

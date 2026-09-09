@@ -486,7 +486,7 @@ def test_route_detail_lists_setters_without_exposing_email(
     assert "marco-setter" in content
     assert "anna-private@example.com" not in content
     assert "marco-private@example.com" not in content
-    assert content.count('class="list-name-link"') == 2
+    assert content.count('class="list-name-link"') == 3
 
 
 @pytest.mark.django_db

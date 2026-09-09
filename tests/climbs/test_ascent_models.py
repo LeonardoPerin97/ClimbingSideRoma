@@ -97,6 +97,8 @@ def test_attempt_count_is_required_only_for_number_option(
 
     with override("en"):
         assert counted.display_attempts == "3 attempts"
+    with override("it"):
+        assert counted.display_attempts == "3° giro"
     assert flash.attempt_count is None
 
 

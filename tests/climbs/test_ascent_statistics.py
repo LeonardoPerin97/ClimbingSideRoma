@@ -62,7 +62,13 @@ def test_route_detail_calculates_public_ascent_statistics(
     assert response.context["maximum_proposed_grade_count"] == 1
     assert "first-user" in content and "second-user" in content
     assert "first-private@example.com" not in content
-    assert content.count('class="list-name-link"') == 2
+    assert content.count('class="list-name-link"') == 3
+    assert 'class="route-title-separator"' in content
+    assert 'class="route-title-grade"' in content
+    assert "route-grade-large" not in content
+    assert ">Ripetizioni<" in content
+    assert ">Grado proposto<" in content
+    assert ">Bellezza<" in content
 
 
 @pytest.mark.django_db

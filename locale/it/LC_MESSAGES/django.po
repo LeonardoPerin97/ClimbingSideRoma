@@ -238,7 +238,7 @@ msgstr "Usa 0 se non vuoi specificare un decimale."
 
 #: apps/climbs/forms.py:218
 msgid "Required only when Number of attempts is selected."
-msgstr "Obbligatorio solo quando selezioni Numero di tentativi."
+msgstr "Obbligatorio solo quando selezioni Numero di giri."
 
 #: apps/climbs/forms.py:229 apps/climbs/models.py:192
 msgid "The ascent date cannot be in the future."
@@ -250,7 +250,7 @@ msgstr "Hai già registrato una ripetizione per questa via."
 
 #: apps/climbs/forms.py:252 apps/climbs/models.py:195
 msgid "Enter a positive number of attempts."
-msgstr "Inserisci un numero di tentativi positivo."
+msgstr "Inserisci un numero di giri positivo."
 
 #: apps/climbs/images.py:29 apps/climbs/images.py:53
 msgid "Upload a JPEG, PNG or WebP image."
@@ -365,7 +365,7 @@ msgstr "Flash"
 
 #: apps/climbs/models.py:110
 msgid "Number of attempts"
-msgstr "Numero di tentativi"
+msgstr "Numero di giri"
 
 #: apps/climbs/models.py:111
 msgid "N.D."
@@ -393,7 +393,7 @@ msgstr "esito dei tentativi"
 
 #: apps/climbs/models.py:145
 msgid "attempt count"
-msgstr "numero di tentativi"
+msgstr "numero di giri"
 
 #: apps/climbs/models.py:150 apps/climbs/models.py:244 apps/core/models.py:30
 msgid "created at"
@@ -415,8 +415,8 @@ msgstr "ripetizioni"
 #, python-format
 msgid "%(count)s attempt"
 msgid_plural "%(count)s attempts"
-msgstr[0] "%(count)s tentativo"
-msgstr[1] "%(count)s tentativi"
+msgstr[0] "%(count)s° giro"
+msgstr[1] "%(count)s° giro"
 
 #: apps/climbs/models.py:226
 msgid "image"
@@ -1011,8 +1011,7 @@ msgstr "Registro personale"
 msgid ""
 "Add the date, your rating, perceived grade and how many attempts it took."
 msgstr ""
-"Aggiungi la data, la valutazione, il grado percepito e il numero di "
-"tentativi."
+"Aggiungi la data, la valutazione, il grado percepito e il numero di giri."
 
 #: templates/climbs/ascent_form.html:15
 msgid "Save ascent"
@@ -1143,8 +1142,8 @@ msgid "Average proposed grade"
 msgstr "Grado medio proposto"
 
 #: templates/climbs/route_detail.html:43
-msgid "Average rating"
-msgstr "Valutazione media"
+msgid "Beauty"
+msgstr "Bellezza"
 
 #: templates/climbs/route_detail.html:52
 msgid "Edit my ascent"
@@ -1173,7 +1172,7 @@ msgstr "Valutazione"
 
 #: templates/climbs/route_detail.html:59
 msgid "Attempts"
-msgstr "Tentativi"
+msgstr "Giri"
 
 #: templates/climbs/route_detail.html:69 templates/climbs/wall_detail.html:20
 #: templates/components/ascent_card.html:26
