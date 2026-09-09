@@ -19,7 +19,7 @@ REGISTRATION_DATA = {
 
 
 @pytest.mark.django_db
-def test_registration_creates_inactive_user_and_sends_verification_email(
+def test_registration_creates_active_unverified_user_and_sends_verification_email(
     client: Client,
 ) -> None:
     response = client.post(reverse("accounts:register"), REGISTRATION_DATA)
@@ -28,7 +28,7 @@ def test_registration_creates_inactive_user_and_sends_verification_email(
     assert response.headers["Location"] == reverse("accounts:verification_sent")
 
     user = User.objects.get(username="Leonardo")
-    assert not user.is_active
+    assert user.is_active
     assert not user.email_is_verified
     assert user.email == "leonardo@example.com"
     assert user.check_password(REGISTRATION_DATA["password1"])
@@ -63,7 +63,7 @@ def test_registration_bypass_activates_user_without_sending_email(
 
 
 @pytest.mark.django_db
-def test_email_verification_activates_account(client: Client) -> None:
+def test_email_verification_marks_active_account_as_verified(client: Client) -> None:
     client.post(reverse("accounts:register"), REGISTRATION_DATA)
     match = re.search(r"https?://[^\s]+/verify-email/[^\s]+", str(mail.outbox[0].body))
     assert match is not None
@@ -77,7 +77,7 @@ def test_email_verification_activates_account(client: Client) -> None:
 
 
 @pytest.mark.django_db
-def test_invalid_verification_token_does_not_activate_user(client: Client) -> None:
+def test_invalid_verification_token_does_not_verify_user(client: Client) -> None:
     client.post(reverse("accounts:register"), REGISTRATION_DATA)
     user = User.objects.get(username="Leonardo")
 
@@ -90,8 +90,30 @@ def test_invalid_verification_token_does_not_activate_user(client: Client) -> No
 
     assert response.status_code == 400
     user.refresh_from_db()
-    assert not user.is_active
+    assert user.is_active
     assert not user.email_is_verified
+
+
+@pytest.mark.django_db
+def test_email_verification_does_not_reactivate_disabled_account(client: Client) -> None:
+    client.post(reverse("accounts:register"), REGISTRATION_DATA)
+    user = User.objects.get(username="Leonardo")
+    user.is_active = False
+    user.save(update_fields=["is_active"])
+    mail.outbox.clear()
+    client.post(
+        reverse("accounts:resend_verification"),
+        {"email": user.email},
+    )
+    match = re.search(r"https?://[^\s]+/verify-email/[^\s]+", str(mail.outbox[0].body))
+    assert match is not None
+
+    response = client.get(match.group(0))
+
+    assert response.status_code == 200
+    user.refresh_from_db()
+    assert not user.is_active
+    assert user.email_is_verified
 
 
 @pytest.mark.django_db

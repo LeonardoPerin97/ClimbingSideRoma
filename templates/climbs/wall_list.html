@@ -48,7 +48,7 @@
                         <div class="badge-row">
                             {% if wall.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
                         </div>
-                        <h2><a href="{% url 'climbs:wall_detail' wall.pk %}">{{ wall.name }}</a></h2>
+                        <h2><a class="list-name-link" href="{% url 'climbs:wall_detail' wall.pk %}">{{ wall.name }}</a></h2>
                         <dl class="wall-stats">
                             <div class="wall-stat wall-stat-climbs">
                                 <dt>{% translate "Active climbs" %}</dt>

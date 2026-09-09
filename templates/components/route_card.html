@@ -6,9 +6,9 @@
             <span class="badge badge-discipline">{{ climbing_route.get_discipline_display }}</span>
             {% if climbing_route.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
         </div>
-        <h2><a href="{% url 'climbs:route_detail' climbing_route.pk %}">{{ climbing_route.name }}</a></h2>
+        <h2><a class="list-name-link" href="{% url 'climbs:route_detail' climbing_route.pk %}">{{ climbing_route.name }}</a></h2>
         <p>
-            <a href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a>
+            <a class="list-name-link" href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a>
         </p>
         <div class="catalog-card-stats">
             <span>{% blocktranslate count count=climbing_route.ascent_count %}{{ count }} ascent{% plural %}{{ count }} ascents{% endblocktranslate %}</span>

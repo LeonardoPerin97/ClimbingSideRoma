@@ -136,7 +136,7 @@ La home presenta una sintesi immediata della palestra:
 - ripetizioni recenti con climber, via e grado;
 - vie più ripetute;
 - collegamenti rapidi al catalogo e alla registrazione di una ripetizione;
-- immagine hero derivata dall’immagine aggiornata più recentemente di una via attiva.
+- immagine hero fissa della palestra, distribuita come asset statico dell’applicazione.
 
 ### Amministrazione
 
@@ -320,8 +320,9 @@ template Django, lo stile è CSS nativo e gli script sono JavaScript senza dipen
 2. L’utente viene creato tramite il modello personalizzato `accounts.User`.
 3. La password viene hashata dal sistema Django.
 4. Il ruolo `User` viene assegnato tramite un gruppo Django.
-5. Se la verifica email è attiva, l’account resta inattivo e viene inviato un token.
-6. Il link valido imposta `email_verified_at` e attiva l’utente.
+5. L’account è immediatamente attivo e può autenticarsi anche prima della verifica.
+6. Se la verifica email è abilitata, viene inviato un token firmato.
+7. Il link valido imposta `email_verified_at` senza cambiare `is_active`.
 
 ### Login
 
@@ -655,10 +656,10 @@ ID utente fissi.
 | Creare e modificare vie | — | ✓ | ✓ |
 | Archiviare e ripristinare vie | — | ✓ | ✓ |
 | Caricare, sostituire e annotare immagini | — | ✓ | ✓ |
-| Eliminare immagini | — | — | ✓ |
-| Gestire pareti | — | — | ✓ |
+| Eliminare immagini | — | ✓ | ✓ |
+| Creare, modificare e archiviare pareti | — | ✓ | ✓ |
+| Eliminare definitivamente pareti e vie | — | ✓ | ✓ |
 | Gestire utenti e ruoli | — | — | ✓ |
-| Eseguire cancellazioni permanenti | — | — | ✓ |
 | Accedere al Django Admin | — | — | ✓ |
 
 I gruppi `User`, `RouteSetter` e `Admin` e i relativi permessi vengono sincronizzati dal
@@ -870,10 +871,9 @@ mittente autorizzato dal provider.
 
 Alla registrazione:
 
-1. l’account viene creato inattivo;
+1. l’account viene creato attivo e l’utente può accedere subito;
 2. viene inviato un link firmato;
-3. il link verifica l’email e attiva l’account;
-4. l’utente può effettuare il login.
+3. il link verifica l’indirizzo email senza modificare lo stato attivo dell’account.
 
 Lo stesso servizio SMTP gestisce il recupero password.
 
@@ -887,7 +887,7 @@ DJANGO_BYPASS_EMAIL_VERIFICATION=true
 
 Con il bypass:
 
-- i nuovi account vengono attivati immediatamente;
+- i nuovi account restano immediatamente utilizzabili, come nel flusso normale;
 - l’email rimane non verificata;
 - verifica, reinvio e recupero password via email sono disabilitati;
 - un amministratore può gestire manualmente l’account dal Django Admin.
@@ -898,7 +898,7 @@ Il bypass deve essere disattivato quando il servizio SMTP è operativo:
 DJANGO_BYPASS_EMAIL_VERIFICATION=false
 ```
 
-Gli account inattivi creati prima del bypass non vengono attivati automaticamente.
+Gli account disattivati da un amministratore non vengono riattivati dalla verifica email.
 
 ## Immagini e annotazioni
 

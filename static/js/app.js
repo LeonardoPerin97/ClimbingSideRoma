@@ -16,6 +16,15 @@ if (languageSelect) {
   });
 }
 
+document.querySelectorAll("[data-confirm-logout]").forEach((form) => {
+  form.addEventListener("submit", (event) => {
+    const message = form.dataset.confirmLogout;
+    if (message && !window.confirm(message)) {
+      event.preventDefault();
+    }
+  });
+});
+
 const projectToggle = document.querySelector("[data-project-toggle]");
 const gradeField = document.querySelector("[data-grade-field]");
 

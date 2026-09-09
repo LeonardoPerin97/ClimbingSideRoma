@@ -25,6 +25,7 @@ def test_verified_user_can_login_and_logout(
 
     profile_response = client.get(reverse("accounts:profile"))
     assert profile_response.status_code == 200
+    assert 'data-confirm-logout="' in profile_response.content.decode()
 
     logout_response = client.post(reverse("accounts:logout"))
     assert logout_response.status_code == 302
@@ -49,7 +50,7 @@ def test_username_login_is_case_insensitive(
 
 
 @pytest.mark.django_db
-def test_unverified_user_cannot_login(client: Client) -> None:
+def test_inactive_user_cannot_login(client: Client) -> None:
     user = User.objects.create_user(
         username="inactive",
         email="inactive@example.com",
@@ -65,6 +66,26 @@ def test_unverified_user_cannot_login(client: Client) -> None:
     assert response.status_code == 200
     assert response.context["form"].errors
     assert "_auth_user_id" not in client.session
+
+
+@pytest.mark.django_db
+def test_active_unverified_user_can_login(client: Client) -> None:
+    user = User.objects.create_user(
+        username="unverified",
+        email="unverified@example.com",
+        password="Strong-Test-Password-42!",
+        is_active=True,
+        email_verified_at=None,
+    )
+
+    response = client.post(
+        reverse("accounts:login"),
+        {"username": user.username, "password": "Strong-Test-Password-42!"},
+    )
+
+    assert response.status_code == 302
+    assert response.headers["Location"] == reverse("accounts:profile")
+    assert client.session["_auth_user_id"] == str(user.pk)
 
 
 @pytest.mark.django_db

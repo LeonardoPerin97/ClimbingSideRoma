@@ -1001,9 +1001,11 @@ meter::-webkit-meter-optimum-value {
 }
 
 .wall-card h2 a:hover,
-.catalog-card h2 a:hover {
-  color: #000000;
-  text-decoration: underline;
+.wall-card h2 a:focus-visible,
+.catalog-card h2 a:hover,
+.catalog-card h2 a:focus-visible {
+  color: var(--color-accent-dark);
+  text-decoration: none;
 }
 
 .wall-stats {
@@ -1761,6 +1763,19 @@ meter::-webkit-meter-optimum-value {
 .ascent-card h3,
 .user-card h2 {
   margin: 0;
+}
+
+.list-name-link,
+.user-profile-link {
+  text-decoration: none;
+}
+
+.list-name-link:hover,
+.list-name-link:focus-visible,
+.user-profile-link:hover,
+.user-profile-link:focus-visible {
+  color: var(--color-accent-dark);
+  text-decoration: none;
 }
 
 .ascent-main > p,

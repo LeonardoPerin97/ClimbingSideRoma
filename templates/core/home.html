@@ -1,13 +1,11 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% translate "Home" %} · ClimbingSide{% endblock %}
 
 {% block content %}
 <section class="home-hero">
-    {% if hero_route_image %}
-        <img class="home-hero-image" src="{{ hero_route_image.image.url }}" alt="" aria-hidden="true">
-    {% endif %}
+    <img class="home-hero-image" src="{% static 'images/home-hero.jpg' %}" alt="" aria-hidden="true">
     <div class="home-hero-overlay" aria-hidden="true"></div>
     <div class="container home-hero-content">
         <h1>Climbing Side Roma</h1>
@@ -79,7 +77,7 @@
                                                 </span>
 
                                                 {% if ascent.user.is_active %}
-                                                    <a href="{% url 'accounts:public_profile' ascent.user.username %}">
+                                                    <a class="list-name-link" href="{% url 'accounts:public_profile' ascent.user.username %}">
                                                         {{ ascent.user.username }}
                                                     </a>
                                                 {% else %}
@@ -91,14 +89,14 @@
                                         <td data-label="{% translate 'Climb' %}">
                                             <span class="activity-climb">
                                                 <a
-                                                    class="activity-route"
+                                                    class="activity-route list-name-link"
                                                     href="{% url 'climbs:route_detail' ascent.climbing_route_id %}"
                                                 >
                                                     {{ ascent.climbing_route.name }}
                                                 </a>
 
                                                 <a
-                                                    class="activity-wall"
+                                                    class="activity-wall list-name-link"
                                                     href="{% url 'climbs:wall_detail' ascent.climbing_route.wall_id %}"
                                                 >
                                                     {{ ascent.climbing_route.wall.name }}
@@ -146,7 +144,7 @@
                                 </span>
 
                                 <div>
-                                    <a href="{% url 'climbs:route_detail' climbing_route.pk %}">
+                                    <a class="list-name-link" href="{% url 'climbs:route_detail' climbing_route.pk %}">
                                         {{ climbing_route.name }}
                                     </a>
                                     <span>

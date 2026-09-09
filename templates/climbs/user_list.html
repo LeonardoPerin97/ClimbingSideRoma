@@ -34,7 +34,7 @@
             {% for profile_user in page %}
                 <article class="user-card">
                     <div>
-                        <h2><a href="{% url 'accounts:public_profile' profile_user.username %}">{{ profile_user.username }}</a></h2>
+                        <h2><a class="user-profile-link list-name-link" href="{% url 'accounts:public_profile' profile_user.username %}">{{ profile_user.username }}</a></h2>
                         {% if profile_user.first_name or profile_user.last_name %}<p>{{ profile_user.get_full_name }}</p>{% endif %}
                     </div>
                     <div class="user-card-stats">
@@ -53,4 +53,3 @@
     {% endif %}
 </div></section>
 {% endblock %}
-

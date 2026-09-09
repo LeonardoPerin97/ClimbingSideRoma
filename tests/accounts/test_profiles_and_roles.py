@@ -40,6 +40,32 @@ def test_assigning_route_setter_does_not_grant_admin_access(
 
 
 @pytest.mark.django_db
+def test_route_setter_receives_catalogue_and_image_permissions(
+    user_factory: Callable[..., User],
+) -> None:
+    user = user_factory()
+    assign_role(user, Role.ROUTE_SETTER)
+
+    expected_permissions = {
+        "add_wall",
+        "change_wall",
+        "delete_wall",
+        "view_wall",
+        "add_climbingroute",
+        "change_climbingroute",
+        "delete_climbingroute",
+        "view_climbingroute",
+        "add_routeimage",
+        "change_routeimage",
+        "delete_routeimage",
+        "view_routeimage",
+    }
+
+    assert all(user.has_perm(f"climbs.{codename}") for codename in expected_permissions)
+    assert not user.has_perm("accounts.change_user")
+
+
+@pytest.mark.django_db
 def test_assigning_admin_grants_staff_and_admin_permissions(
     client: Client,
     user_factory: Callable[..., User],

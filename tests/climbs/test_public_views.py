@@ -34,6 +34,7 @@ def test_wall_list_counts_only_active_routes(
     content = response.content.decode()
     assert 'class="wall-stat wall-stat-climbs"' in content
     assert 'class="wall-stat wall-stat-ascents"' in content
+    assert 'class="list-name-link"' in content
 
 
 @pytest.mark.django_db
@@ -52,6 +53,7 @@ def test_route_list_hides_archived_routes_by_default(
     assert ">Tipo</label>" in content
     assert ">Tutti i tipi</option>" in content
     assert "Disciplina" not in content
+    assert content.count('class="list-name-link"') == 2
 
 
 @pytest.mark.django_db
@@ -484,6 +486,7 @@ def test_route_detail_lists_setters_without_exposing_email(
     assert "marco-setter" in content
     assert "anna-private@example.com" not in content
     assert "marco-private@example.com" not in content
+    assert content.count('class="list-name-link"') == 2
 
 
 @pytest.mark.django_db

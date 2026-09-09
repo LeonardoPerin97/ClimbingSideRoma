@@ -80,7 +80,39 @@ def test_route_setter_can_create_edit_and_archive_route_without_setter(
 
 
 @pytest.mark.django_db
-def test_route_setter_cannot_manage_walls_or_permanently_delete_routes(
+def test_route_setter_can_create_edit_archive_and_delete_wall(
+    client: Client,
+    user_factory: Callable[..., User],
+) -> None:
+    route_setter = user_factory()
+    assign_role(route_setter, Role.ROUTE_SETTER)
+    client.force_login(route_setter)
+
+    create_response = client.post(reverse("climbs:wall_create"), {"name": "Setter Wall"})
+    wall = Wall.objects.get(name="Setter Wall")
+    edit_response = client.post(
+        reverse("climbs:wall_edit", args=[wall.pk]),
+        {"name": "Renamed Setter Wall"},
+    )
+    archive_response = client.post(reverse("climbs:wall_archive", args=[wall.pk]))
+    wall.refresh_from_db()
+    delete_form_response = client.get(reverse("climbs:wall_delete", args=[wall.pk]))
+    delete_response = client.post(
+        reverse("climbs:wall_delete", args=[wall.pk]),
+        {"name": wall.name},
+    )
+
+    assert create_response.status_code == 302
+    assert edit_response.status_code == 302
+    assert archive_response.status_code == 302
+    assert delete_form_response.status_code == 200
+    assert wall.is_archived
+    assert delete_response.status_code == 302
+    assert not Wall.objects.filter(pk=wall.pk).exists()
+
+
+@pytest.mark.django_db
+def test_route_setter_can_permanently_delete_archived_route(
     client: Client,
     user_factory: Callable[..., User],
     route_factory: Callable[..., ClimbingRoute],
@@ -88,9 +120,31 @@ def test_route_setter_cannot_manage_walls_or_permanently_delete_routes(
     route_setter = user_factory()
     assign_role(route_setter, Role.ROUTE_SETTER)
     client.force_login(route_setter)
-    climbing_route = route_factory(is_archived=True)
+    climbing_route = route_factory(name="Setter Delete", is_archived=True)
 
-    assert client.get(reverse("climbs:wall_create")).status_code == 403
+    response = client.post(
+        reverse("climbs:route_delete", args=[climbing_route.pk]),
+        {"name": climbing_route.name},
+    )
+
+    assert response.status_code == 302
+    assert not ClimbingRoute.objects.filter(pk=climbing_route.pk).exists()
+
+
+@pytest.mark.django_db
+def test_standard_user_cannot_permanently_delete_catalogue_objects(
+    client: Client,
+    user_factory: Callable[..., User],
+    route_factory: Callable[..., ClimbingRoute],
+) -> None:
+    user = user_factory()
+    client.force_login(user)
+    climbing_route = route_factory(is_archived=True)
+    wall = climbing_route.wall
+    wall.is_archived = True
+    wall.save(update_fields=["is_archived"])
+
+    assert client.get(reverse("climbs:wall_delete", args=[wall.pk])).status_code == 403
     assert client.get(reverse("climbs:route_delete", args=[climbing_route.pk])).status_code == 403
 
 

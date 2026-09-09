@@ -28,12 +28,17 @@ USER_PERMISSION_CODENAMES = {
 }
 
 ROUTE_SETTER_PERMISSION_CODENAMES = USER_PERMISSION_CODENAMES | {
+    "add_wall",
+    "change_wall",
+    "delete_wall",
     "view_wall",
     "add_climbingroute",
     "change_climbingroute",
+    "delete_climbingroute",
     "view_climbingroute",
     "add_routeimage",
     "change_routeimage",
+    "delete_routeimage",
     "view_routeimage",
 }
 
@@ -66,9 +71,15 @@ def assign_role(user: User, role: Role) -> None:
 def sync_role_permissions() -> None:
     groups = {name: Group.objects.get_or_create(name=name)[0] for name in ROLE_GROUP_NAMES}
     groups[Role.USER].permissions.set(
-        Permission.objects.filter(codename__in=USER_PERMISSION_CODENAMES)
+        Permission.objects.filter(
+            content_type__app_label="climbs",
+            codename__in=USER_PERMISSION_CODENAMES,
+        )
     )
     groups[Role.ROUTE_SETTER].permissions.set(
-        Permission.objects.filter(codename__in=ROUTE_SETTER_PERMISSION_CODENAMES)
+        Permission.objects.filter(
+            content_type__app_label="climbs",
+            codename__in=ROUTE_SETTER_PERMISSION_CODENAMES,
+        )
     )
     groups[Role.ADMIN].permissions.set(Permission.objects.all())

@@ -142,6 +142,10 @@ def test_standard_user_cannot_upload_or_annotate_images(
         client.get(reverse("climbs:route_annotation_edit", args=[climbing_route.pk])).status_code
         == 403
     )
+    assert (
+        client.get(reverse("climbs:route_image_delete", args=[climbing_route.pk])).status_code
+        == 403
+    )
 
 
 @pytest.mark.django_db
@@ -257,8 +261,8 @@ def test_replacing_image_clears_markers_and_removes_previous_file(
     assert Path(route_image.image.path).exists()
 
 
-@pytest.mark.django_db
-def test_route_setter_cannot_delete_image(
+@pytest.mark.django_db(transaction=True)
+def test_route_setter_can_delete_image_and_stored_file(
     client: Client,
     user_factory: Callable[..., User],
     route_image_factory: Callable[..., RouteImage],
@@ -266,14 +270,16 @@ def test_route_setter_cannot_delete_image(
     route_setter = user_factory()
     assign_role(route_setter, Role.ROUTE_SETTER)
     route_image = route_image_factory(uploaded_by=route_setter)
+    image_path = Path(route_image.image.path)
     client.force_login(route_setter)
 
     response = client.post(
         reverse("climbs:route_image_delete", args=[route_image.climbing_route_id])
     )
 
-    assert response.status_code == 403
-    assert RouteImage.objects.filter(pk=route_image.pk).exists()
+    assert response.status_code == 302
+    assert not RouteImage.objects.filter(pk=route_image.pk).exists()
+    assert not image_path.exists()
 
 
 @pytest.mark.django_db(transaction=True)

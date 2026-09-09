@@ -33,20 +33,12 @@ def home(request: HttpRequest) -> HttpResponse:
         .order_by("-ascent_count", Lower("name"))[:5]
     )
 
-    hero_route_image = (
-        RouteImage.objects.filter(climbing_route__is_archived=False)
-        .select_related("climbing_route")
-        .order_by("-updated_at")
-        .first()
-    )
-
     return render(
         request,
         "core/home.html",
         {
             "recent_ascents": recent_ascents,
             "popular_routes": popular_routes,
-            "hero_route_image": hero_route_image,
             "active_route_count": active_routes.count(),
             "active_wall_count": Wall.objects.filter(is_archived=False).count(),
             "active_user_count": User.objects.filter(is_active=True).count(),
@@ -73,35 +65,21 @@ def management_dashboard(request: HttpRequest) -> HttpResponse:
     users = User.objects.filter(is_active=True)
 
     role_counts = {
-        Role.ADMIN: users.filter(
-            Q(is_superuser=True) | Q(groups__name=Role.ADMIN)
-        )
+        Role.ADMIN: users.filter(Q(is_superuser=True) | Q(groups__name=Role.ADMIN))
         .distinct()
         .count(),
-        Role.ROUTE_SETTER: users.filter(
-            groups__name=Role.ROUTE_SETTER
-        )
-        .distinct()
-        .count(),
-        Role.USER: users.filter(
-            groups__name=Role.USER
-        )
-        .distinct()
-        .count(),
+        Role.ROUTE_SETTER: users.filter(groups__name=Role.ROUTE_SETTER).distinct().count(),
+        Role.USER: users.filter(groups__name=Role.USER).distinct().count(),
     }
 
     route_status_counts = {
         row["is_archived"]: row["count"]
-        for row in ClimbingRoute.objects.values("is_archived").annotate(
-            count=Count("id")
-        )
+        for row in ClimbingRoute.objects.values("is_archived").annotate(count=Count("id"))
     }
 
     wall_status_counts = {
         row["is_archived"]: row["count"]
-        for row in Wall.objects.values("is_archived").annotate(
-            count=Count("id")
-        )
+        for row in Wall.objects.values("is_archived").annotate(count=Count("id"))
     }
 
     context = {
@@ -115,9 +93,7 @@ def management_dashboard(request: HttpRequest) -> HttpResponse:
         "archived_route_count": route_status_counts.get(True, 0),
         "ascent_count": Ascent.objects.count(),
         "image_count": RouteImage.objects.count(),
-        "recent_audit_entries": AuditLogEntry.objects.select_related(
-            "actor"
-        )[:20],
+        "recent_audit_entries": AuditLogEntry.objects.select_related("actor")[:20],
     }
 
     return render(
@@ -130,15 +106,10 @@ def management_dashboard(request: HttpRequest) -> HttpResponse:
 def set_language_preference(request: HttpRequest) -> HttpResponse:
     response = django_set_language(request)
     language = request.POST.get("language")
-    supported_languages = {
-        code for code, _name in settings.LANGUAGES
-    }
+    supported_languages = {code for code, _name in settings.LANGUAGES}
 
     if request.user.is_authenticated and language in supported_languages:
-        User.objects.filter(pk=request.user.pk).update(
-            preferred_language=language
-        )
+        User.objects.filter(pk=request.user.pk).update(preferred_language=language)
         request.user.preferred_language = language
 
     return response
-    

@@ -39,9 +39,6 @@ def register(request: HttpRequest) -> HttpResponse:
     if request.method == "POST" and form.is_valid():
         with transaction.atomic():
             user = form.save()
-            if settings.BYPASS_EMAIL_VERIFICATION:
-                user.is_active = True
-                user.save(update_fields=["is_active"])
             assign_role(user, Role.USER)
         if settings.BYPASS_EMAIL_VERIFICATION:
             logger.warning("Email verification bypassed for user_id=%s", user.pk)
@@ -112,9 +109,8 @@ def verify_email(request: HttpRequest, uidb64: str, token: str) -> HttpResponse:
     if not email_verification_token.check_token(user, token):
         return render(request, "accounts/verification_invalid.html", status=400)
 
-    user.is_active = True
     user.email_verified_at = timezone.now()
-    user.save(update_fields=["is_active", "email_verified_at"])
+    user.save(update_fields=["email_verified_at"])
     return render(request, "accounts/verification_complete.html")
 
 

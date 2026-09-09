@@ -5,6 +5,7 @@ import pytest
 from django.template.loader import render_to_string
 from django.test import Client
 from django.urls import reverse
+from django.utils import translation
 
 from apps.accounts.models import User
 from apps.climbs.grades import encode_perceived_grade
@@ -12,7 +13,8 @@ from apps.climbs.models import Ascent, ClimbingRoute, Wall
 
 
 def test_star_rating_component_supports_fractional_values() -> None:
-    content = render_to_string("components/star_rating.html", {"rating": 2.5})
+    with translation.override("it"):
+        content = render_to_string("components/star_rating.html", {"rating": 2.5})
 
     assert content.count("★★★★★") == 2
     assert 'style="--rating-fill: 50%;"' in content
@@ -60,6 +62,7 @@ def test_route_detail_calculates_public_ascent_statistics(
     assert response.context["maximum_proposed_grade_count"] == 1
     assert "first-user" in content and "second-user" in content
     assert "first-private@example.com" not in content
+    assert content.count('class="list-name-link"') == 2
 
 
 @pytest.mark.django_db
@@ -301,6 +304,7 @@ def test_user_list_can_sort_by_completed_routes_and_maximum_official_grade(
 
     assert by_count.context["page"].object_list[0].username == "frequent"
     assert by_grade.context["page"].object_list[0].username == "strongest"
+    assert 'class="user-profile-link list-name-link"' in by_count.content.decode()
 
 
 @pytest.mark.django_db

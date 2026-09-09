@@ -29,7 +29,7 @@
                         {{ climbing_route.display_grade }}
                     </div>
                 </div>
-                <p><a href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a></p>
+                <p><a class="list-name-link" href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a></p>
             </div>
         </header>
 
@@ -134,7 +134,7 @@
                         <dt>{% translate "Route setters" %}</dt>
                         <dd>
                             {% for setter in climbing_route.route_setters.all %}
-                                <a href="{% url 'accounts:public_profile' setter.username %}">{{ setter.username }}</a>{% if not forloop.last %}, {% endif %}
+                                <a class="list-name-link" href="{% url 'accounts:public_profile' setter.username %}">{{ setter.username }}</a>{% if not forloop.last %}, {% endif %}
                             {% empty %}
                                 {% translate "Not specified" %}
                             {% endfor %}

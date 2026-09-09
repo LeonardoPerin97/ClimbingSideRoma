@@ -3,11 +3,12 @@ from unittest.mock import patch
 
 import pytest
 from django.conf import settings
+from django.contrib.staticfiles import finders
 from django.test import Client
 from django.urls import reverse
 
 from apps.accounts.models import User
-from apps.climbs.models import Ascent, ClimbingRoute, Wall
+from apps.climbs.models import Ascent, ClimbingRoute, RouteImage, Wall
 
 
 @pytest.mark.django_db
@@ -20,10 +21,27 @@ def test_home_page_is_available(client: Client) -> None:
 
     assert "Climbing Side Roma" in content
     assert "/static/images/climbingside-logo.jpg" in content
+    assert "/static/images/home-hero.jpg" in content
+    assert finders.find("images/home-hero.jpg") is not None
     assert "brand-mark" not in content
     assert "🇮🇹" in content
     assert "🇬🇧" in content
     assert "Pensata per la palestra di arrampicata" not in content
+
+
+@pytest.mark.django_db
+def test_home_uses_fixed_hero_instead_of_latest_route_image(
+    client: Client,
+    route_image_factory: Callable[..., RouteImage],
+) -> None:
+    route_image = route_image_factory()
+
+    response = client.get(reverse("core:home"))
+    content = response.content.decode()
+
+    assert "/static/images/home-hero.jpg" in content
+    assert route_image.image.url not in content
+    assert "hero_route_image" not in response.context
 
 
 @pytest.mark.django_db
@@ -75,10 +93,7 @@ def test_home_page_summarises_public_gym_activity(
     assert response.context["active_user_count"] == 2
     assert response.context["ascent_count"] == 3
     assert next(iter(response.context["popular_routes"])) == most_climbed
-    assert (
-        next(iter(response.context["recent_ascents"])).climbing_route
-        == other_route
-    )
+    assert next(iter(response.context["recent_ascents"])).climbing_route == other_route
 
     content = response.content.decode()
 
@@ -87,6 +102,8 @@ def test_home_page_summarises_public_gym_activity(
     assert content.count('<th scope="col">') == 3
     assert 'class="activity-climber"' in content
     assert 'class="activity-climb"' in content
+    assert 'class="activity-route list-name-link"' in content
+    assert 'class="activity-wall list-name-link"' in content
     assert "rating-stars" not in content
 
 
@@ -136,12 +153,8 @@ def test_language_can_be_changed_with_django_endpoint(
 
     assert response.status_code == 302
     assert response.headers["Location"] == "/"
-    assert (
-        response.cookies[settings.LANGUAGE_COOKIE_NAME].value
-        == "en"
-    )
+    assert response.cookies[settings.LANGUAGE_COOKIE_NAME].value == "en"
 
     home_response = client.get(reverse("core:home"))
 
     assert "Climbing Side Roma" in home_response.content.decode()
-    

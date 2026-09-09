@@ -631,8 +631,8 @@ msgid "Reset your ClimbingSide password"
 msgstr "Reimposta la password di ClimbingSide"
 
 #: templates/accounts/email/verify_email.html:3
-msgid "confirm your email address to activate your ClimbingSide account."
-msgstr "conferma il tuo indirizzo email per attivare l'account ClimbingSide."
+msgid "confirm your ClimbingSide email address."
+msgstr "conferma il tuo indirizzo email ClimbingSide."
 
 #: templates/accounts/email/verify_email.html:4
 msgid "Verify email"
@@ -861,11 +861,11 @@ msgstr "Registrati per salvare le tue ripetizioni e seguire i tuoi progressi."
 
 #: templates/accounts/register.html:15
 msgid ""
-"Email verification is temporarily disabled. Your account will be active "
-"immediately."
+"Email verification is temporarily disabled. You can log in immediately "
+"after registration."
 msgstr ""
-"La verifica email è temporaneamente disabilitata. Il tuo account sarà "
-"attivo immediatamente."
+"La verifica email è temporaneamente disabilitata. Puoi accedere subito dopo "
+"la registrazione."
 
 #: templates/accounts/register.html:22
 msgid "Create account"
@@ -889,8 +889,8 @@ msgid "Email verified"
 msgstr "Email verificata"
 
 #: templates/accounts/verification_complete.html:12
-msgid "Your account is active. You can now log in."
-msgstr "Il tuo account è attivo. Ora puoi accedere."
+msgid "Your email address has been verified. You can now log in."
+msgstr "Il tuo indirizzo email è stato verificato. Ora puoi accedere."
 
 #: templates/accounts/verification_invalid.html:4
 msgid "Invalid verification link"
@@ -902,11 +902,11 @@ msgstr "Richiedi una nuova email di verifica e riprova."
 
 #: templates/accounts/verification_sent.html:12
 msgid ""
-"If the address can receive a verification message, you will find a link to "
-"activate the account."
+"Your account is already active. If the address can receive email, you will "
+"find a link to verify it."
 msgstr ""
-"Se l'indirizzo può ricevere il messaggio di verifica, troverai un link per "
-"attivare l'account."
+"Il tuo account è già attivo. Se l'indirizzo può ricevere email, troverai un "
+"link per verificarlo."
 
 #: templates/accounts/verification_sent.html:13
 msgid "Go to login"
@@ -961,6 +961,10 @@ msgstr "Amministrazione"
 #: templates/base.html:50
 msgid "Log out"
 msgstr "Esci"
+
+#: templates/base.html:53
+msgid "Are you sure you want to log out?"
+msgstr "Vuoi davvero uscire?"
 
 #: templates/base.html:70
 msgid "Apply"

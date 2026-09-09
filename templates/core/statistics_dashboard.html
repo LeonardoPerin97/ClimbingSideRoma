@@ -76,7 +76,7 @@
                                 {% for bucket in routes_by_wall %}
                                     <tr>
                                         <th scope="row">
-                                            <a href="{% url 'climbs:wall_detail' bucket.wall.pk %}">{{ bucket.wall.name }}</a>
+                                            <a class="list-name-link" href="{% url 'climbs:wall_detail' bucket.wall.pk %}">{{ bucket.wall.name }}</a>
                                         </th>
                                         <td>
                                             {{ bucket.total }}

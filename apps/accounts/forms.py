@@ -36,7 +36,7 @@ class RegistrationForm(StyledFormMixin, UserCreationForm):
     def save(self, commit: bool = True) -> User:
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"]
-        user.is_active = False
+        user.is_active = True
         user.email_verified_at = None
         if commit:
             user.save()

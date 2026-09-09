@@ -45,7 +45,12 @@
                         <a href="{% url 'core:management_dashboard' %}">{% translate "Management" %}</a>
                         <a href="{% url 'admin:index' %}">{% translate "Administration" %}</a>
                     {% endif %}
-                    <form class="nav-logout" action="{% url 'accounts:logout' %}" method="post">
+                    <form
+                        class="nav-logout"
+                        action="{% url 'accounts:logout' %}"
+                        method="post"
+                        data-confirm-logout="{% translate 'Are you sure you want to log out?' %}"
+                    >
                         {% csrf_token %}
                         <button type="submit">{% translate "Log out" %}</button>
                     </form>

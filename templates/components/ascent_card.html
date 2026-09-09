@@ -3,11 +3,11 @@
 <article class="ascent-card">
     <div class="ascent-main">
         {% if show_route %}
-            <h3><a href="{% url 'climbs:route_detail' ascent.climbing_route_id %}">{{ ascent.climbing_route.name }}</a></h3>
-            <p><a href="{% url 'climbs:wall_detail' ascent.climbing_route.wall_id %}">{{ ascent.climbing_route.wall.name }}</a> · {{ ascent.climbing_route.get_discipline_display }} · {{ ascent.climbing_route.display_grade }}</p>
+            <h3><a class="list-name-link" href="{% url 'climbs:route_detail' ascent.climbing_route_id %}">{{ ascent.climbing_route.name }}</a></h3>
+            <p><a class="list-name-link" href="{% url 'climbs:wall_detail' ascent.climbing_route.wall_id %}">{{ ascent.climbing_route.wall.name }}</a> · {{ ascent.climbing_route.get_discipline_display }} · {{ ascent.climbing_route.display_grade }}</p>
         {% elif show_user %}
             {% if ascent.user.is_active %}
-                <h3><a href="{% url 'accounts:public_profile' ascent.user.username %}">{{ ascent.user.username }}</a></h3>
+                <h3><a class="list-name-link" href="{% url 'accounts:public_profile' ascent.user.username %}">{{ ascent.user.username }}</a></h3>
             {% else %}
                 <h3>{% translate "Former user" %}</h3>
             {% endif %}
