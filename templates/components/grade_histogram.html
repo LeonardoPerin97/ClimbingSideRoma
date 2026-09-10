@@ -1,7 +1,10 @@
 {% load i18n %}
 
 <div class="histogram-scroll" tabindex="0" aria-label="{{ histogram_scroll_label }}">
-    <div class="grade-histogram">
+    <div
+        class="grade-histogram"
+        style="--histogram-desktop-width: {% widthratio buckets|length 1 54 %}px; --histogram-natural-width: {% widthratio buckets|length 1 40 %}px; --histogram-compact-width: {% widthratio buckets|length 1 34 %}px;"
+    >
         <div class="histogram-y-axis" aria-hidden="true">
             <span>{{ maximum_count }}</span>
             <span>0</span>
@@ -11,9 +14,13 @@
                 <div
                     class="histogram-column"
                     role="listitem"
+                    tabindex="0"
+                    data-histogram-column
                     aria-label="{% blocktranslate with grade=bucket.label count=bucket.count %}Grade {{ grade }}: {{ count }} entries{% endblocktranslate %}"
                 >
-                    <span class="histogram-value" aria-hidden="true">{{ bucket.count }}</span>
+                    <span class="histogram-tooltip" aria-hidden="true">
+                        {{ bucket.label }} · {{ histogram_value_label }}: {{ bucket.count }}
+                    </span>
                     <span class="histogram-track" aria-hidden="true">
                         <span class="histogram-bar{% if not bucket.count %} is-zero{% endif %}" style="--histogram-height: {% widthratio bucket.count maximum_count 100 %}%;"></span>
                     </span>

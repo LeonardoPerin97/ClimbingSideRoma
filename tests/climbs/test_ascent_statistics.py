@@ -18,7 +18,8 @@ def test_star_rating_component_supports_fractional_values() -> None:
 
     assert content.count("★★★★★") == 2
     assert 'style="--rating-fill: 50%;"' in content
-    assert "2,5/5" in content
+    assert "2,5/5" not in content
+    assert 'aria-label="Valutazione 2,5 su 5 stelle"' in content
 
 
 @pytest.mark.django_db
@@ -62,13 +63,25 @@ def test_route_detail_calculates_public_ascent_statistics(
     assert response.context["maximum_proposed_grade_count"] == 1
     assert "first-user" in content and "second-user" in content
     assert "first-private@example.com" not in content
-    assert content.count('class="list-name-link"') == 3
+    assert content.count('class="list-name-link"') == 5
     assert 'class="route-title-separator"' in content
     assert 'class="route-title-grade"' in content
     assert "route-grade-large" not in content
     assert ">Ripetizioni<" in content
     assert ">Grado proposto<" in content
     assert ">Bellezza<" in content
+    assert 'style="--rating-fill: 80%;"' in content
+    assert "4,0/5" not in content
+    assert content.index('class="route-grade-distribution"') < content.index(
+        'class="route-media-section"'
+    )
+    assert 'class="histogram-tooltip"' in content
+    assert "data-histogram-column" in content
+    assert 'class="histogram-value"' not in content
+    assert "6a.2 · Proposte: 1" in content
+    assert "<h2>Distribuzione dei gradi proposti</h2>" not in content
+    assert '<div class="section-heading"><h2>Ripetizioni</h2></div>' in content
+    assert "Completata da" not in content
 
 
 @pytest.mark.django_db
@@ -247,7 +260,7 @@ def test_route_detail_places_current_user_ascent_data_next_to_edit_action(
     assert response.context["user_ascent"] == ascent
     assert 'class="my-ascent-summary"' in content
     assert "6a.3" in content
-    assert "★ 4/5" in content
+    assert "★ 4/5" not in content
     assert "data-star-rating" in content
     assert 'data-rating="4"' in content
     assert 'style="--rating-fill: 80%;"' in content
@@ -290,7 +303,7 @@ def test_route_detail_lists_ascents_from_newest_to_oldest(
 
 
 @pytest.mark.django_db
-def test_user_list_can_sort_by_completed_routes_and_maximum_official_grade(
+def test_user_list_can_sort_by_ascents_and_highest_official_grade(
     client: Client,
     user_factory: Callable[..., User],
     route_factory: Callable[..., ClimbingRoute],
@@ -305,12 +318,34 @@ def test_user_list_can_sort_by_completed_routes_and_maximum_official_grade(
     ascent_factory(user=frequent, climbing_route=route_6a)
     ascent_factory(user=strongest, climbing_route=route_7a)
 
-    by_count = client.get(reverse("climbs:user_list"), {"sort": "ascents"})
-    by_grade = client.get(reverse("climbs:user_list"), {"sort": "grade"})
+    by_count = client.get(
+        reverse("climbs:user_list"),
+        {"sort": "ascents"},
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+    by_grade = client.get(
+        reverse("climbs:user_list"),
+        {"sort": "grade"},
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+    italian = client.get(
+        reverse("climbs:user_list"),
+        HTTP_ACCEPT_LANGUAGE="it",
+    )
 
     assert by_count.context["page"].object_list[0].username == "frequent"
     assert by_grade.context["page"].object_list[0].username == "strongest"
-    assert 'class="user-profile-link list-name-link"' in by_count.content.decode()
+    english_content = by_count.content.decode()
+    italian_content = italian.content.decode()
+    assert 'class="user-profile-link list-name-link"' in english_content
+    assert ">Ascents</option>" in english_content
+    assert ">Highest grade</option>" in english_content
+    assert " ascents</span>" in english_content
+    assert " highest grade</span>" in english_content
+    assert ">Ripetizioni</option>" in italian_content
+    assert ">Grado più alto</option>" in italian_content
+    assert " ripetizioni</span>" in italian_content
+    assert " grado più alto</span>" in italian_content
 
 
 @pytest.mark.django_db
@@ -330,17 +365,26 @@ def test_profile_context_contains_histogram_distributions_without_progression(
         official_grade="6a",
         discipline=ClimbingRoute.Discipline.BOULDER,
     )
+    project = route_factory(
+        name="Boulder Project",
+        wall=wall,
+        official_grade="",
+        discipline=ClimbingRoute.Discipline.BOULDER,
+        is_project=True,
+    )
     ascent_factory(user=user, climbing_route=easy, date=date(2026, 1, 10))
     ascent_factory(user=user, climbing_route=harder, date=date(2026, 2, 10))
+    ascent_factory(user=user, climbing_route=project, date=date(2026, 3, 10))
 
     response = client.get(reverse("accounts:public_profile", args=[user.username]))
     content = response.content.decode()
 
-    assert response.context["ascent_count"] == 2
+    assert response.context["ascent_count"] == 3
     assert response.context["highest_grade"] == "6a"
-    assert response.context["discipline_counts"] == {"route": 1, "boulder": 1}
+    assert response.context["discipline_counts"] == {"route": 1, "boulder": 2}
     assert response.context["maximum_grade_count"] == 1
-    assert [bucket.label for bucket in response.context["grade_distribution"]] == [
+    distribution = response.context["grade_distribution"]
+    assert [bucket.label for bucket in distribution] == [
         "5a",
         "5a+",
         "5b",
@@ -348,12 +392,36 @@ def test_profile_context_contains_histogram_distributions_without_progression(
         "5c",
         "5c+",
         "6a",
+        "Project",
     ]
+    assert (distribution[0].total, distribution[0].routes, distribution[0].boulders) == (
+        1,
+        1,
+        0,
+    )
+    assert (distribution[-2].total, distribution[-2].routes, distribution[-2].boulders) == (
+        1,
+        0,
+        1,
+    )
+    assert (distribution[-1].total, distribution[-1].routes, distribution[-1].boulders) == (
+        1,
+        0,
+        1,
+    )
+    assert response.context["project_count"] == 1
     assert "progression" not in response.context
     assert response.context["wall_distribution"][0].label == "Progress Wall"
     assert 'class="grade-histogram"' in content
+    assert 'data-histogram-filter="all"' in content
+    assert 'data-histogram-filter="route"' in content
+    assert 'data-histogram-filter="boulder"' in content
+    assert 'class="histogram-tooltip"' in content
+    assert 'class="histogram-value"' not in content
+    assert "5a · Ripetizioni:" in content
+    assert "non è incluso nell'istogramma" not in content
     assert "progression-list" not in content
-    assert "Easy Step" in content and "Harder Step" in content
+    assert "Easy Step" in content and "Harder Step" in content and "Boulder Project" in content
     assert "progressive-private@example.com" not in content
 
 

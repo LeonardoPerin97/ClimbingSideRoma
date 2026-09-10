@@ -13,7 +13,10 @@
         </div>
     </div>
     <div class="histogram-scroll" tabindex="0" aria-label="{{ histogram_scroll_label }}">
-        <div class="grade-histogram">
+        <div
+            class="grade-histogram"
+            style="--histogram-desktop-width: {% widthratio buckets|length 1 54 %}px; --histogram-natural-width: {% widthratio buckets|length 1 40 %}px; --histogram-compact-width: {% widthratio buckets|length 1 34 %}px;"
+        >
             <div class="histogram-y-axis" aria-hidden="true">
                 <span data-histogram-y-maximum>{{ maximum_count }}</span>
                 <span>0</span>
@@ -23,11 +26,15 @@
                     <div
                         class="histogram-column"
                         role="listitem"
+                        tabindex="0"
+                        data-histogram-column
                         data-route-count="{{ bucket.routes }}"
                         data-boulder-count="{{ bucket.boulders }}"
                         aria-label="{% blocktranslate with grade=bucket.label total=bucket.total routes=bucket.routes boulders=bucket.boulders %}Grade {{ grade }}: {{ total }} total, {{ routes }} routes, {{ boulders }} boulders{% endblocktranslate %}"
                     >
-                        <span class="histogram-value" data-histogram-value aria-hidden="true">{{ bucket.total }}</span>
+                        <span class="histogram-tooltip" aria-hidden="true">
+                            {{ bucket.label }} · {{ histogram_value_label }}: <span data-histogram-value>{{ bucket.total }}</span>
+                        </span>
                         <span class="histogram-track" aria-hidden="true">
                             <span
                                 class="histogram-stacked-bar{% if not bucket.total %} is-zero{% endif %}"

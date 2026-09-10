@@ -24,7 +24,10 @@ def test_wall_list_counts_only_active_routes(
         is_archived=True,
     )
 
-    response = client.get(reverse("climbs:wall_list"))
+    response = client.get(
+        reverse("climbs:wall_list"),
+        HTTP_ACCEPT_LANGUAGE="it",
+    )
 
     listed_wall = response.context["page"].object_list[0]
     assert response.status_code == 200
@@ -35,6 +38,10 @@ def test_wall_list_counts_only_active_routes(
     assert 'class="wall-stat wall-stat-climbs"' in content
     assert 'class="wall-stat wall-stat-ascents"' in content
     assert 'class="list-name-link"' in content
+    assert "<dt>Vie</dt>" in content
+    assert "<dt>Ripetizioni</dt>" in content
+    assert "<dt>Vie attive</dt>" not in content
+    assert "<dt>Ripetizioni registrate</dt>" not in content
 
 
 @pytest.mark.django_db
@@ -146,6 +153,10 @@ def test_route_list_shows_continuous_type_split_histogram(
     assert 'data-histogram-filter="boulder"' in content
     assert 'data-route-count="1"' in content
     assert 'data-boulder-count="1"' in content
+    assert 'class="histogram-tooltip"' in content
+    assert "data-histogram-column" in content
+    assert 'class="histogram-value"' not in content
+    assert "5a · Climbs:" in content
     assert "Total climbs by grade" in content
     assert "Routes" in content and "Boulders" in content
 
@@ -486,7 +497,8 @@ def test_route_detail_lists_setters_without_exposing_email(
     assert "marco-setter" in content
     assert "anna-private@example.com" not in content
     assert "marco-private@example.com" not in content
-    assert content.count('class="list-name-link"') == 3
+    assert content.count('class="list-name-link"') == 5
+    assert f'<a class="list-name-link" href="{reverse("climbs:route_list")}">' in content
 
 
 @pytest.mark.django_db

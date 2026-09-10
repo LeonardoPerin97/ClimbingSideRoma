@@ -448,12 +448,6 @@ input {
   color: var(--color-muted);
 }
 
-.rating-stars {
-  color: var(--color-accent-dark);
-  font-weight: 700;
-  white-space: nowrap;
-}
-
 .star-rating {
   display: inline-flex;
   gap: 0.4rem;
@@ -482,10 +476,6 @@ input {
   overflow: hidden;
   color: #f4b223;
   white-space: nowrap;
-}
-
-.star-rating-value {
-  color: var(--color-muted);
 }
 
 .popular-list {
@@ -1310,15 +1300,16 @@ meter::-webkit-meter-optimum-value {
 
 .grade-histogram {
   display: grid;
-  grid-template-columns: 2.2rem max-content;
-  min-width: 100%;
+  width: min(100%, max(18rem, calc(2.2rem + var(--histogram-desktop-width))));
+  min-width: 0;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
   height: 15rem;
 }
 
 .histogram-y-axis {
   display: flex;
   justify-content: space-between;
-  padding: 1.45rem 0.45rem 1.8rem 0;
+  padding: 0.2rem 0.45rem 1.8rem 0;
   color: var(--color-muted);
   flex-direction: column;
   font-size: 0.7rem;
@@ -1328,27 +1319,63 @@ meter::-webkit-meter-optimum-value {
 
 .histogram-plot {
   display: flex;
+  width: 100%;
   min-width: 100%;
   align-items: stretch;
+  justify-content: center;
   border-bottom: 1px solid #999994;
 }
 
 .histogram-column {
+  position: relative;
   display: grid;
-  width: 3.4rem;
-  min-width: 3.4rem;
-  grid-template-rows: 1.45rem 1fr 1.8rem;
+  width: auto;
+  min-width: 0;
+  max-width: 3.4rem;
+  flex: 1 1 0;
+  grid-template-rows: 1fr 1.8rem;
   justify-items: center;
+  cursor: pointer;
 }
 
-.histogram-value,
 .histogram-label {
   font-size: 0.72rem;
   font-weight: 700;
 }
 
-.histogram-value {
-  color: var(--color-muted);
+.histogram-tooltip {
+  position: absolute;
+  top: 0.35rem;
+  left: 50%;
+  z-index: 2;
+  width: max-content;
+  padding: 0.15rem 0.35rem;
+  color: white;
+  background: var(--color-ink);
+  border-radius: var(--radius);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -0.2rem);
+  transition: opacity 120ms ease, transform 120ms ease;
+  visibility: hidden;
+}
+
+.histogram-column:hover .histogram-tooltip,
+.histogram-column:focus-visible .histogram-tooltip,
+.histogram-column.is-tooltip-visible .histogram-tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  visibility: visible;
+}
+
+.histogram-column:focus-visible {
+  outline: 2px solid var(--color-chart-dark);
+  outline-offset: 2px;
 }
 
 .histogram-track {
@@ -1360,7 +1387,7 @@ meter::-webkit-meter-optimum-value {
 }
 
 .histogram-bar {
-  width: 1.8rem;
+  width: min(1.8rem, 62%);
   height: max(0.3rem, var(--histogram-height));
   background: var(--color-chart);
   border: 1px solid var(--color-chart-dark);
@@ -1374,7 +1401,7 @@ meter::-webkit-meter-optimum-value {
 
 .histogram-stacked-bar {
   display: flex;
-  width: 1.8rem;
+  width: min(1.8rem, 62%);
   height: var(--histogram-height);
   min-height: 0;
   flex-direction: column;
@@ -1535,7 +1562,7 @@ meter::-webkit-meter-optimum-value {
 }
 
 .route-title-separator {
-  color: var(--color-muted);
+  color: #9a9a94;
 }
 
 .route-detail-header > div > p {
@@ -1586,6 +1613,10 @@ meter::-webkit-meter-optimum-value {
   min-width: 0;
   gap: 0.75rem;
   align-items: stretch;
+}
+
+.route-grade-distribution {
+  margin-top: 2.5rem;
 }
 
 .route-ascent-buttons {
@@ -2003,6 +2034,43 @@ meter::-webkit-meter-optimum-value {
 }
 
 @media (max-width: 760px) {
+  .histogram-scroll {
+    overflow-x: hidden;
+  }
+
+  .grade-histogram {
+    width: min(100%, max(16rem, calc(1.55rem + var(--histogram-natural-width))));
+    min-width: 0;
+    grid-template-columns: 1.55rem minmax(0, 1fr);
+  }
+
+  .histogram-plot {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .histogram-column {
+    width: auto;
+    min-width: 0;
+    max-width: 2.5rem;
+    flex: 1 1 0;
+  }
+
+  .histogram-bar,
+  .histogram-stacked-bar {
+    width: clamp(0.42rem, 62%, 1.2rem);
+  }
+
+  .histogram-label {
+    font-size: clamp(0.5rem, 1.55vw, 0.66rem);
+    white-space: nowrap;
+  }
+
+  .histogram-y-axis {
+    padding-right: 0.2rem;
+    font-size: 0.62rem;
+  }
+
   .brand-word {
     font-size: 1.45rem;
   }
@@ -2262,6 +2330,30 @@ meter::-webkit-meter-optimum-value {
 }
 
 @media (max-width: 430px) {
+  .grade-histogram {
+    width: min(100%, max(14rem, calc(1.35rem + var(--histogram-compact-width))));
+    grid-template-columns: 1.35rem minmax(0, 1fr);
+  }
+
+  .histogram-column {
+    grid-template-rows: 1fr 2.6rem;
+  }
+
+  .histogram-bar,
+  .histogram-stacked-bar {
+    width: clamp(0.38rem, 58%, 0.9rem);
+  }
+
+  .histogram-label {
+    position: absolute;
+    top: calc(100% - 2.5rem);
+    right: 50%;
+    width: max-content;
+    font-size: clamp(0.48rem, 2.1vw, 0.58rem);
+    transform: rotate(-55deg);
+    transform-origin: top right;
+  }
+
   .home-summary dd,
   .summary-grid dd,
   .summary-grid strong {

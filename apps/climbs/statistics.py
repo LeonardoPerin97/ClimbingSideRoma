@@ -66,28 +66,6 @@ class MonthlyClimbingSummary:
         return self.route_count + self.boulder_count
 
 
-def continuous_french_grade_distribution(
-    counts: Mapping[str, int],
-    *,
-    project_count: int = 0,
-) -> list[StatisticBucket]:
-    """Return every French grade between the easiest and hardest recorded grade."""
-    populated_indexes = [
-        FRENCH_GRADE_INDEX[grade]
-        for grade, count in counts.items()
-        if count and grade in FRENCH_GRADE_INDEX
-    ]
-    buckets: list[StatisticBucket] = []
-    if populated_indexes:
-        buckets.extend(
-            StatisticBucket(FRENCH_GRADE_BASES[index], counts.get(FRENCH_GRADE_BASES[index], 0))
-            for index in range(min(populated_indexes), max(populated_indexes) + 1)
-        )
-    if project_count:
-        buckets.append(StatisticBucket("Project", project_count))
-    return buckets
-
-
 def continuous_perceived_grade_distribution(
     counts: Mapping[int, int],
 ) -> list[StatisticBucket]:
@@ -356,8 +334,11 @@ def user_climbing_context(
         ClimbingRoute.Discipline.BOULDER: 0,
     }
     wall_counter: Counter[str] = Counter()
-    official_grade_counter: Counter[str] = Counter()
-    project_count = 0
+    official_grade_counts: dict[str, dict[str, int]] = {}
+    project_counts: dict[str, int] = {
+        ClimbingRoute.Discipline.ROUTE: 0,
+        ClimbingRoute.Discipline.BOULDER: 0,
+    }
     highest_grade_order = -1
 
     for ascent in all_ascents:
@@ -365,15 +346,25 @@ def user_climbing_context(
         discipline_counts[climbing_route.discipline] += 1
         wall_counter[climbing_route.wall.name] += 1
         if climbing_route.is_project:
-            project_count += 1
+            project_counts[climbing_route.discipline] += 1
             continue
-        official_grade_counter[climbing_route.official_grade] += 1
+        grade_counts = official_grade_counts.setdefault(
+            climbing_route.official_grade,
+            {
+                ClimbingRoute.Discipline.ROUTE: 0,
+                ClimbingRoute.Discipline.BOULDER: 0,
+            },
+        )
+        grade_counts[climbing_route.discipline] += 1
         highest_grade_order = max(
             highest_grade_order,
             FRENCH_GRADE_INDEX[climbing_route.official_grade],
         )
 
-    grade_distribution = continuous_french_grade_distribution(official_grade_counter)
+    grade_distribution = continuous_discipline_grade_distribution(
+        official_grade_counts,
+        project_counts=project_counts,
+    )
     wall_distribution = [
         StatisticBucket(wall_name, count)
         for wall_name, count in sorted(
@@ -392,10 +383,10 @@ def user_climbing_context(
         "discipline_counts": discipline_counts,
         "grade_distribution": grade_distribution,
         "maximum_grade_count": max(
-            (bucket.count for bucket in grade_distribution),
+            (bucket.total for bucket in grade_distribution),
             default=0,
         ),
-        "project_count": project_count,
+        "project_count": sum(project_counts.values()),
         "wall_distribution": wall_distribution,
         "monthly_summary": monthly_summary,
         "monthly_summary_as_of": statistics_today,

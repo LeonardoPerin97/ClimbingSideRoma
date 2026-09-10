@@ -171,7 +171,7 @@ def test_public_profile_is_visible_but_does_not_expose_email(
 
 
 @pytest.mark.django_db
-def test_public_profile_places_histogram_before_profile_information(
+def test_public_profile_places_summary_before_histogram_and_profile_information(
     client: Client,
     user_factory: Callable[..., User],
 ) -> None:
@@ -183,11 +183,26 @@ def test_public_profile_places_histogram_before_profile_information(
     )
     content = response.content.decode()
 
-    assert content.index('id="climbing-statistics-heading"') < content.index(
-        'id="profile-information-heading"'
+    assert content.index('class="summary-grid"') < content.index(
+        'class="profile-card profile-histogram-card profile-primary-histogram"'
     )
-    assert "Number of ascents" in content
+    assert content.index(
+        'class="profile-card profile-histogram-card profile-primary-histogram"'
+    ) < content.index('id="profile-information-heading"')
+    assert "Recorded ascents" in content
+    assert "Highest grade" in content
+    assert "Grade distribution" not in content
+    assert "Number of ascents" not in content
     assert "Completed routes" not in content
+
+    italian_response = client.get(
+        reverse("accounts:public_profile", args=[user.username]),
+        HTTP_ACCEPT_LANGUAGE="it",
+    )
+    italian_content = italian_response.content.decode()
+    assert "Ripetizioni inserite" in italian_content
+    assert "Grado più alto" in italian_content
+    assert "Distribuzione dei gradi" not in italian_content
 
 
 @pytest.mark.django_db

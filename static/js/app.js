@@ -113,3 +113,23 @@ document.querySelectorAll("[data-discipline-histogram]").forEach((histogram) => 
     });
   });
 });
+
+const histogramColumns = Array.from(
+  document.querySelectorAll("[data-histogram-column]"),
+);
+
+histogramColumns.forEach((column) => {
+  column.addEventListener("click", () => {
+    const shouldShow = !column.classList.contains("is-tooltip-visible");
+    histogramColumns.forEach((item) => item.classList.remove("is-tooltip-visible"));
+    column.classList.toggle("is-tooltip-visible", shouldShow);
+  });
+});
+
+document.addEventListener("click", (event) => {
+  if (!event.target.closest("[data-histogram-column]")) {
+    histogramColumns.forEach((column) => {
+      column.classList.remove("is-tooltip-visible");
+    });
+  }
+});

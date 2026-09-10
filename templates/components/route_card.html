@@ -12,7 +12,7 @@
         </p>
         <div class="catalog-card-stats">
             <span>{% blocktranslate count count=climbing_route.ascent_count %}{{ count }} ascent{% plural %}{{ count }} ascents{% endblocktranslate %}</span>
-            {% if climbing_route.average_rating %}<span class="rating-stars">★ {{ climbing_route.average_rating|floatformat:1 }}</span>{% endif %}
+            {% if climbing_route.average_rating %}{% include "components/star_rating.html" with rating=climbing_route.average_rating %}{% endif %}
         </div>
     </div>
     <div class="route-grade-stack">

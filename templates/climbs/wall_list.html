@@ -51,7 +51,7 @@
                         <h2><a class="list-name-link" href="{% url 'climbs:wall_detail' wall.pk %}">{{ wall.name }}</a></h2>
                         <dl class="wall-stats">
                             <div class="wall-stat wall-stat-climbs">
-                                <dt>{% translate "Active climbs" %}</dt>
+                                <dt>{% translate "Climbs" %}</dt>
                                 <dd>
                                     <strong>{{ wall.route_count }}</strong>
                                     <span>
@@ -61,7 +61,7 @@
                                 </dd>
                             </div>
                             <div class="wall-stat wall-stat-ascents">
-                                <dt>{% translate "Recorded ascents" %}</dt>
+                                <dt>{% translate "Ascents" %}</dt>
                                 <dd><strong>{{ wall.ascent_count }}</strong></dd>
                             </div>
                         </dl>

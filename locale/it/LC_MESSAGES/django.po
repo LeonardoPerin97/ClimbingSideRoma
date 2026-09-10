@@ -1248,6 +1248,10 @@ msgstr "Istogramma scorrevole dei gradi proposti"
 msgid "Proposals grouped by decimal grade"
 msgstr "Proposte raggruppate per grado decimale"
 
+#: templates/climbs/route_detail.html
+msgid "Proposals"
+msgstr "Proposte"
+
 #: templates/climbs/route_detail.html:155
 msgid "No proposed grades available yet."
 msgstr "Non sono ancora disponibili gradi proposti."
@@ -1448,9 +1452,8 @@ msgid "Community"
 msgstr "Community"
 
 #: templates/climbs/user_list.html:12
-msgid "Browse public profiles and compare completed routes and maximum grades."
-msgstr ""
-"Consulta i profili pubblici e confronta vie completate e gradi massimi."
+msgid "Browse public profiles and compare ascents and highest grades."
+msgstr "Consulta i profili pubblici e confronta ripetizioni e gradi più alti."
 
 #: templates/climbs/user_list.html:19
 msgid "Username"
@@ -1466,16 +1469,16 @@ msgstr "Vie completate"
 
 #: templates/climbs/user_list.html:26
 #: templates/components/climbing_profile_stats.html:25
-msgid "Maximum grade"
-msgstr "Grado massimo"
+msgid "Highest grade"
+msgstr "Grado più alto"
 
 #: templates/climbs/user_list.html:41
 msgid "completed"
 msgstr "completate"
 
 #: templates/climbs/user_list.html:42
-msgid "maximum grade"
-msgstr "grado massimo"
+msgid "highest grade"
+msgstr "grado più alto"
 
 #: templates/climbs/user_list.html:50
 msgid "No climbers found"
@@ -1560,6 +1563,10 @@ msgstr "Numero di ripetizioni"
 msgid "Ascents"
 msgstr "Ripetizioni"
 
+#: templates/climbs/wall_list.html:54
+msgid "Climbs"
+msgstr "Vie"
+
 #: templates/climbs/wall_list.html:54 templates/core/home.html:29
 #: templates/core/management_dashboard.html:22
 #: templates/core/statistics_dashboard.html:16
@@ -1579,6 +1586,11 @@ msgstr "boulder"
 #: templates/core/statistics_dashboard.html:22
 msgid "Recorded ascents"
 msgstr "Ripetizioni registrate"
+
+#: templates/components/climbing_profile_stats.html:10
+msgctxt "profile statistic"
+msgid "Recorded ascents"
+msgstr "Ripetizioni inserite"
 
 #: templates/climbs/wall_list.html:74
 msgid "No walls found"
@@ -1614,8 +1626,8 @@ msgid "Scrollable completed-grade histogram"
 msgstr "Istogramma scorrevole dei gradi completati"
 
 #: templates/components/climbing_profile_stats.html:13
-msgid "Completed climbs grouped by grade"
-msgstr "Vie completate raggruppate per grado"
+msgid "Completed climbs grouped by grade and type"
+msgstr "Vie completate raggruppate per grado e tipo"
 
 #: templates/components/climbing_profile_stats.html:15
 msgid "No grades available yet."
@@ -1923,8 +1935,8 @@ msgstr "Aggiornato al %(date)s."
 # msgstr "Su schermi piccoli, scorri in orizzontale per vedere tutte le colonne."
 
 #: templates/components/monthly_ascent_summary.html
-msgid "Monthly ascent counts and maximum official grades, split into routes and boulders."
-msgstr "Numero di ripetizioni e gradi massimi ufficiali per mese, distinti tra vie e boulder."
+msgid "Monthly ascent counts and highest official grades, split into routes and boulders."
+msgstr "Numero di ripetizioni e gradi ufficiali più alti per mese, distinti tra vie e boulder."
 
 #: templates/components/monthly_ascent_summary.html
 #msgid ""

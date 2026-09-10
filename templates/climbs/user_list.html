@@ -9,7 +9,7 @@
         <div>
             <p class="eyebrow">{% translate "Community" %}</p>
             <h1>{% translate "Climbers" %}</h1>
-            <p>{% translate "Browse public profiles and compare completed routes and maximum grades." %}</p>
+            <p>{% translate "Browse public profiles and compare ascents and highest grades." %}</p>
         </div>
     </header>
 
@@ -22,8 +22,8 @@
             <label for="user-sort">{% translate "Order by" %}</label>
             <select id="user-sort" name="sort">
                 <option value="name"{% if sort == 'name' %} selected{% endif %}>{% translate "Name" %}</option>
-                <option value="ascents"{% if sort == 'ascents' %} selected{% endif %}>{% translate "Completed routes" %}</option>
-                <option value="grade"{% if sort == 'grade' %} selected{% endif %}>{% translate "Maximum grade" %}</option>
+                <option value="ascents"{% if sort == 'ascents' %} selected{% endif %}>{% translate "Ascents" %}</option>
+                <option value="grade"{% if sort == 'grade' %} selected{% endif %}>{% translate "Highest grade" %}</option>
             </select>
         </div>
         <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
@@ -38,8 +38,8 @@
                         {% if profile_user.first_name or profile_user.last_name %}<p>{{ profile_user.get_full_name }}</p>{% endif %}
                     </div>
                     <div class="user-card-stats">
-                        <span><strong>{{ profile_user.ascent_count }}</strong> {% translate "completed" %}</span>
-                        <span><strong>{{ profile_user.highest_grade_order|french_grade_from_index }}</strong> {% translate "maximum grade" %}</span>
+                        <span><strong>{{ profile_user.ascent_count }}</strong> {% translate "ascents" %}</span>
+                        <span><strong>{{ profile_user.highest_grade_order|french_grade_from_index }}</strong> {% translate "highest grade" %}</span>
                     </div>
                 </article>
             {% endfor %}
