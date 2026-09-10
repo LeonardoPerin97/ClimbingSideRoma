@@ -1191,6 +1191,7 @@ meter::-webkit-meter-optimum-value {
 
 .pagination {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
   align-items: center;

@@ -1,5 +1,6 @@
 from typing import cast
 
+from django.conf import settings
 from django.contrib import admin
 from django.db.models import Count, QuerySet
 from django.http import HttpRequest
@@ -13,6 +14,7 @@ from .models import Ascent, ClimbingRoute, RouteImage, Wall
 
 @admin.register(Wall)
 class WallAdmin(admin.ModelAdmin):
+    list_per_page = settings.PAGINATION_PAGE_SIZE
     list_display = ("name", "route_count", "is_archived")
     list_filter = ("is_archived",)
     search_fields = ("name",)
@@ -47,6 +49,7 @@ class WallAdmin(admin.ModelAdmin):
 
 @admin.register(ClimbingRoute)
 class ClimbingRouteAdmin(admin.ModelAdmin):
+    list_per_page = settings.PAGINATION_PAGE_SIZE
     list_display = (
         "name",
         "wall",
@@ -89,6 +92,7 @@ class ClimbingRouteAdmin(admin.ModelAdmin):
 
 @admin.register(Ascent)
 class AscentAdmin(admin.ModelAdmin):
+    list_per_page = settings.PAGINATION_PAGE_SIZE
     list_display = (
         "climbing_route",
         "user",
@@ -150,6 +154,7 @@ class AscentAdmin(admin.ModelAdmin):
 
 @admin.register(RouteImage)
 class RouteImageAdmin(admin.ModelAdmin):
+    list_per_page = settings.PAGINATION_PAGE_SIZE
     list_display = ("climbing_route", "uploaded_by", "has_annotations", "updated_at")
     search_fields = ("climbing_route__name", "climbing_route__wall__name")
     list_select_related = ("climbing_route", "uploaded_by")

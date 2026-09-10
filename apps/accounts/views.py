@@ -17,6 +17,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
 
 from apps.climbs.statistics import user_climbing_context
+from apps.core.pagination import paginate
 
 from .forms import ProfileUpdateForm, RegistrationForm, VerificationResendForm
 from .models import User
@@ -26,6 +27,17 @@ from .services import send_verification_email
 from .tokens import email_verification_token
 
 logger = logging.getLogger(__name__)
+
+
+def _add_ascent_page(context: dict[str, Any], request: HttpRequest) -> None:
+    ascent_page, show_all = paginate(request, context["ascents"])
+    context.update(
+        {
+            "ascent_page": ascent_page,
+            "ascent_pagination_show_all": show_all,
+            "pagination_page_size": settings.PAGINATION_PAGE_SIZE,
+        }
+    )
 
 
 @require_http_methods(["GET", "POST"])
@@ -165,6 +177,7 @@ def profile(request: HttpRequest) -> HttpResponse:
         ascent_sort=request.GET.get("sort", "date_desc"),
         ascent_discipline=request.GET.get("discipline", ""),
     )
+    _add_ascent_page(context, request)
     context.update(
         {
             "profile_user": profile_user,
@@ -191,6 +204,7 @@ def public_profile(request: HttpRequest, username: str) -> HttpResponse:
         ascent_sort=request.GET.get("sort", "date_desc"),
         ascent_discipline=request.GET.get("discipline", ""),
     )
+    _add_ascent_page(context, request)
     context.update(
         {
             "profile_user": profile_user,

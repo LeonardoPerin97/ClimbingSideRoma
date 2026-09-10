@@ -1,10 +1,10 @@
 import logging
 from typing import Any, cast
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import Avg, BooleanField, Count, Exists, F, Max, OuterRef, Q, QuerySet, Value
 from django.db.models.deletion import ProtectedError
@@ -19,6 +19,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 from apps.accounts.models import User
 from apps.core.audit import record_audit_event
 from apps.core.models import AuditLogEntry
+from apps.core.pagination import paginate
 
 from .forms import (
     AscentForm,
@@ -97,11 +98,18 @@ def wall_list(request: HttpRequest) -> HttpResponse:
         sort = "name"
         walls = walls.order_by(Lower("name"))
 
-    page = Paginator(walls, 20).get_page(request.GET.get("page"))
+    page, pagination_show_all = paginate(request, walls)
     return render(
         request,
         "climbs/wall_list.html",
-        {"page": page, "search": search, "status": status, "sort": sort},
+        {
+            "page": page,
+            "pagination_show_all": pagination_show_all,
+            "pagination_page_size": settings.PAGINATION_PAGE_SIZE,
+            "search": search,
+            "status": status,
+            "sort": sort,
+        },
     )
 
 
@@ -195,7 +203,9 @@ def wall_detail(request: HttpRequest, pk: int) -> HttpResponse:
             Lower("name"),
         )
 
-    route_list = list(climbing_routes)
+    page, pagination_show_all = paginate(request, climbing_routes)
+    route_list = list(page.object_list)
+    page.object_list = route_list
     for climbing_route in route_list:
         average_value = getattr(climbing_route, "average_proposed_grade", None)
         average_display = (
@@ -209,6 +219,9 @@ def wall_detail(request: HttpRequest, pk: int) -> HttpResponse:
         {
             "wall": wall,
             "climbing_routes": route_list,
+            "page": page,
+            "pagination_show_all": pagination_show_all,
+            "pagination_page_size": settings.PAGINATION_PAGE_SIZE,
             "discipline_counts": discipline_counts,
             "grade_distribution": grade_distribution,
             "maximum_grade_count": max(
@@ -307,13 +320,15 @@ def route_list(request: HttpRequest) -> HttpResponse:
         sort = "grade"
         climbing_routes = climbing_routes.order_by("is_project", "grade_order", Lower("name"))
 
-    page = Paginator(climbing_routes, 20).get_page(request.GET.get("page"))
+    page, pagination_show_all = paginate(request, climbing_routes)
     walls = Wall.objects.order_by(Lower("name"))
     return render(
         request,
         "climbs/route_list.html",
         {
             "page": page,
+            "pagination_show_all": pagination_show_all,
+            "pagination_page_size": settings.PAGINATION_PAGE_SIZE,
             "walls": walls,
             "grades": FRENCH_GRADE_BASES,
             "disciplines": ClimbingRoute.Discipline.choices,
@@ -344,6 +359,7 @@ def route_detail(request: HttpRequest, pk: int) -> HttpResponse:
         pk=pk,
     )
     ascents = climbing_route.ascents.select_related("user").order_by("-date", "-created_at")
+    ascent_page, ascent_pagination_show_all = paginate(request, ascents)
     proposed_grade_counts = {
         row["proposed_grade"]: row["count"]
         for row in climbing_route.ascents.order_by()
@@ -371,6 +387,9 @@ def route_detail(request: HttpRequest, pk: int) -> HttpResponse:
         {
             "climbing_route": climbing_route,
             "ascents": ascents,
+            "ascent_page": ascent_page,
+            "ascent_pagination_show_all": ascent_pagination_show_all,
+            "pagination_page_size": settings.PAGINATION_PAGE_SIZE,
             "proposed_distribution": proposed_distribution,
             "maximum_proposed_grade_count": max(
                 (bucket.count for bucket in proposed_distribution),
@@ -792,11 +811,17 @@ def user_list(request: HttpRequest) -> HttpResponse:
         sort = "name"
         users = users.order_by(Lower("username"))
 
-    page = Paginator(users, 20).get_page(request.GET.get("page"))
+    page, pagination_show_all = paginate(request, users)
     return render(
         request,
         "climbs/user_list.html",
-        {"page": page, "search": search, "sort": sort},
+        {
+            "page": page,
+            "pagination_show_all": pagination_show_all,
+            "pagination_page_size": settings.PAGINATION_PAGE_SIZE,
+            "search": search,
+            "sort": sort,
+        },
     )
 
 

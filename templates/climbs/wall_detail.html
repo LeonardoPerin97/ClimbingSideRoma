@@ -86,6 +86,7 @@
                     {% include "components/route_card.html" with show_proposed_average=True %}
                 {% endfor %}
             </div>
+            {% include "components/pagination.html" %}
         {% else %}
             <div class="empty-state catalog-empty">
                 <h2>{% translate "No routes on this wall" %}</h2>

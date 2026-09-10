@@ -502,16 +502,16 @@ def test_route_detail_lists_setters_without_exposing_email(
 
 
 @pytest.mark.django_db
-def test_route_list_is_paginated_at_twenty_items(
+def test_route_list_is_paginated_at_fifty_items(
     client: Client,
     wall_factory: Callable[..., Wall],
     route_factory: Callable[..., ClimbingRoute],
 ) -> None:
     wall = wall_factory(name="Busy Wall")
-    for index in range(21):
+    for index in range(51):
         route_factory(name=f"Route {index:02}", wall=wall)
 
     response = client.get(reverse("climbs:route_list"))
 
-    assert len(response.context["page"].object_list) == 20
+    assert len(response.context["page"].object_list) == 50
     assert response.context["page"].paginator.num_pages == 2

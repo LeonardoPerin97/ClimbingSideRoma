@@ -1,6 +1,7 @@
 from typing import cast
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
@@ -39,6 +40,7 @@ class AdminUserCreationForm(UserCreationForm):
 
 @admin.register(User)
 class ClimbingSideUserAdmin(UserAdmin):
+    list_per_page = settings.PAGINATION_PAGE_SIZE
     form = AdminUserChangeForm
     add_form = AdminUserCreationForm
     fieldsets = (

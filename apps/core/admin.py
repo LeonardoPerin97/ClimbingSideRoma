@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.http import HttpRequest
 
@@ -6,6 +7,7 @@ from .models import AuditLogEntry
 
 @admin.register(AuditLogEntry)
 class AuditLogEntryAdmin(admin.ModelAdmin):
+    list_per_page = settings.PAGINATION_PAGE_SIZE
     list_display = ("created_at", "action", "entity_type", "entity_id", "actor_id")
     list_filter = ("action", "entity_type", "created_at")
     search_fields = ("entity_id",)

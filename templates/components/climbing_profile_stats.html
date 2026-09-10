@@ -55,10 +55,11 @@
         </div>
         <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
     </form>
-    {% if ascents %}
+    {% if ascent_page.object_list %}
         <div class="ascent-list">
-            {% for ascent in ascents %}{% include "components/ascent_card.html" with show_route=True %}{% endfor %}
+            {% for ascent in ascent_page %}{% include "components/ascent_card.html" with show_route=True %}{% endfor %}
         </div>
+        {% include "components/pagination.html" with page=ascent_page pagination_show_all=ascent_pagination_show_all %}
     {% else %}
         <div class="empty-state catalog-empty">
             {% if selected_discipline %}

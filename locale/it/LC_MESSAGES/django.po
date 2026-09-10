@@ -1701,6 +1701,15 @@ msgstr "Pagina %(current)s di %(total)s"
 msgid "Next"
 msgstr "Successiva"
 
+#: templates/components/pagination.html
+msgid "Show all"
+msgstr "Mostra tutto"
+
+#: templates/components/pagination.html
+#, python-format
+msgid "Show %(page_size)s per page"
+msgstr "Mostra %(page_size)s per pagina"
+
 #: templates/components/route_card.html:14
 #, python-format
 msgid "%(count)s ascent"

@@ -346,7 +346,8 @@ template Django, lo stile è CSS nativo e gli script sono JavaScript senza dipen
 1. La vista interpreta ricerca, filtri, ordinamento e pagina.
 2. Le query usano `select_related`, aggregazioni e annotazioni Django.
 3. Per gli utenti autenticati una sottoquery `Exists` identifica le vie completate.
-4. Il risultato viene paginato a 20 elementi.
+4. Il risultato viene paginato a 50 elementi, con la possibilità di mostrare
+   l’intero elenco e tornare successivamente alla visualizzazione paginata.
 5. Il template renderizza schede, filtri e statistiche senza query aggiuntive.
 
 ### Caricamento di un’immagine
