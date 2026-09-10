@@ -7,10 +7,42 @@
 <section class="page-section"><div class="container narrow-container"><div class="form-card">
     <p class="eyebrow">{% translate "Personal logbook" %}</p>
     <h1>{% if editing %}{% translate "Edit ascent" %}{% else %}{% translate "Record ascent" %}{% endif %}</h1>
-    <p>{% translate "Add the date, your rating, perceived grade and how many attempts it took." %}</p>
     <form method="post" novalidate>
         {% csrf_token %}
-        {% include "components/form.html" %}
+        {% if form.non_field_errors %}
+            <div class="form-errors" role="alert">
+                {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+            </div>
+        {% endif %}
+
+        {% include "components/form_field.html" with field=form.climbing_route %}
+        {% include "components/form_field.html" with field=form.date %}
+
+        <div class="form-group{% if form.rating.errors %} has-error{% endif %}">
+            <span class="form-label" id="ascent-rating-label">{{ form.rating.label }}</span>
+            <div class="ascent-star-rating" role="radiogroup" aria-labelledby="ascent-rating-label">
+                {% for radio in form.rating %}
+                    {{ radio.tag }}
+                    <label for="{{ radio.id_for_label }}" title="{{ radio.choice_label }}">
+                        <span aria-hidden="true">★</span>
+                        <span class="sr-only">{{ radio.choice_label }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+            {% if form.rating.errors %}
+                <div class="field-errors" id="{{ form.rating.id_for_label }}-errors" role="alert">
+                    {% for error in form.rating.errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="ascent-grade-fields">
+            {% include "components/form_field.html" with field=form.proposed_grade_base %}
+            {% include "components/form_field.html" with field=form.proposed_grade_decimal %}
+        </div>
+
+        {% include "components/form_field.html" with field=form.attempt_type %}
+        {% include "components/form_field.html" with field=form.attempt_count %}
         <div class="button-row">
             <button class="button button-primary" type="submit">{% translate "Save ascent" %}</button>
             {% if editing %}
@@ -22,4 +54,3 @@
     </form>
 </div></div></section>
 {% endblock %}
-

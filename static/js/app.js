@@ -39,6 +39,21 @@ if (projectToggle && gradeField) {
   syncProjectGrade();
 }
 
+const gradeFilterMode = document.querySelector("[data-grade-filter-mode]");
+const gradeFilterValue = document.querySelector("[data-grade-filter-value]");
+
+if (gradeFilterMode && gradeFilterValue) {
+  const syncGradeFilter = () => {
+    const showsAllGrades = gradeFilterMode.value === "all";
+    gradeFilterValue.disabled = showsAllGrades;
+    if (showsAllGrades) {
+      gradeFilterValue.value = "";
+    }
+  };
+  gradeFilterMode.addEventListener("change", syncGradeFilter);
+  syncGradeFilter();
+}
+
 const attemptType = document.querySelector("[data-attempt-type]");
 const attemptCount = document.querySelector("[data-attempt-count]");
 

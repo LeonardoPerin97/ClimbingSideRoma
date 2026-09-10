@@ -92,6 +92,35 @@ def test_create_form_defaults_to_today_three_stars_and_official_grade_decimal_fi
     assert form.initial["proposed_grade_base"] == "6b+"
     assert form.initial["proposed_grade_decimal"] == 5
 
+    user.preferred_language = "en"
+    user.save(update_fields=["preferred_language"])
+    english_response = client.get(
+        reverse("climbs:ascent_create"),
+        {"route": climbing_route.pk},
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+    content = english_response.content.decode()
+    assert f'value="{timezone.localdate().isoformat()}"' in content
+    assert 'class="ascent-grade-fields"' in content
+    assert ">Proposed grade</label>" in content
+    assert ">Decimal</label>" in content
+    assert ">Attempts</label>" in content
+    assert content.count('type="radio"') == 5
+    assert 'class="ascent-star-rating"' in content
+    assert 'title="3 stars"' in content
+    assert "Add the date, the rating, the perceived grade" not in content
+
+    user.preferred_language = "it"
+    user.save(update_fields=["preferred_language"])
+    italian_response = client.get(
+        reverse("climbs:ascent_create"),
+        {"route": climbing_route.pk},
+        HTTP_ACCEPT_LANGUAGE="it",
+    )
+    italian_content = italian_response.content.decode()
+    assert ">Grado proposto</label>" in italian_content
+    assert ">Tentativi</label>" in italian_content
+
 
 @pytest.mark.django_db
 def test_project_create_form_requires_user_to_choose_a_perceived_grade(
@@ -135,6 +164,7 @@ def test_edit_form_uses_all_values_from_existing_ascent(
     assert form.initial["proposed_grade_decimal"] == 7
     assert form.initial["attempt_type"] == Ascent.AttemptType.COUNT
     assert form.initial["attempt_count"] == 4
+    assert f'value="{ascent.date.isoformat()}"' in response.content.decode()
 
 
 @pytest.mark.django_db

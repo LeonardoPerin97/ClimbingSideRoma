@@ -8,7 +8,11 @@
     <div class="container">
         <header class="detail-header">
             <div>
-                <a class="back-link" href="{% url 'climbs:wall_list' %}">← {% translate "All walls" %}</a>
+                <nav class="breadcrumb" aria-label="{% translate 'Breadcrumb' %}">
+                    <a class="list-name-link" href="{% url 'climbs:wall_list' %}">{% translate "Gym" %}</a>
+                    <span aria-hidden="true">›</span>
+                    <span aria-current="page">{{ wall.name }}</span>
+                </nav>
                 <div class="badge-row">
                     {% if wall.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
                 </div>

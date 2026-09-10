@@ -80,6 +80,49 @@ def test_route_setter_can_create_edit_and_archive_route_without_setter(
 
 
 @pytest.mark.django_db
+def test_route_form_can_select_multiple_setters_and_deselect_one(
+    client: Client,
+    user_factory: Callable[..., User],
+    wall_factory: Callable[..., Wall],
+) -> None:
+    first_setter = user_factory(username="first-setter", email="first-setter@example.com")
+    second_setter = user_factory(username="second-setter", email="second-setter@example.com")
+    assign_role(first_setter, Role.ROUTE_SETTER)
+    assign_role(second_setter, Role.ROUTE_SETTER)
+    client.force_login(first_setter)
+    wall = wall_factory(name="Multiple Setters Wall")
+
+    form_response = client.get(reverse("climbs:route_create"))
+    create_response = client.post(
+        reverse("climbs:route_create"),
+        route_form_data(
+            wall,
+            route_setters=[first_setter.pk, second_setter.pk],
+        ),
+    )
+    climbing_route = ClimbingRoute.objects.get(name="Created Route")
+
+    assert form_response.status_code == 200
+    form_content = form_response.content.decode()
+    assert 'class="checkbox-choice-list"' in form_content
+    assert form_content.count('type="checkbox"') >= 2
+    assert create_response.status_code == 302
+    assert set(climbing_route.route_setters.all()) == {first_setter, second_setter}
+
+    edit_response = client.post(
+        reverse("climbs:route_edit", args=[climbing_route.pk]),
+        route_form_data(
+            wall,
+            name="Updated Multiple Setters Route",
+            route_setters=[second_setter.pk],
+        ),
+    )
+
+    assert edit_response.status_code == 302
+    assert list(climbing_route.route_setters.all()) == [second_setter]
+
+
+@pytest.mark.django_db
 def test_route_setter_can_create_edit_archive_and_delete_wall(
     client: Client,
     user_factory: Callable[..., User],

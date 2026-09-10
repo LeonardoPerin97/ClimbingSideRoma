@@ -57,7 +57,7 @@
     </form>
     {% if ascent_page.object_list %}
         <div class="ascent-list">
-            {% for ascent in ascent_page %}{% include "components/ascent_card.html" with show_route=True %}{% endfor %}
+            {% for ascent in ascent_page %}{% include "components/ascent_card.html" with show_route=True show_actions=False %}{% endfor %}
         </div>
         {% include "components/pagination.html" with page=ascent_page pagination_show_all=ascent_pagination_show_all %}
     {% else %}

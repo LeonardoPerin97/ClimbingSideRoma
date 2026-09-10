@@ -21,6 +21,10 @@ def test_home_page_is_available(client: Client) -> None:
 
     assert "Climbing Side Roma" in content
     assert "/static/images/climbingside-logo.jpg" in content
+    assert (
+        '<link rel="icon" type="image/jpeg" href="/static/images/climbingside-logo.jpg">'
+    ) in content
+    assert '<link rel="apple-touch-icon" href="/static/images/climbingside-logo.jpg">' in content
     assert "/static/images/home-hero.jpg" in content
     assert finders.find("images/home-hero.jpg") is not None
     assert "brand-mark" not in content

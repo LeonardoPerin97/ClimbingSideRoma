@@ -31,6 +31,7 @@ from .forms import (
 )
 from .grades import (
     FRENCH_GRADE_BASES,
+    FRENCH_GRADE_INDEX,
     format_perceived_grade,
     grade_order_expression,
 )
@@ -242,6 +243,7 @@ def wall_detail(request: HttpRequest, pk: int) -> HttpResponse:
 def route_list(request: HttpRequest) -> HttpResponse:
     search = request.GET.get("q", "").strip()[:120]
     grade = request.GET.get("grade", "")
+    grade_mode = request.GET.get("grade_mode", "")
     wall_id = request.GET.get("wall", "")
     discipline = request.GET.get("discipline", "")
     status = request.GET.get("status", "active")
@@ -288,12 +290,27 @@ def route_list(request: HttpRequest) -> HttpResponse:
         )
     if search:
         climbing_routes = climbing_routes.filter(name__icontains=search)
-    if grade == "project":
+    if not grade_mode:
+        grade_mode = "equal" if grade else "all"
+    if grade_mode not in {"all", "from", "up_to", "equal"}:
+        grade_mode = "all"
+
+    if grade_mode == "all":
+        grade = ""
+    elif grade_mode == "equal" and grade == "project":
         climbing_routes = climbing_routes.filter(is_project=True)
-    elif grade in FRENCH_GRADE_BASES:
-        climbing_routes = climbing_routes.filter(is_project=False, official_grade=grade)
+    elif grade in FRENCH_GRADE_INDEX:
+        grade_index = FRENCH_GRADE_INDEX[grade]
+        climbing_routes = climbing_routes.filter(is_project=False)
+        if grade_mode == "from":
+            climbing_routes = climbing_routes.filter(grade_order__gte=grade_index)
+        elif grade_mode == "up_to":
+            climbing_routes = climbing_routes.filter(grade_order__lte=grade_index)
+        else:
+            climbing_routes = climbing_routes.filter(official_grade=grade)
     else:
         grade = ""
+        grade_mode = "all"
     if wall_id.isdigit():
         climbing_routes = climbing_routes.filter(wall_id=int(wall_id))
     else:
@@ -334,6 +351,7 @@ def route_list(request: HttpRequest) -> HttpResponse:
             "disciplines": ClimbingRoute.Discipline.choices,
             "search": search,
             "selected_grade": grade,
+            "selected_grade_mode": grade_mode,
             "selected_wall": wall_id,
             "selected_discipline": discipline,
             "status": status,

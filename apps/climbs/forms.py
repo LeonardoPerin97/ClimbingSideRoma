@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.db.models.functions import Lower
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 from apps.accounts.models import User
 from apps.core.forms import StyledFormMixin
@@ -16,6 +17,14 @@ from .annotations import empty_route_annotation, parse_route_annotation
 from .grades import FRENCH_GRADE_CHOICES, encode_perceived_grade
 from .images import validate_route_image
 from .models import Ascent, ClimbingRoute, RouteImage, Wall
+
+RATING_CHOICES = (
+    (5, _("5 stars")),
+    (4, _("4 stars")),
+    (3, _("3 stars")),
+    (2, _("2 stars")),
+    (1, _("1 star")),
+)
 
 
 class WallForm(StyledFormMixin, forms.ModelForm):
@@ -49,6 +58,7 @@ class ClimbingRouteForm(StyledFormMixin, forms.ModelForm):
         widgets = {
             "is_project": forms.CheckboxInput(attrs={"data-project-toggle": ""}),
             "official_grade": forms.Select(attrs={"data-grade-field": ""}),
+            "route_setters": forms.CheckboxSelectMultiple(),
         }
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -70,6 +80,7 @@ class ClimbingRouteForm(StyledFormMixin, forms.ModelForm):
             forms.ModelMultipleChoiceField,
             self.fields["route_setters"],
         )
+        route_setters_field.widget.attrs["class"] = "checkbox-choice-list"
         wall_field.queryset = available_walls.order_by(Lower("name"))
         route_setters_field.queryset = (
             User.objects.filter(groups__name="RouteSetter", is_active=True)
@@ -159,11 +170,11 @@ class RouteAnnotationForm(forms.Form):
 
 class AscentForm(StyledFormMixin, forms.ModelForm):
     proposed_grade_base = forms.ChoiceField(
-        label=_("Perceived grade"),
+        label=_("Proposed grade"),
         choices=(("", _("Choose a grade")), *FRENCH_GRADE_CHOICES),
     )
     proposed_grade_decimal = forms.TypedChoiceField(
-        label=_("Grade decimal"),
+        label=_("Decimal"),
         choices=tuple((value, str(value)) for value in range(10)),
         coerce=int,
     )
@@ -180,8 +191,8 @@ class AscentForm(StyledFormMixin, forms.ModelForm):
             "attempt_count",
         )
         widgets = {
-            "date": forms.DateInput(attrs={"type": "date"}),
-            "rating": forms.Select(choices=tuple((value, value) for value in range(1, 6))),
+            "date": forms.DateInput(format="%Y-%m-%d", attrs={"type": "date"}),
+            "rating": forms.RadioSelect(choices=RATING_CHOICES),
             "attempt_type": forms.Select(attrs={"data-attempt-type": ""}),
             "attempt_count": forms.NumberInput(attrs={"min": 1, "data-attempt-count": ""}),
         }
@@ -195,6 +206,9 @@ class AscentForm(StyledFormMixin, forms.ModelForm):
         self.user = user
         super().__init__(*args, **kwargs)
         self.apply_control_classes()
+        self.fields["rating"].widget.attrs["class"] = ""
+        self.fields["rating"].label = _("Beauty")
+        self.fields["attempt_type"].label = pgettext_lazy("ascent form field", "Attempts")
 
         climbing_route_field = cast(
             forms.ModelChoiceField,
@@ -212,14 +226,10 @@ class AscentForm(StyledFormMixin, forms.ModelForm):
             Lower("name")
         )
 
-        self.fields["rating"].help_text = _("From 1 to 5 stars.")
-        self.fields["proposed_grade_decimal"].help_text = _(
-            "Use 0 if you do not need a decimal refinement."
-        )
+        self.fields["rating"].help_text = ""
+        self.fields["proposed_grade_decimal"].help_text = ""
         self.fields["attempt_count"].required = False
-        self.fields["attempt_count"].help_text = _(
-            "Required only when Number of attempts is selected."
-        )
+        self.fields["attempt_count"].help_text = ""
 
         if self.instance.pk:
             base_index, decimal = divmod(self.instance.proposed_grade, 10)

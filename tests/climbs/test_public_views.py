@@ -104,6 +104,44 @@ def test_route_list_combines_search_and_catalogue_filters(
 
 
 @pytest.mark.django_db
+def test_route_list_filters_by_grade_range_or_exact_grade(
+    client: Client,
+    route_factory: Callable[..., ClimbingRoute],
+) -> None:
+    easy = route_factory(name="Easy range", official_grade="5a")
+    middle = route_factory(name="Middle range", official_grade="6a")
+    hard = route_factory(name="Hard range", official_grade="7a")
+    project = route_factory(name="Range project", is_project=True, official_grade="")
+
+    all_grades = client.get(reverse("climbs:route_list"), {"grade_mode": "all"})
+    from_middle = client.get(
+        reverse("climbs:route_list"),
+        {"grade_mode": "from", "grade": "6a"},
+    )
+    up_to_middle = client.get(
+        reverse("climbs:route_list"),
+        {"grade_mode": "up_to", "grade": "6a"},
+    )
+    equal_middle = client.get(
+        reverse("climbs:route_list"),
+        {"grade_mode": "equal", "grade": "6a"},
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+
+    assert list(all_grades.context["page"].object_list) == [easy, middle, hard, project]
+    assert list(from_middle.context["page"].object_list) == [middle, hard]
+    assert list(up_to_middle.context["page"].object_list) == [easy, middle]
+    assert list(equal_middle.context["page"].object_list) == [middle]
+    assert equal_middle.context["selected_grade_mode"] == "equal"
+    assert equal_middle.context["selected_grade"] == "6a"
+    content = equal_middle.content.decode()
+    assert "data-grade-filter-mode" in content
+    assert ">From</option>" in content
+    assert ">Up to</option>" in content
+    assert ">Equal to</option>" in content
+
+
+@pytest.mark.django_db
 def test_route_list_shows_continuous_type_split_histogram(
     client: Client,
     route_factory: Callable[..., ClimbingRoute],
@@ -498,7 +536,48 @@ def test_route_detail_lists_setters_without_exposing_email(
     assert "anna-private@example.com" not in content
     assert "marco-private@example.com" not in content
     assert content.count('class="list-name-link"') == 5
-    assert f'<a class="list-name-link" href="{reverse("climbs:route_list")}">' in content
+    assert f'<a class="list-name-link" href="{reverse("climbs:wall_list")}">' in content
+    assert "Palestra" in content
+
+
+@pytest.mark.django_db
+def test_wall_and_route_breadcrumbs_start_from_gym(
+    client: Client,
+    route_factory: Callable[..., ClimbingRoute],
+) -> None:
+    climbing_route = route_factory(name="Breadcrumb Route")
+
+    wall_response = client.get(
+        reverse("climbs:wall_detail", args=[climbing_route.wall_id]),
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+    route_response = client.get(
+        reverse("climbs:route_detail", args=[climbing_route.pk]),
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+    wall_breadcrumb = (
+        wall_response.content.decode()
+        .split(
+            '<nav class="breadcrumb"',
+            maxsplit=1,
+        )[1]
+        .split("</nav>", maxsplit=1)[0]
+    )
+    route_breadcrumb = (
+        route_response.content.decode()
+        .split(
+            '<nav class="breadcrumb"',
+            maxsplit=1,
+        )[1]
+        .split("</nav>", maxsplit=1)[0]
+    )
+
+    assert f'href="{reverse("climbs:wall_list")}">Gym</a>' in wall_breadcrumb
+    assert climbing_route.wall.name in wall_breadcrumb
+    assert "All walls" not in wall_breadcrumb
+    assert f'href="{reverse("climbs:wall_list")}">Gym</a>' in route_breadcrumb
+    assert climbing_route.wall.name in route_breadcrumb
+    assert climbing_route.name in route_breadcrumb
 
 
 @pytest.mark.django_db

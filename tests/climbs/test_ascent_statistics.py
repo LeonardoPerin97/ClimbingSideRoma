@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils import translation
 
 from apps.accounts.models import User
+from apps.accounts.roles import Role, assign_role
 from apps.climbs.grades import encode_perceived_grade
 from apps.climbs.models import Ascent, ClimbingRoute, Wall
 
@@ -268,6 +269,60 @@ def test_route_detail_places_current_user_ascent_data_next_to_edit_action(
     assert "Flash" in content
     assert reverse("climbs:ascent_edit", args=[ascent.pk]) in content
     assert reverse("climbs:ascent_delete", args=[ascent.pk]) in content
+
+
+@pytest.mark.django_db
+def test_route_management_actions_are_in_header_and_information_is_last(
+    client: Client,
+    user_factory: Callable[..., User],
+    route_factory: Callable[..., ClimbingRoute],
+) -> None:
+    route_setter = user_factory(
+        username="header-setter",
+        email="header-setter@example.com",
+        preferred_language="en",
+    )
+    assign_role(route_setter, Role.ROUTE_SETTER)
+    climbing_route = route_factory(name="Header Actions Route")
+    client.force_login(route_setter)
+
+    response = client.get(
+        reverse("climbs:route_detail", args=[climbing_route.pk]),
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+    content = response.content.decode()
+    header = content.split(
+        '<header class="detail-header route-detail-header">',
+        maxsplit=1,
+    )[1].split("</header>", maxsplit=1)[0]
+
+    assert reverse("climbs:route_edit", args=[climbing_route.pk]) in header
+    assert reverse("climbs:route_archive", args=[climbing_route.pk]) in header
+    assert reverse("climbs:route_delete", args=[climbing_route.pk]) in header
+    assert content.index('<div class="section-heading"><h2>Ascents</h2>') < content.index(
+        "<h2>Route information</h2>"
+    )
+
+
+@pytest.mark.django_db
+def test_profile_ascent_list_hides_actions_but_route_detail_keeps_them(
+    client: Client,
+    ascent_factory: Callable[..., Ascent],
+) -> None:
+    ascent = ascent_factory()
+    client.force_login(ascent.user)
+    edit_url = reverse("climbs:ascent_edit", args=[ascent.pk])
+    delete_url = reverse("climbs:ascent_delete", args=[ascent.pk])
+
+    profile_response = client.get(reverse("accounts:profile"))
+    route_response = client.get(reverse("climbs:route_detail", args=[ascent.climbing_route_id]))
+
+    profile_content = profile_response.content.decode()
+    route_content = route_response.content.decode()
+    assert edit_url not in profile_content
+    assert delete_url not in profile_content
+    assert edit_url in route_content
+    assert delete_url in route_content
 
 
 @pytest.mark.django_db

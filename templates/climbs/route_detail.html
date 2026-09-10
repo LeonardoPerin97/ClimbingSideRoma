@@ -7,7 +7,7 @@
 <section class="page-section">
     <div class="container">
         <nav class="breadcrumb" aria-label="{% translate 'Breadcrumb' %}">
-            <a class="list-name-link" href="{% url 'climbs:route_list' %}">{% translate "Climbing routes" %}</a>
+            <a class="list-name-link" href="{% url 'climbs:wall_list' %}">{% translate "Gym" %}</a>
             <span aria-hidden="true">›</span>
             <a class="list-name-link" href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a>
             <span aria-hidden="true">›</span>
@@ -31,6 +31,22 @@
                 </div>
                 <p><a class="list-name-link" href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a></p>
             </div>
+            {% if perms.climbs.change_climbingroute or perms.climbs.delete_climbingroute %}
+                <div class="button-row admin-actions">
+                    {% if perms.climbs.change_climbingroute %}
+                        <a class="button button-secondary" href="{% url 'climbs:route_edit' climbing_route.pk %}">{% translate "Edit" %}</a>
+                        <form method="post" action="{% url 'climbs:route_archive' climbing_route.pk %}">
+                            {% csrf_token %}
+                            <button class="button button-secondary" type="submit">
+                                {% if climbing_route.is_archived %}{% translate "Restore" %}{% else %}{% translate "Archive" %}{% endif %}
+                            </button>
+                        </form>
+                    {% endif %}
+                    {% if perms.climbs.delete_climbingroute %}
+                        <a class="button button-danger" href="{% url 'climbs:route_delete' climbing_route.pk %}">{% translate "Delete permanently" %}</a>
+                    {% endif %}
+                </div>
+            {% endif %}
         </header>
 
         <dl class="route-summary" aria-label="{% translate 'Route summary' %}">
@@ -51,6 +67,7 @@
             </div>
         </dl>
 
+        {% if user_ascent or perms.climbs.add_ascent %}
         <div class="route-action-bar">
             <div class="route-user-actions">
                 {% if user_ascent %}
@@ -68,24 +85,8 @@
                     <a class="button button-accent" href="{% url 'climbs:ascent_create' %}?route={{ climbing_route.pk }}">{% translate "Record ascent" %}</a>
                 {% endif %}
             </div>
-
-            {% if perms.climbs.change_climbingroute or perms.climbs.delete_climbingroute %}
-                <div class="button-row admin-actions">
-                {% if perms.climbs.change_climbingroute %}
-                    <a class="button button-secondary" href="{% url 'climbs:route_edit' climbing_route.pk %}">{% translate "Edit" %}</a>
-                    <form method="post" action="{% url 'climbs:route_archive' climbing_route.pk %}">
-                        {% csrf_token %}
-                        <button class="button button-secondary" type="submit">
-                            {% if climbing_route.is_archived %}{% translate "Restore" %}{% else %}{% translate "Archive" %}{% endif %}
-                        </button>
-                    </form>
-                {% endif %}
-                {% if perms.climbs.delete_climbingroute %}
-                    <a class="button button-danger" href="{% url 'climbs:route_delete' climbing_route.pk %}">{% translate "Delete permanently" %}</a>
-                {% endif %}
-                </div>
-            {% endif %}
         </div>
+        {% endif %}
 
         <section class="route-grade-distribution" aria-label="{% translate 'Proposed grade distribution' %}">
             {% if proposed_distribution %}
@@ -140,6 +141,19 @@
             {% endif %}
         </section>
 
+        <div class="section-heading"><h2>{% translate "Ascents" %}</h2></div>
+        {% if ascent_page.object_list %}
+            <div class="ascent-list">
+                {% for ascent in ascent_page %}{% include "components/ascent_card.html" with show_user=True show_actions=True %}{% endfor %}
+            </div>
+            {% include "components/pagination.html" with page=ascent_page pagination_show_all=ascent_pagination_show_all %}
+        {% else %}
+            <div class="empty-state catalog-empty">
+                <h3>{% translate "No ascents recorded" %}</h3>
+                <p>{% translate "Be the first to record this route." %}</p>
+            </div>
+        {% endif %}
+
         <div class="detail-grid detail-grid-single">
             <article class="profile-card">
                 <h2>{% translate "Route information" %}</h2>
@@ -160,19 +174,6 @@
                 </dl>
             </article>
         </div>
-
-        <div class="section-heading"><h2>{% translate "Ascents" %}</h2></div>
-        {% if ascent_page.object_list %}
-            <div class="ascent-list">
-                {% for ascent in ascent_page %}{% include "components/ascent_card.html" with show_user=True %}{% endfor %}
-            </div>
-            {% include "components/pagination.html" with page=ascent_page pagination_show_all=ascent_pagination_show_all %}
-        {% else %}
-            <div class="empty-state catalog-empty">
-                <h3>{% translate "No ascents recorded" %}</h3>
-                <p>{% translate "Be the first to record this route." %}</p>
-            </div>
-        {% endif %}
     </div>
 </section>
 {% endblock %}

@@ -7,8 +7,8 @@
 {% endif %}
 
 {% for field in form %}
-    <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.widget.input_type == 'checkbox' %} form-check{% endif %}">
-        {% if field.field.widget.input_type == "checkbox" %}
+    <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.widget.input_type == 'checkbox' and not field.field.widget.allow_multiple_selected %} form-check{% endif %}">
+        {% if field.field.widget.input_type == "checkbox" and not field.field.widget.allow_multiple_selected %}
             {{ field }}
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
         {% else %}

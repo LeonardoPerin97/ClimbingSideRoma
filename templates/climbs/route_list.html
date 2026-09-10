@@ -41,14 +41,27 @@
                 </select>
             </div>
             <div>
-                <label for="route-grade">{% translate "Grade" %}</label>
-                <select id="route-grade" name="grade">
-                    <option value="">{% translate "All grades" %}</option>
-                    <option value="project"{% if selected_grade == 'project' %} selected{% endif %}>{% translate "Project" %}</option>
-                    {% for grade in grades %}
-                        <option value="{{ grade }}"{% if selected_grade == grade %} selected{% endif %}>{{ grade }}</option>
-                    {% endfor %}
-                </select>
+                <label for="route-grade-mode">{% translate "Grade" %}</label>
+                <div class="paired-filter-controls">
+                    <select id="route-grade-mode" name="grade_mode" data-grade-filter-mode>
+                        <option value="all"{% if selected_grade_mode == 'all' %} selected{% endif %}>{% translate "All" %}</option>
+                        <option value="from"{% if selected_grade_mode == 'from' %} selected{% endif %}>{% translate "From" %}</option>
+                        <option value="up_to"{% if selected_grade_mode == 'up_to' %} selected{% endif %}>{% translate "Up to" %}</option>
+                        <option value="equal"{% if selected_grade_mode == 'equal' %} selected{% endif %}>{% translate "Equal to" %}</option>
+                    </select>
+                    <select
+                        id="route-grade"
+                        name="grade"
+                        aria-label="{% translate 'Grade' %}"
+                        data-grade-filter-value
+                        {% if selected_grade_mode == 'all' %}disabled{% endif %}
+                    >
+                        <option value="">{% translate "Choose a grade" %}</option>
+                        {% for grade in grades %}
+                            <option value="{{ grade }}"{% if selected_grade == grade %} selected{% endif %}>{{ grade }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
             <div>
                 <label for="route-status">{% translate "Status" %}</label>
