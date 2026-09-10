@@ -1,0 +1,42 @@
+{% load i18n %}
+
+<div
+    class="data-list ascent-data-list{% if show_route %} ascent-data-list-profile{% else %} ascent-data-list-route{% endif %}"
+    role="region"
+    aria-label="{{ table_label }}"
+>
+    <div class="data-list-header ascent-data-row data-list-header-desktop" aria-hidden="true">
+        <div class="ascent-data-identity">
+            <span>{% translate "Date" %}</span>
+            {% if show_route %}
+                <span>{% translate "Climb" %}</span>
+                <span>{% translate "Type" %}</span>
+            {% else %}
+                <span>{% translate "User" %}</span>
+            {% endif %}
+        </div>
+        <div class="ascent-data-grades">
+            {% if show_route %}<span>{% translate "Grade" %}</span>{% endif %}
+            <span>{% translate "Proposed" %}</span>
+        </div>
+        <div class="ascent-data-activity">
+            <span>{% translate "Attempts" context "ascent form field" %}</span>
+            <span>{% translate "Beauty" %}</span>
+        </div>
+    </div>
+    <div class="data-list-header ascent-data-row data-list-header-compact" aria-hidden="true">
+        {% if show_route %}
+            <span>{% translate "Climb" %}</span>
+            <span>{% translate "Grade" %}</span>
+        {% else %}
+            <span>{% translate "User" %}</span>
+            <span></span>
+        {% endif %}
+        <span>{% translate "Details" %}</span>
+    </div>
+    <div class="data-list-rows">
+        {% for ascent in ascents %}
+            {% include "components/ascent_card.html" with show_route=show_route show_user=show_user %}
+        {% endfor %}
+    </div>
+</div>

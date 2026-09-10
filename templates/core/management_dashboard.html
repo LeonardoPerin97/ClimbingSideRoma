@@ -54,7 +54,7 @@
                         <tbody>
                             {% for entry in recent_audit_entries %}
                                 <tr>
-                                    <td>{{ entry.created_at|date:"SHORT_DATETIME_FORMAT" }}</td>
+                                    <td>{{ entry.created_at|date:"d/m/Y H:i" }}</td>
                                     <td>{% if entry.actor %}{{ entry.actor.username }}{% else %}—{% endif %}</td>
                                     <td>{{ entry.get_action_display }}</td>
                                     <td>{{ entry.entity_type }}</td>

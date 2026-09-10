@@ -85,11 +85,8 @@
             {% endif %}
         </div>
         {% if climbing_routes %}
-            <div class="catalog-list">
-                {% for climbing_route in climbing_routes %}
-                    {% include "components/route_card.html" with show_proposed_average=True %}
-                {% endfor %}
-            </div>
+            {% translate "Climbing routes on this wall" as route_table_label %}
+            {% include "components/route_table.html" with routes=climbing_routes show_wall=False table_label=route_table_label %}
             {% include "components/pagination.html" %}
         {% else %}
             <div class="empty-state catalog-empty">

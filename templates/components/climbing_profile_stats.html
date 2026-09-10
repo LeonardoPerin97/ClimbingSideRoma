@@ -56,9 +56,8 @@
         <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
     </form>
     {% if ascent_page.object_list %}
-        <div class="ascent-list">
-            {% for ascent in ascent_page %}{% include "components/ascent_card.html" with show_route=True show_actions=False %}{% endfor %}
-        </div>
+        {% translate "Climber ascents" as ascent_table_label %}
+        {% include "components/ascent_table.html" with ascents=ascent_page show_route=True show_user=False table_label=ascent_table_label %}
         {% include "components/pagination.html" with page=ascent_page pagination_show_all=ascent_pagination_show_all %}
     {% else %}
         <div class="empty-state catalog-empty">

@@ -61,6 +61,24 @@ def test_route_list_hides_archived_routes_by_default(
     assert ">Tutti i tipi</option>" in content
     assert "Disciplina" not in content
     assert content.count('class="list-name-link"') == 2
+    assert 'class="data-list route-data-list route-data-list-with-wall"' in content
+    desktop_header = content.split(
+        'class="data-list-header route-data-row data-list-header-desktop"',
+        maxsplit=1,
+    )[1].split(
+        'class="data-list-header route-data-row data-list-header-compact"',
+        maxsplit=1,
+    )[0]
+    assert all(
+        f">{label}</span>" in desktop_header
+        for label in ("Nome", "Parete", "Tipo", "Grado", "Proposto", "Ripetizioni", "Bellezza")
+    )
+    compact_header = content.split(
+        'class="data-list-header route-data-row data-list-header-compact"',
+        maxsplit=1,
+    )[1].split('class="data-list-rows"', maxsplit=1)[0]
+    assert ">Grado</span>" in compact_header
+    assert ">Gradi</span>" not in compact_header
 
 
 @pytest.mark.django_db
@@ -197,6 +215,9 @@ def test_route_list_shows_continuous_type_split_histogram(
     assert "5a · Climbs:" in content
     assert "Total climbs by grade" in content
     assert "Routes" in content and "Boulders" in content
+    assert content.index('class="profile-card catalogue-histogram-card"') < content.index(
+        'class="filter-bar route-filters"'
+    )
 
 
 @pytest.mark.django_db
@@ -217,8 +238,10 @@ def test_route_list_highlights_only_current_user_completed_routes(
 
     assert routes[0] == completed
     assert routes[0].completed_by_user is True
+    assert routes[0].average_proposed_grade_display == "6a.0"
     assert routes[1] == untouched
     assert routes[1].completed_by_user is False
+    assert routes[1].average_proposed_grade_display == "—"
     assert response.content.decode().count("is-completed") == 1
 
 
@@ -309,6 +332,21 @@ def test_wall_detail_exposes_disciplines_and_grade_distribution(
     assert 'data-histogram-filter="boulder"' in content
     assert 'class="histogram-stacked-bar is-zero"' in content
     assert "Vie per grado" in content
+    assert 'class="data-list route-data-list route-data-list-without-wall"' in content
+    route_table_start = content.index(
+        'class="data-list route-data-list route-data-list-without-wall"'
+    )
+    route_desktop_header = content[route_table_start:].split(
+        'class="data-list-header route-data-row data-list-header-compact"',
+        maxsplit=1,
+    )[0]
+    assert ">Nome</span>" in route_desktop_header
+    assert ">Parete</span>" not in route_desktop_header
+    assert all(
+        f">{label}</span>" in route_desktop_header
+        for label in ("Tipo", "Grado", "Proposto", "Ripetizioni", "Bellezza")
+    )
+    assert 'class="data-cell-compact-label">Proposto</span>' not in content
 
 
 @pytest.mark.django_db
@@ -535,7 +573,7 @@ def test_route_detail_lists_setters_without_exposing_email(
     assert "marco-setter" in content
     assert "anna-private@example.com" not in content
     assert "marco-private@example.com" not in content
-    assert content.count('class="list-name-link"') == 5
+    assert content.count('class="list-name-link"') == 4
     assert f'<a class="list-name-link" href="{reverse("climbs:wall_list")}">' in content
     assert "Palestra" in content
 
@@ -578,6 +616,13 @@ def test_wall_and_route_breadcrumbs_start_from_gym(
     assert f'href="{reverse("climbs:wall_list")}">Gym</a>' in route_breadcrumb
     assert climbing_route.wall.name in route_breadcrumb
     assert climbing_route.name in route_breadcrumb
+
+    route_header = (
+        route_response.content.decode()
+        .split('<header class="detail-header route-detail-header">', maxsplit=1)[1]
+        .split("</header>", maxsplit=1)[0]
+    )
+    assert climbing_route.wall.name not in route_header
 
 
 @pytest.mark.django_db

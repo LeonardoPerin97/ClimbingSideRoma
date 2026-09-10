@@ -64,7 +64,7 @@ def test_route_detail_calculates_public_ascent_statistics(
     assert response.context["maximum_proposed_grade_count"] == 1
     assert "first-user" in content and "second-user" in content
     assert "first-private@example.com" not in content
-    assert content.count('class="list-name-link"') == 5
+    assert content.count('class="list-name-link"') == 4
     assert 'class="route-title-separator"' in content
     assert 'class="route-title-grade"' in content
     assert "route-grade-large" not in content
@@ -231,7 +231,7 @@ def test_wall_detail_shows_average_proposed_grade_and_completed_route(
     assert routes[1].average_proposed_grade_display == "—"
     assert routes[1].completed_by_user is False
     content = response.content.decode()
-    assert 'class="catalog-card is-completed"' in content
+    assert 'class="route-data-row is-completed"' in content
     assert "badge-completed" not in content
     assert "6a.4" in content
 
@@ -260,6 +260,7 @@ def test_route_detail_places_current_user_ascent_data_next_to_edit_action(
 
     assert response.context["user_ascent"] == ascent
     assert 'class="my-ascent-summary"' in content
+    assert "14/03/2026" in content
     assert "6a.3" in content
     assert "★ 4/5" not in content
     assert "data-star-rating" in content
@@ -319,10 +320,17 @@ def test_profile_ascent_list_hides_actions_but_route_detail_keeps_them(
 
     profile_content = profile_response.content.decode()
     route_content = route_response.content.decode()
+    route_list_start = route_content.index(
+        'class="data-list ascent-data-list ascent-data-list-route"'
+    )
+    route_list_end = route_content.index('class="detail-grid detail-grid-single"')
+    route_list_content = route_content[route_list_start:route_list_end]
     assert edit_url not in profile_content
     assert delete_url not in profile_content
     assert edit_url in route_content
     assert delete_url in route_content
+    assert edit_url not in route_list_content
+    assert delete_url not in route_list_content
 
 
 @pytest.mark.django_db
@@ -352,9 +360,35 @@ def test_route_detail_lists_ascents_from_newest_to_oldest(
         date=date(2026, 2, 5),
     )
 
-    response = client.get(reverse("climbs:route_detail", args=[climbing_route.pk]))
+    response = client.get(
+        reverse("climbs:route_detail", args=[climbing_route.pk]),
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
 
     assert list(response.context["ascents"]) == [newest, middle, oldest]
+    content = response.content.decode()
+    assert 'class="data-list ascent-data-list ascent-data-list-route"' in content
+    desktop_header = content.split(
+        'class="data-list-header ascent-data-row data-list-header-desktop"',
+        maxsplit=1,
+    )[1].split(
+        'class="data-list-header ascent-data-row data-list-header-compact"',
+        maxsplit=1,
+    )[0]
+    assert all(
+        f">{label}</span>" in desktop_header
+        for label in ("Date", "User", "Proposed", "Attempts", "Beauty")
+    )
+    compact_header = content.split(
+        'class="data-list-header ascent-data-row data-list-header-compact"',
+        maxsplit=1,
+    )[1].split('class="data-list-rows"', maxsplit=1)[0]
+    assert ">Proposed</span>" not in compact_header
+    route_list_start = content.index('class="data-list ascent-data-list ascent-data-list-route"')
+    route_list_end = content.index('class="detail-grid detail-grid-single"')
+    route_list_content = content[route_list_start:route_list_end]
+    assert all(value in route_list_content for value in ("05/03/2026", "05/02/2026", "05/01/2026"))
+    assert 'class="data-cell-compact-label">Proposed</span>' not in route_list_content
 
 
 @pytest.mark.django_db
@@ -478,6 +512,31 @@ def test_profile_context_contains_histogram_distributions_without_progression(
     assert "progression-list" not in content
     assert "Easy Step" in content and "Harder Step" in content and "Boulder Project" in content
     assert "progressive-private@example.com" not in content
+    assert 'class="data-list ascent-data-list ascent-data-list-profile"' in content
+    profile_table_start = content.index(
+        'class="data-list ascent-data-list ascent-data-list-profile"'
+    )
+    profile_desktop_header = content[profile_table_start:].split(
+        'class="data-list-header ascent-data-row data-list-header-compact"',
+        maxsplit=1,
+    )[0]
+    assert all(
+        f">{label}</span>" in profile_desktop_header
+        for label in ("Data", "Via", "Tipo", "Grado", "Proposto", "Tentativi", "Bellezza")
+    )
+    assert 'class="ascent-compact-route-meta"' in content
+    profile_compact_header = (
+        content[profile_table_start:]
+        .split(
+            'class="data-list-header ascent-data-row data-list-header-compact"',
+            maxsplit=1,
+        )[1]
+        .split('class="data-list-rows"', maxsplit=1)[0]
+    )
+    assert ">Grado</span>" in profile_compact_header
+    assert ">Gradi</span>" not in profile_compact_header
+    assert 'class="ascent-compact-type">Boulder</strong>' in content
+    assert "10/03/2026" in content
 
 
 @pytest.mark.django_db

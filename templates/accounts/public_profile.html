@@ -20,7 +20,7 @@
             <h2 id="profile-information-heading">{% translate "Profile information" %}</h2>
             <dl class="profile-data">
                 <div><dt>{% translate "Role" %}</dt><dd>{{ role }}</dd></div>
-                <div><dt>{% translate "Member since" %}</dt><dd>{{ profile_user.date_joined|date:"DATE_FORMAT" }}</dd></div>
+                <div><dt>{% translate "Member since" %}</dt><dd>{{ profile_user.date_joined|date:"d/m/Y" }}</dd></div>
             </dl>
         </div>
     </div>

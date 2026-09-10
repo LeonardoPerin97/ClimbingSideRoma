@@ -55,6 +55,9 @@ class ClimbingRouteForm(StyledFormMixin, forms.ModelForm):
             "official_grade",
             "route_setters",
         )
+        labels = {
+            "official_grade": _("Grade"),
+        }
         widgets = {
             "is_project": forms.CheckboxInput(attrs={"data-project-toggle": ""}),
             "official_grade": forms.Select(attrs={"data-grade-field": ""}),

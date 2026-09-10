@@ -1,29 +1,36 @@
 {% load i18n %}
 
-<article class="catalog-card{% if climbing_route.is_archived %} is-archived{% endif %}{% if climbing_route.completed_by_user %} is-completed{% endif %}">
-    <div class="catalog-card-main">
-        <div class="badge-row">
-            <span class="badge badge-discipline">{{ climbing_route.get_discipline_display }}</span>
-            {% if climbing_route.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
+<article class="route-data-row{% if climbing_route.is_archived %} is-archived{% endif %}{% if climbing_route.completed_by_user %} is-completed{% endif %}">
+    <div class="route-data-identity">
+        <div class="route-name-cell">
+            <h2><a class="list-name-link" href="{% url 'climbs:route_detail' climbing_route.pk %}">{{ climbing_route.name }}</a></h2>
+            {% if climbing_route.is_archived %}<span class="data-row-status">{% translate "Archived" %}</span>{% endif %}
         </div>
-        <h2><a class="list-name-link" href="{% url 'climbs:route_detail' climbing_route.pk %}">{{ climbing_route.name }}</a></h2>
-        <p>
-            <a class="list-name-link" href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a>
-        </p>
-        <div class="catalog-card-stats">
-            <span>{% blocktranslate count count=climbing_route.ascent_count %}{{ count }} ascent{% plural %}{{ count }} ascents{% endblocktranslate %}</span>
-            {% if climbing_route.average_rating %}{% include "components/star_rating.html" with rating=climbing_route.average_rating %}{% endif %}
+        {% if show_wall %}
+            <div class="route-wall-cell">
+                <a class="list-name-link" href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a>
+            </div>
+        {% endif %}
+        <div class="route-type-cell">{{ climbing_route.get_discipline_display }}</div>
+    </div>
+    <div class="route-data-grades">
+        <div class="route-official-grade{% if climbing_route.is_project %} grade-project{% endif %}">{{ climbing_route.display_grade }}</div>
+        <div class="route-proposed-grade" aria-label="{% translate 'Proposed grade' %}: {{ climbing_route.average_proposed_grade_display }}">
+            {% if show_wall %}<span class="data-cell-compact-label">{% translate "Proposed" %}</span>{% endif %}
+            {{ climbing_route.average_proposed_grade_display }}
         </div>
     </div>
-    <div class="route-grade-stack">
-        <div class="grade-chip{% if climbing_route.is_project %} grade-project{% endif %}">
-            {{ climbing_route.display_grade }}
+    <div class="route-data-activity">
+        <div class="route-ascent-count">
+            <span class="data-cell-compact-label">{% translate "Ascents" %}</span>
+            {{ climbing_route.ascent_count }}
         </div>
-        {% if show_proposed_average %}
-            <span class="proposed-grade-average">
-                {% translate "Average proposed grade" %}
-                <strong>{{ climbing_route.average_proposed_grade_display }}</strong>
-            </span>
-        {% endif %}
+        <div class="route-beauty">
+            {% if climbing_route.average_rating %}
+                {% include "components/star_rating.html" with rating=climbing_route.average_rating %}
+            {% else %}
+                <span aria-label="{% translate 'No ratings yet' %}">—</span>
+            {% endif %}
+        </div>
     </div>
 </article>

@@ -1,0 +1,33 @@
+{% load i18n %}
+
+<div
+    class="data-list route-data-list{% if show_wall %} route-data-list-with-wall{% else %} route-data-list-without-wall{% endif %}"
+    role="region"
+    aria-label="{{ table_label }}"
+>
+    <div class="data-list-header route-data-row data-list-header-desktop" aria-hidden="true">
+        <div class="route-data-identity">
+            <span>{% translate "Name" %}</span>
+            {% if show_wall %}<span>{% translate "Wall" %}</span>{% endif %}
+            <span>{% translate "Type" %}</span>
+        </div>
+        <div class="route-data-grades">
+            <span>{% translate "Grade" %}</span>
+            <span>{% translate "Proposed" %}</span>
+        </div>
+        <div class="route-data-activity">
+            <span>{% translate "Ascents" %}</span>
+            <span>{% translate "Beauty" %}</span>
+        </div>
+    </div>
+    <div class="data-list-header route-data-row data-list-header-compact" aria-hidden="true">
+        <span>{% translate "Climb" %}</span>
+        <span>{% translate "Grade" %}</span>
+        <span>{% translate "Activity" %}</span>
+    </div>
+    <div class="data-list-rows">
+        {% for climbing_route in routes %}
+            {% include "components/route_card.html" with show_wall=show_wall %}
+        {% endfor %}
+    </div>
+</div>

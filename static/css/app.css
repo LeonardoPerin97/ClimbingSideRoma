@@ -1058,8 +1058,7 @@ meter::-webkit-meter-optimum-value {
   gap: 1rem;
 }
 
-.wall-card,
-.catalog-card {
+.wall-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -1072,21 +1071,17 @@ meter::-webkit-meter-optimum-value {
   border-top: 3px solid var(--color-ink);
 }
 
-.wall-card h2,
-.catalog-card h2 {
+.wall-card h2 {
   margin: 0.45rem 0 0.2rem;
   font-size: 1.55rem;
 }
 
-.wall-card h2 a,
-.catalog-card h2 a {
+.wall-card h2 a {
   text-decoration: none;
 }
 
 .wall-card h2 a:hover,
-.wall-card h2 a:focus-visible,
-.catalog-card h2 a:hover,
-.catalog-card h2 a:focus-visible {
+.wall-card h2 a:focus-visible {
   color: var(--color-accent-dark);
   text-decoration: none;
 }
@@ -1155,44 +1150,252 @@ meter::-webkit-meter-optimum-value {
   color: var(--color-ink);
 }
 
-.catalog-list {
-  display: grid;
-  gap: 0;
+.data-list {
+  overflow: hidden;
+  background: var(--color-surface);
   border-top: 2px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.catalog-card {
-  display: flex;
-  justify-content: space-between;
+.data-list-header {
+  color: var(--color-muted);
+  background: var(--color-soft);
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.route-data-row.data-list-header-compact,
+.ascent-data-row.data-list-header-compact {
+  display: none;
+}
+
+.data-list-rows {
+  display: grid;
+}
+
+.route-data-row,
+.ascent-data-row {
+  display: grid;
   gap: 1rem;
   align-items: center;
   padding: 0.85rem 1rem;
-  border-width: 0 0 1px;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.catalog-card.is-completed {
+.data-list-rows > :last-child {
+  border-bottom: 0;
+}
+
+.data-list-rows > .route-data-row:hover,
+.data-list-rows > .ascent-data-row:hover {
+  background: #f7f7f4;
+}
+
+.route-data-row {
+  grid-template-columns:
+    minmax(0, 3.2fr)
+    minmax(8rem, 1.35fr)
+    minmax(10rem, 1.55fr);
+}
+
+.route-data-identity,
+.route-data-grades,
+.route-data-activity,
+.ascent-data-identity,
+.ascent-data-grades,
+.ascent-data-activity {
+  display: grid;
+  min-width: 0;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.route-data-list-with-wall .route-data-identity {
+  grid-template-columns: minmax(7rem, 1.45fr) minmax(6rem, 1fr) minmax(4rem, 0.7fr);
+}
+
+.route-data-list-without-wall .route-data-identity {
+  grid-template-columns: minmax(8rem, 1.6fr) minmax(4rem, 0.7fr);
+}
+
+.route-data-grades {
+  grid-template-columns: repeat(2, minmax(3.7rem, 1fr));
+}
+
+.route-data-activity {
+  grid-template-columns: minmax(4.2rem, 0.65fr) minmax(6.8rem, 1fr);
+}
+
+.route-name-cell,
+.route-wall-cell,
+.route-type-cell,
+.route-official-grade,
+.route-proposed-grade,
+.route-ascent-count,
+.route-beauty {
+  min-width: 0;
+}
+
+.route-name-cell h2 {
+  margin: 0;
+  font-size: 1.08rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.route-wall-cell,
+.route-type-cell,
+.route-proposed-grade {
+  color: var(--color-muted);
+  font-size: 0.84rem;
+}
+
+.route-wall-cell a {
+  color: inherit;
+}
+
+.route-type-cell {
+  font-weight: 650;
+}
+
+.route-official-grade,
+.route-ascent-count {
+  font-size: 1.05rem;
+  font-weight: 750;
+}
+
+.route-official-grade.grade-project {
+  color: #8a5c00;
+  background: transparent;
+  font-size: 0.85rem;
+}
+
+.route-beauty,
+.ascent-beauty {
+  white-space: nowrap;
+}
+
+.route-beauty .star-rating,
+.ascent-beauty .star-rating {
+  gap: 0;
+  font-size: 0.92rem;
+}
+
+.data-row-status {
+  display: inline-block;
+  margin-top: 0.2rem;
+  color: var(--color-muted);
+  font-size: 0.66rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.data-cell-compact-label {
+  display: none;
+}
+
+.route-data-row.is-completed {
   background: #fff4c7;
   box-shadow: inset 0.3rem 0 #e5a018;
 }
 
-.catalog-card-main p {
+.data-list-rows > .route-data-row.is-completed:hover {
+  background: #ffefb0;
+}
+
+.ascent-data-list-route .ascent-data-row {
+  grid-template-columns:
+    minmax(0, 2.3fr)
+    minmax(5.5rem, 0.7fr)
+    minmax(10rem, 1.35fr);
+}
+
+.ascent-data-list-profile .ascent-data-row {
+  grid-template-columns:
+    minmax(0, 3.35fr)
+    minmax(8rem, 1.25fr)
+    minmax(10rem, 1.35fr);
+}
+
+.ascent-data-list-route .ascent-data-identity {
+  grid-template-columns: minmax(7rem, 0.8fr) minmax(8rem, 1.4fr);
+}
+
+.ascent-data-list-profile .ascent-data-identity {
+  grid-template-columns: minmax(7rem, 0.75fr) minmax(9rem, 1.7fr) minmax(4rem, 0.65fr);
+}
+
+.ascent-data-list-route .ascent-data-grades {
+  grid-template-columns: 1fr;
+}
+
+.ascent-data-list-profile .ascent-data-grades,
+.ascent-data-activity {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ascent-date-cell,
+.ascent-type-cell,
+.ascent-proposed-grade {
+  color: var(--color-muted);
+  font-size: 0.84rem;
+}
+
+.ascent-route-cell,
+.ascent-user-cell,
+.ascent-date-cell,
+.ascent-type-cell,
+.ascent-official-grade,
+.ascent-proposed-grade,
+.ascent-attempts,
+.ascent-beauty {
+  min-width: 0;
+}
+
+.ascent-route-cell h3,
+.ascent-user-cell h3 {
   margin: 0;
-  color: var(--color-muted);
-  font-size: 0.9rem;
+  font-size: 1rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
 }
 
-.catalog-card-stats,
-.ascent-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 0.8rem;
-  margin-top: 0.4rem;
+.ascent-route-cell p {
+  margin: 0.18rem 0 0;
   color: var(--color-muted);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
 }
 
-.catalog-card-main p a {
+.ascent-route-cell p a {
   color: inherit;
+}
+
+.ascent-type-cell {
+  font-weight: 650;
+}
+
+.ascent-official-grade,
+.ascent-proposed-grade {
+  font-weight: 750;
+}
+
+.ascent-official-grade {
+  font-size: 1rem;
+}
+
+.ascent-attempts {
+  font-size: 0.84rem;
+}
+
+.ascent-compact-route-meta,
+.ascent-compact-date {
+  display: none;
+}
+
+.ascent-compact-type {
+  font-weight: 650;
 }
 
 .is-archived {
@@ -1224,51 +1427,6 @@ meter::-webkit-meter-optimum-value {
 .badge-muted {
   color: #4e5651;
   background: #e4e8e4;
-}
-
-.grade-chip {
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-  color: white;
-  background: #262626;
-  border-radius: var(--radius);
-  font-weight: 700;
-}
-
-.grade-chip {
-  min-width: 3.2rem;
-  min-height: 2.4rem;
-  padding: 0.35rem 0.5rem;
-}
-
-.grade-project {
-  color: #202020;
-  background: var(--color-accent);
-  font-size: 0.8rem;
-}
-
-.route-grade-stack {
-  display: grid;
-  min-width: 7.2rem;
-  gap: 0.45rem;
-  justify-items: end;
-}
-
-.proposed-grade-average {
-  color: var(--color-muted);
-  font-size: 0.68rem;
-  font-weight: 700;
-  line-height: 1.15;
-  text-align: right;
-  text-transform: uppercase;
-}
-
-.proposed-grade-average strong {
-  display: block;
-  margin-top: 0.15rem;
-  color: var(--color-ink);
-  font-size: 1rem;
 }
 
 .catalog-empty {
@@ -1860,14 +2018,12 @@ meter::-webkit-meter-optimum-value {
   margin-top: 0;
 }
 
-.ascent-list,
 .user-list {
   display: grid;
   gap: 0;
   border-top: 2px solid var(--color-ink);
 }
 
-.ascent-card,
 .user-card {
   display: flex;
   justify-content: space-between;
@@ -1880,7 +2036,6 @@ meter::-webkit-meter-optimum-value {
   border-radius: 0;
 }
 
-.ascent-card h3,
 .user-card h2 {
   margin: 0;
 }
@@ -1898,23 +2053,9 @@ meter::-webkit-meter-optimum-value {
   text-decoration: none;
 }
 
-.ascent-main > p,
 .user-card p {
   margin: 0.2rem 0 0;
   color: var(--color-muted);
-}
-
-.ascent-side {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-
-.compact-actions {
-  display: grid;
-  gap: 0.2rem;
-  font-size: 0.78rem;
-  font-weight: 750;
 }
 
 .user-card-stats {
@@ -2128,6 +2269,32 @@ meter::-webkit-meter-optimum-value {
 
   .language-form select {
     width: 100%;
+  }
+
+  .route-data-row,
+  .ascent-data-row {
+    gap: 0.65rem;
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+  }
+
+  .route-data-identity,
+  .route-data-grades,
+  .route-data-activity,
+  .ascent-data-identity,
+  .ascent-data-grades,
+  .ascent-data-activity {
+    gap: 0.5rem;
+  }
+
+  .route-wall-cell,
+  .route-type-cell,
+  .route-proposed-grade,
+  .ascent-date-cell,
+  .ascent-type-cell,
+  .ascent-proposed-grade,
+  .ascent-attempts {
+    font-size: 0.76rem;
   }
 }
 
@@ -2394,17 +2561,117 @@ meter::-webkit-meter-optimum-value {
     grid-template-columns: 1fr;
   }
 
-  .ascent-card,
   .user-card {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .ascent-side,
   .user-card-stats {
     width: 100%;
     justify-content: space-between;
     text-align: left;
+  }
+
+  .data-list-header-desktop {
+    display: none;
+  }
+
+  .route-data-row.data-list-header-compact,
+  .ascent-data-row.data-list-header-compact {
+    display: grid;
+  }
+
+  .route-data-row,
+  .ascent-data-row,
+  .ascent-data-list-route .ascent-data-row,
+  .ascent-data-list-profile .ascent-data-row {
+    grid-template-columns:
+      minmax(0, 1.45fr)
+      minmax(4.4rem, 0.65fr)
+      minmax(6.4rem, 0.95fr);
+    gap: 0.45rem;
+    padding: 0.72rem 0.6rem;
+  }
+
+  .route-data-identity,
+  .route-data-list-with-wall .route-data-identity,
+  .route-data-list-without-wall .route-data-identity,
+  .route-data-grades,
+  .route-data-activity,
+  .ascent-data-identity,
+  .ascent-data-list-route .ascent-data-identity,
+  .ascent-data-list-profile .ascent-data-identity,
+  .ascent-data-grades,
+  .ascent-data-list-route .ascent-data-grades,
+  .ascent-data-list-profile .ascent-data-grades,
+  .ascent-data-activity {
+    display: block;
+  }
+
+  .route-name-cell h2,
+  .ascent-route-cell h3,
+  .ascent-user-cell h3 {
+    font-size: 0.9rem;
+  }
+
+  .route-wall-cell,
+  .route-type-cell {
+    display: inline;
+    font-size: 0.68rem;
+  }
+
+  .route-data-list-with-wall .route-type-cell::before {
+    content: "\00A0\00B7\00A0";
+  }
+
+  .route-proposed-grade,
+  .route-beauty,
+  .ascent-proposed-grade,
+  .ascent-beauty {
+    margin-top: 0.24rem;
+  }
+
+  .route-official-grade,
+  .route-ascent-count,
+  .ascent-official-grade,
+  .ascent-proposed-grade {
+    font-size: 0.88rem;
+  }
+
+  .data-cell-compact-label {
+    display: inline;
+    margin-right: 0.18rem;
+    color: var(--color-muted);
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .route-beauty .star-rating,
+  .ascent-beauty .star-rating {
+    font-size: 0.76rem;
+  }
+
+  .ascent-data-list-profile .ascent-date-cell,
+  .ascent-data-list-profile .ascent-type-cell,
+  .ascent-data-list-route .ascent-date-cell {
+    display: none;
+  }
+
+  .ascent-compact-route-meta {
+    display: inline;
+  }
+
+  .ascent-compact-date {
+    display: block;
+    margin-top: 0.18rem;
+    color: var(--color-muted);
+    font-size: 0.68rem;
+  }
+
+  .ascent-attempts {
+    font-size: 0.72rem;
+    line-height: 1.15;
   }
 
   .page-header {
@@ -2428,6 +2695,27 @@ meter::-webkit-meter-optimum-value {
 }
 
 @media (max-width: 430px) {
+  .route-data-row,
+  .ascent-data-row,
+  .ascent-data-list-route .ascent-data-row,
+  .ascent-data-list-profile .ascent-data-row {
+    grid-template-columns:
+      minmax(0, 1.35fr)
+      minmax(3.8rem, 0.55fr)
+      minmax(5.5rem, 0.85fr);
+    gap: 0.3rem;
+    padding: 0.65rem 0.45rem;
+  }
+
+  .data-list-header {
+    font-size: 0.62rem;
+  }
+
+  .route-beauty .star-rating,
+  .ascent-beauty .star-rating {
+    font-size: 0.68rem;
+  }
+
   .grade-histogram {
     width: min(100%, max(14rem, calc(1.35rem + var(--histogram-compact-width))));
     grid-template-columns: 1.35rem minmax(0, 1fr);

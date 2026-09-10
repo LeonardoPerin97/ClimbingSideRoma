@@ -59,6 +59,8 @@ def test_route_setter_can_create_edit_and_archive_route_without_setter(
 
     assert form_response.status_code == 200
     assert ">Tipo</label>" in form_response.content.decode()
+    assert ">Grado</label>" in form_response.content.decode()
+    assert "Grado ufficiale" not in form_response.content.decode()
     assert create_response.status_code == 302
     assert not climbing_route.route_setters.exists()
 

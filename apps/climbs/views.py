@@ -274,6 +274,7 @@ def route_list(request: HttpRequest) -> HttpResponse:
         grade_order=grade_order_expression(),
         ascent_count=Count("ascents"),
         average_rating=Avg("ascents__rating"),
+        average_proposed_grade=Avg("ascents__proposed_grade"),
     )
     if request.user.is_authenticated:
         climbing_routes = climbing_routes.annotate(
@@ -338,6 +339,14 @@ def route_list(request: HttpRequest) -> HttpResponse:
         climbing_routes = climbing_routes.order_by("is_project", "grade_order", Lower("name"))
 
     page, pagination_show_all = paginate(request, climbing_routes)
+    route_items = list(page.object_list)
+    page.object_list = route_items
+    for climbing_route in route_items:
+        average_value = getattr(climbing_route, "average_proposed_grade", None)
+        average_display = (
+            format_perceived_grade(round(average_value)) if average_value is not None else "—"
+        )
+        cast(Any, climbing_route).average_proposed_grade_display = average_display
     walls = Wall.objects.order_by(Lower("name"))
     return render(
         request,

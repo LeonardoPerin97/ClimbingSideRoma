@@ -17,6 +17,18 @@
             {% endif %}
         </header>
 
+        <section class="profile-card catalogue-histogram-card" aria-labelledby="catalogue-grade-heading">
+            <h2 id="catalogue-grade-heading">{% translate "Total climbs by grade" %}</h2>
+            {% if grade_distribution %}
+                {% translate "Scrollable catalogue-grade histogram" as histogram_scroll_label %}
+                {% translate "Catalogue climbs grouped by grade and type" as histogram_content_label %}
+                {% translate "Climbs" as histogram_value_label %}
+                {% include "components/discipline_grade_histogram.html" with buckets=grade_distribution maximum_count=maximum_grade_count histogram_scroll_label=histogram_scroll_label histogram_content_label=histogram_content_label histogram_value_label=histogram_value_label %}
+            {% else %}
+                <p class="muted-text">{% translate "No grades are available for the selected catalogue status." %}</p>
+            {% endif %}
+        </section>
+
         <form class="filter-bar route-filters" method="get">
             <div>
                 <label for="route-search">{% translate "Search" %}</label>
@@ -85,27 +97,12 @@
             <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
         </form>
 
-        <section class="profile-card catalogue-histogram-card" aria-labelledby="catalogue-grade-heading">
-            <h2 id="catalogue-grade-heading">{% translate "Total climbs by grade" %}</h2>
-            {% if grade_distribution %}
-                {% translate "Scrollable catalogue-grade histogram" as histogram_scroll_label %}
-                {% translate "Catalogue climbs grouped by grade and type" as histogram_content_label %}
-                {% translate "Climbs" as histogram_value_label %}
-                {% include "components/discipline_grade_histogram.html" with buckets=grade_distribution maximum_count=maximum_grade_count histogram_scroll_label=histogram_scroll_label histogram_content_label=histogram_content_label histogram_value_label=histogram_value_label %}
-            {% else %}
-                <p class="muted-text">{% translate "No grades are available for the selected catalogue status." %}</p>
-            {% endif %}
-        </section>
-
         {% if page.object_list %}
             <div class="result-count">
                 {% blocktranslate count total=page.paginator.count %}{{ total }} climbing route{% plural %}{{ total }} climbing routes{% endblocktranslate %}
             </div>
-            <div class="catalog-list">
-                {% for climbing_route in page %}
-                    {% include "components/route_card.html" %}
-                {% endfor %}
-            </div>
+            {% translate "Climbing routes" as route_table_label %}
+            {% include "components/route_table.html" with routes=page show_wall=True table_label=route_table_label %}
             {% include "components/pagination.html" %}
         {% else %}
             <div class="empty-state catalog-empty">
