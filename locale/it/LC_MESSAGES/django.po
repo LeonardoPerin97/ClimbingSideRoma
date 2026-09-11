@@ -1210,6 +1210,9 @@ msgstr "Home"
 msgid "Find your next climb, record the result and follow the progress of the whole gym."
 msgstr "Trova la prossima via, registra il risultato e segui i progressi di tutta la palestra."
 
+msgid "Find your next climb. Log your sends. Track your progress."
+msgstr "Trova la prossima via. Registra le tue salite. Segui i tuoi progressi."
+
 msgid "Explore climbs"
 msgstr "Esplora le vie"
 

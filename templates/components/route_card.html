@@ -11,7 +11,9 @@
                 <a class="list-name-link" href="{% url 'climbs:wall_detail' climbing_route.wall_id %}">{{ climbing_route.wall.name }}</a>
             </div>
         {% endif %}
-        <div class="route-type-cell">{{ climbing_route.get_discipline_display }}</div>
+        <div class="route-type-cell">
+            {% if climbing_route.discipline == "route" %}{% translate "Route" %}{% else %}{% translate "Boulder" %}{% endif %}
+        </div>
     </div>
     <div class="route-data-grades">
         <div class="route-official-grade{% if climbing_route.is_project %} grade-project{% endif %}">{{ climbing_route.display_grade }}</div>
@@ -20,10 +22,6 @@
         </div>
     </div>
     <div class="route-data-activity">
-        <div class="route-ascent-count">
-            <span class="data-cell-compact-label">{% translate "Ascents" %}</span>
-            {{ climbing_route.ascent_count }}
-        </div>
         <div class="route-beauty">
             {% if climbing_route.average_rating %}
                 {% include "components/star_rating.html" with rating=climbing_route.average_rating %}
@@ -31,5 +29,6 @@
                 <span aria-label="{% translate 'No ratings yet' %}">—</span>
             {% endif %}
         </div>
+        <div class="route-ascent-count">{{ climbing_route.ascent_count }}</div>
     </div>
 </article>

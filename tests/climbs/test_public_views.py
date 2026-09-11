@@ -71,8 +71,9 @@ def test_route_list_hides_archived_routes_by_default(
     )[0]
     assert all(
         f">{label}</span>" in desktop_header
-        for label in ("Nome", "Parete", "Tipo", "Grado", "Proposto", "Ripetizioni", "Bellezza")
+        for label in ("Nome", "Parete", "Tipo", "Grado", "Proposto", "Bellezza", "Ripetizioni")
     )
+    assert desktop_header.index(">Bellezza</span>") < desktop_header.index(">Ripetizioni</span>")
     compact_header = content.split(
         'class="data-list-header route-data-row data-list-header-compact"',
         maxsplit=1,
@@ -80,6 +81,9 @@ def test_route_list_hides_archived_routes_by_default(
     assert ">Grado</span>" in compact_header
     assert ">Gradi</span>" not in compact_header
     assert ">Attività</span>" not in compact_header
+    assert ">Ripetizioni</span>" in compact_header
+    assert '<div class="route-type-cell">\n            Via\n' in content
+    assert content.index('class="route-beauty"') < content.index('class="route-ascent-count"')
     assert 'class="data-cell-compact-label">Proposto</span>' not in content
 
 
@@ -346,8 +350,22 @@ def test_wall_detail_exposes_disciplines_and_grade_distribution(
     assert ">Parete</span>" not in route_desktop_header
     assert all(
         f">{label}</span>" in route_desktop_header
-        for label in ("Tipo", "Grado", "Proposto", "Ripetizioni", "Bellezza")
+        for label in ("Tipo", "Grado", "Proposto", "Bellezza", "Ripetizioni")
     )
+    assert route_desktop_header.index(">Bellezza</span>") < route_desktop_header.index(
+        ">Ripetizioni</span>"
+    )
+    route_compact_header = (
+        content[route_table_start:]
+        .split(
+            'class="data-list-header route-data-row data-list-header-compact"',
+            maxsplit=1,
+        )[1]
+        .split('class="data-list-rows"', maxsplit=1)[0]
+    )
+    assert ">Ripetizioni</span>" in route_compact_header
+    assert '<div class="route-type-cell">\n            Via\n' in content
+    assert '<div class="route-type-cell">\n            Boulder\n' in content
     assert 'class="data-cell-compact-label">Proposto</span>' not in content
 
 

@@ -1225,7 +1225,7 @@ meter::-webkit-meter-optimum-value {
 }
 
 .route-data-activity {
-  grid-template-columns: minmax(4.2rem, 0.65fr) minmax(6.8rem, 1fr);
+  grid-template-columns: minmax(6.8rem, 1fr) minmax(4.2rem, 0.65fr);
 }
 
 .route-name-cell,
@@ -1344,8 +1344,12 @@ meter::-webkit-meter-optimum-value {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.ascent-date-cell,
 .ascent-type-cell {
+  color: var(--color-muted);
+  font-size: 0.84rem;
+}
+
+.ascent-date-cell {
   color: var(--color-ink);
   font-size: 0.84rem;
 }
@@ -2529,8 +2533,77 @@ meter::-webkit-meter-optimum-value {
     grid-template-columns: 1fr;
   }
 
+  .filter-bar {
+    gap: 0.3rem;
+    margin-bottom: 0.85rem;
+    padding: 0.35rem;
+  }
+
+  .filter-bar label {
+    margin-bottom: 0.1rem;
+    font-size: 0.6rem;
+  }
+
+  .filter-bar input,
+  .filter-bar select,
+  .filter-bar .button {
+    min-height: 2.15rem;
+  }
+
+  .filter-bar input,
+  .filter-bar select {
+    padding: 0.28rem 0.4rem;
+    font-size: 0.76rem;
+  }
+
+  .filter-bar .button {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.74rem;
+  }
+
+  .paired-filter-controls {
+    gap: 0.2rem;
+  }
+
   .summary-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    margin: 1.25rem 0;
+  }
+
+  .summary-grid article,
+  .summary-grid > div {
+    padding: 0.65rem 0.7rem;
+    border-top-width: 2px;
+  }
+
+  .summary-grid dt,
+  .summary-grid span {
+    font-size: 0.68rem;
+    line-height: 1.2;
+  }
+
+  .summary-grid dd,
+  .summary-grid strong {
+    margin-top: 0.12rem;
+    font-size: 1.45rem;
+    line-height: 1;
+  }
+
+  .home-summary {
+    margin-bottom: 1.75rem;
+  }
+
+  .home-summary > div {
+    padding: 0.7rem 0.75rem;
+  }
+
+  .home-summary dt {
+    font-size: 0.68rem;
+  }
+
+  .home-summary dd {
+    font-size: 1.7rem;
   }
 
   .detail-grid {
@@ -2552,6 +2625,18 @@ meter::-webkit-meter-optimum-value {
   .route-summary > div + div {
     border-top: 1px solid var(--color-border);
     border-left: 0;
+  }
+
+  .route-summary > div {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .route-summary dt {
+    font-size: 0.68rem;
+  }
+
+  .route-summary dd {
+    font-size: 1.05rem;
   }
 
   .route-action-bar {
@@ -2635,6 +2720,20 @@ meter::-webkit-meter-optimum-value {
   .ascent-data-list-profile .ascent-data-grades,
   .ascent-data-activity {
     display: block;
+  }
+
+  .route-data-activity {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .route-ascent-count {
+    order: 1;
+  }
+
+  .route-beauty {
+    order: 2;
   }
 
   .route-name-cell h2,
@@ -2772,11 +2871,7 @@ meter::-webkit-meter-optimum-value {
   .home-summary dd,
   .summary-grid dd,
   .summary-grid strong {
-    font-size: 1.55rem;
-  }
-
-  .summary-grid {
-    grid-template-columns: 1fr;
+    font-size: 1.4rem;
   }
 
   .annotation-toolbar,

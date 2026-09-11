@@ -9,7 +9,8 @@
     <div class="home-hero-overlay" aria-hidden="true"></div>
     <div class="container home-hero-content">
         <h1>Climbing Side Roma</h1>
-        <p>{% translate "Find your next climb, record the result and follow the progress of the whole gym." %}</p>
+        <!--<p>{% translate "Find your next climb, record the result and follow the progress of the whole gym." %}</p>-->
+        <p>{% translate "Find your next climb. Log your sends. Track your progress." %}</p>
         <div class="button-row hero-actions">
             <a class="button button-accent" href="{% url 'climbs:route_list' %}">{% translate "Explore climbs" %}</a>
             {% if request.user.is_authenticated %}
