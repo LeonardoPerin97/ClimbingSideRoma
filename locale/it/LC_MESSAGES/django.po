@@ -239,6 +239,9 @@ msgstr "pareti"
 msgid "Routes"
 msgstr "Vie"
 
+msgid "Route"
+msgstr "Via"
+
 msgid "Boulder"
 msgstr "Boulder"
 

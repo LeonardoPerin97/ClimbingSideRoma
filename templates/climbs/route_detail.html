@@ -16,10 +16,6 @@
 
         <header class="detail-header route-detail-header">
             <div>
-                <div class="badge-row">
-                    <span class="badge badge-discipline">{{ climbing_route.get_discipline_display }}</span>
-                    {% if climbing_route.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
-                </div>
                 <div class="route-title-row">
                     <h1>
                         {{ climbing_route.name }}
@@ -28,6 +24,12 @@
                             {{ climbing_route.display_grade }}
                         </span>
                     </h1>
+                </div>
+                <div class="badge-row route-title-badges">
+                    <span class="badge badge-discipline">
+                        {% if climbing_route.discipline == "route" %}{% translate "Route" %}{% else %}{% translate "Boulder" %}{% endif %}
+                    </span>
+                    {% if climbing_route.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
                 </div>
             </div>
             {% if perms.climbs.change_climbingroute or perms.climbs.delete_climbingroute %}

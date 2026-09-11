@@ -383,7 +383,8 @@ def test_route_detail_lists_ascents_from_newest_to_oldest(
         'class="data-list-header ascent-data-row data-list-header-compact"',
         maxsplit=1,
     )[1].split('class="data-list-rows"', maxsplit=1)[0]
-    assert ">Proposed</span>" not in compact_header
+    assert ">Proposed</span>" in compact_header
+    assert ">Details</span>" not in compact_header
     route_list_start = content.index('class="data-list ascent-data-list ascent-data-list-route"')
     route_list_end = content.index('class="detail-grid detail-grid-single"')
     route_list_content = content[route_list_start:route_list_end]
@@ -525,6 +526,7 @@ def test_profile_context_contains_histogram_distributions_without_progression(
         for label in ("Data", "Via", "Tipo", "Grado", "Proposto", "Tentativi", "Bellezza")
     )
     assert 'class="ascent-compact-route-meta"' in content
+    assert 'class="data-cell-compact-label">Proposto</span>' not in content
     profile_compact_header = (
         content[profile_table_start:]
         .split(
@@ -535,6 +537,7 @@ def test_profile_context_contains_histogram_distributions_without_progression(
     )
     assert ">Grado</span>" in profile_compact_header
     assert ">Gradi</span>" not in profile_compact_header
+    assert ">Dettagli</span>" not in profile_compact_header
     assert 'class="ascent-compact-type">Boulder</strong>' in content
     assert "10/03/2026" in content
 

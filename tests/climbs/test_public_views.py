@@ -79,6 +79,8 @@ def test_route_list_hides_archived_routes_by_default(
     )[1].split('class="data-list-rows"', maxsplit=1)[0]
     assert ">Grado</span>" in compact_header
     assert ">Gradi</span>" not in compact_header
+    assert ">Attività</span>" not in compact_header
+    assert 'class="data-cell-compact-label">Proposto</span>' not in content
 
 
 @pytest.mark.django_db
@@ -576,6 +578,50 @@ def test_route_detail_lists_setters_without_exposing_email(
     assert content.count('class="list-name-link"') == 4
     assert f'<a class="list-name-link" href="{reverse("climbs:wall_list")}">' in content
     assert "Palestra" in content
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("discipline", "expected_badge"),
+    [
+        (ClimbingRoute.Discipline.ROUTE, "Via"),
+        (ClimbingRoute.Discipline.BOULDER, "Boulder"),
+    ],
+)
+def test_route_detail_places_singular_type_badge_below_title(
+    client: Client,
+    route_factory: Callable[..., ClimbingRoute],
+    discipline: str,
+    expected_badge: str,
+) -> None:
+    climbing_route = route_factory(
+        name="Badge Position",
+        discipline=discipline,
+    )
+
+    response = client.get(
+        reverse("climbs:route_detail", args=[climbing_route.pk]),
+        HTTP_ACCEPT_LANGUAGE="it",
+    )
+    header = (
+        response.content.decode()
+        .split(
+            '<header class="detail-header route-detail-header">',
+            maxsplit=1,
+        )[1]
+        .split("</header>", maxsplit=1)[0]
+    )
+
+    assert response.status_code == 200
+    assert header.index('class="route-title-row"') < header.index(
+        'class="badge-row route-title-badges"'
+    )
+    assert (
+        f'<span class="badge badge-discipline">\n                        {expected_badge}\n'
+        in header
+    )
+    if discipline == ClimbingRoute.Discipline.ROUTE:
+        assert ">Vie<" not in header
 
 
 @pytest.mark.django_db

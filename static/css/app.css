@@ -1246,9 +1246,13 @@ meter::-webkit-meter-optimum-value {
 }
 
 .route-wall-cell,
-.route-type-cell,
-.route-proposed-grade {
+.route-type-cell {
   color: var(--color-muted);
+  font-size: 0.84rem;
+}
+
+.route-proposed-grade {
+  color: var(--color-ink);
   font-size: 0.84rem;
 }
 
@@ -1260,14 +1264,18 @@ meter::-webkit-meter-optimum-value {
   font-weight: 650;
 }
 
-.route-official-grade,
-.route-ascent-count {
+.route-official-grade {
   font-size: 1.05rem;
   font-weight: 750;
 }
 
+.route-ascent-count {
+  font-size: 1.05rem;
+  font-weight: 400;
+}
+
 .route-official-grade.grade-project {
-  color: #8a5c00;
+  color: var(--color-ink);
   background: transparent;
   font-size: 0.85rem;
 }
@@ -1337,9 +1345,13 @@ meter::-webkit-meter-optimum-value {
 }
 
 .ascent-date-cell,
-.ascent-type-cell,
+.ascent-type-cell {
+  color: var(--color-ink);
+  font-size: 0.84rem;
+}
+
 .ascent-proposed-grade {
-  color: var(--color-muted);
+  color: var(--color-ink);
   font-size: 0.84rem;
 }
 
@@ -1381,6 +1393,10 @@ meter::-webkit-meter-optimum-value {
   font-weight: 750;
 }
 
+.ascent-data-list-profile .ascent-proposed-grade {
+  font-weight: 400;
+}
+
 .ascent-official-grade {
   font-size: 1rem;
 }
@@ -1396,6 +1412,10 @@ meter::-webkit-meter-optimum-value {
 
 .ascent-compact-type {
   font-weight: 650;
+}
+
+.ascent-compact-date-value {
+  color: var(--color-ink);
 }
 
 .is-archived {
@@ -1807,6 +1827,10 @@ meter::-webkit-meter-optimum-value {
   font-size: clamp(2.7rem, 7vw, 5rem);
   line-height: 0.92;
   overflow-wrap: anywhere;
+}
+
+.route-title-badges {
+  margin-top: 0.75rem;
 }
 
 .route-title-grade {
@@ -2296,6 +2320,11 @@ meter::-webkit-meter-optimum-value {
   .ascent-attempts {
     font-size: 0.76rem;
   }
+
+  .route-proposed-grade .data-cell-compact-label,
+  .ascent-proposed-grade .data-cell-compact-label {
+    display: none;
+  }
 }
 
 @media (max-width: 760px) {
@@ -2665,7 +2694,7 @@ meter::-webkit-meter-optimum-value {
   .ascent-compact-date {
     display: block;
     margin-top: 0.18rem;
-    color: var(--color-muted);
+    color: var(--color-ink);
     font-size: 0.68rem;
   }
 

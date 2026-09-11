@@ -16,7 +16,6 @@
     <div class="route-data-grades">
         <div class="route-official-grade{% if climbing_route.is_project %} grade-project{% endif %}">{{ climbing_route.display_grade }}</div>
         <div class="route-proposed-grade" aria-label="{% translate 'Proposed grade' %}: {{ climbing_route.average_proposed_grade_display }}">
-            {% if show_wall %}<span class="data-cell-compact-label">{% translate "Proposed" %}</span>{% endif %}
             {{ climbing_route.average_proposed_grade_display }}
         </div>
     </div>
