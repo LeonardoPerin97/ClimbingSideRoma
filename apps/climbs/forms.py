@@ -4,6 +4,7 @@ from typing import Any, cast
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import UploadedFile
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.utils import timezone
@@ -15,7 +16,7 @@ from apps.core.forms import StyledFormMixin
 
 from .annotations import empty_route_annotation, parse_route_annotation
 from .grades import FRENCH_GRADE_CHOICES, encode_perceived_grade
-from .images import validate_route_image
+from .images import MAX_ROUTE_IMAGE_COUNT, validate_route_image
 from .models import Ascent, ClimbingRoute, RouteImage, Wall
 
 RATING_CHOICES = (
@@ -126,14 +127,39 @@ class ConfirmDeleteForm(StyledFormMixin, forms.Form):
         return name
 
 
+class MultipleImageInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleImageField(forms.ImageField):
+    widget = MultipleImageInput
+
+    def clean(
+        self,
+        data: Any,
+        initial: Any = None,
+    ) -> list[UploadedFile]:
+        uploads = list(data) if isinstance(data, (list, tuple)) else [data]
+        if len(uploads) > MAX_ROUTE_IMAGE_COUNT:
+            raise ValidationError(
+                _("You can upload at most %(limit)s images at once."),
+                params={"limit": MAX_ROUTE_IMAGE_COUNT},
+            )
+        clean_single_image = super().clean
+        return [clean_single_image(upload, initial) for upload in uploads]
+
+
 class RouteImageUploadForm(StyledFormMixin, forms.Form):
-    image = forms.ImageField(
-        label=_("Route image"),
+    images = MultipleImageField(
+        label=_("Images to combine"),
         validators=(validate_route_image,),
-        widget=forms.ClearableFileInput(
-            attrs={"accept": "image/jpeg,image/png,image/webp"},
+        widget=MultipleImageInput(
+            attrs={
+                "accept": "image/jpeg,image/png,image/webp",
+                "multiple": True,
+            },
         ),
-        help_text=_("JPEG, PNG or WebP. Maximum 8 MB."),
+        help_text=_("Select up to 4 JPEG, PNG or WebP images. Maximum 8 MB per image."),
     )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

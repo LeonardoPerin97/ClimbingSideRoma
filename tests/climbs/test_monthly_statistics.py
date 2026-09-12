@@ -240,7 +240,7 @@ def test_monthly_summary_is_translated_on_both_profiles_and_keeps_account_info_l
     if language == "it":
         assert "Andamento mensile" in content
         assert "Marzo 2026" in content
-        assert "Aggiornato al 15 Marzo 2026" in content
+        assert "Aggiornato al 15/03/2026" in content
         assert "Ultimi 12 mesi." in content
         assert "Last 12 months" not in content
     else:

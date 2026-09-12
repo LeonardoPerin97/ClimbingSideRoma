@@ -1,9 +1,9 @@
 import logging
 from collections.abc import Callable
 
+from django.core.files.base import File
 from django.core.files.storage import Storage
 from django.db import transaction
-from django.db.models.fields.files import FieldFile
 
 from apps.accounts.models import User
 
@@ -17,7 +17,7 @@ def save_route_image(
     *,
     climbing_route: ClimbingRoute,
     actor: User,
-    upload: FieldFile,
+    upload: File,
     existing: RouteImage | None,
 ) -> tuple[RouteImage, bool]:
     route_image = existing or RouteImage(climbing_route=climbing_route)

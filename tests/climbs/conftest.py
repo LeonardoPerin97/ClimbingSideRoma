@@ -113,8 +113,9 @@ def route_image_upload_factory() -> Callable[..., SimpleUploadedFile]:
         image_format = cast(str, overrides.pop("image_format", "PNG"))
         content_type = cast(str, overrides.pop("content_type", "image/png"))
         size = cast(tuple[int, int], overrides.pop("size", (80, 120)))
+        color = cast(tuple[int, int, int], overrides.pop("color", (34, 92, 61)))
         buffer = BytesIO()
-        Image.new("RGB", size, color=(34, 92, 61)).save(buffer, format=image_format)
+        Image.new("RGB", size, color=color).save(buffer, format=image_format)
         return SimpleUploadedFile(name, buffer.getvalue(), content_type=content_type)
 
     return create_upload

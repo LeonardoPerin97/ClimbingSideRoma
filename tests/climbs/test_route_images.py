@@ -11,10 +11,16 @@ from django.db import IntegrityError, transaction
 from django.db.models.deletion import ProtectedError
 from django.test import Client
 from django.urls import reverse
+from PIL import Image
 
 from apps.accounts.models import User
 from apps.accounts.roles import Role, assign_role
-from apps.climbs.images import MAX_ROUTE_IMAGE_BYTES, validate_route_image
+from apps.climbs.images import (
+    MAX_ROUTE_IMAGE_BYTES,
+    MAX_ROUTE_IMAGE_COUNT,
+    merge_route_images_vertically,
+    validate_route_image,
+)
 from apps.climbs.models import ClimbingRoute, RouteImage
 from apps.core.models import AuditLogEntry
 
@@ -87,6 +93,32 @@ def test_oversized_images_are_rejected() -> None:
         validate_route_image(oversized)
 
 
+def test_images_are_merged_vertically_in_the_selected_order(
+    route_image_upload_factory: Callable[..., SimpleUploadedFile],
+) -> None:
+    top_image = route_image_upload_factory(
+        name="top.png",
+        size=(80, 120),
+        color=(220, 30, 30),
+    )
+    bottom_image = route_image_upload_factory(
+        name="bottom.png",
+        size=(40, 80),
+        color=(30, 180, 30),
+    )
+
+    merged_upload = merge_route_images_vertically([top_image, bottom_image])
+
+    with Image.open(merged_upload) as merged_image:
+        assert merged_image.format == "JPEG"
+        assert merged_image.size == (40, 140)
+        top_pixel = merged_image.getpixel((20, 20))
+        bottom_pixel = merged_image.getpixel((20, 100))
+
+    assert top_pixel[0] > top_pixel[1]
+    assert bottom_pixel[1] > bottom_pixel[0]
+
+
 @pytest.mark.django_db
 def test_image_management_requires_authentication(
     client: Client,
@@ -98,6 +130,28 @@ def test_image_management_requires_authentication(
 
     assert response.status_code == 302
     assert response.headers["Location"].startswith(reverse("accounts:login"))
+
+
+@pytest.mark.django_db
+def test_route_image_form_enables_multiple_selection_and_preview(
+    client: Client,
+    user_factory: Callable[..., User],
+    route_factory: Callable[..., ClimbingRoute],
+) -> None:
+    route_setter = user_factory()
+    assign_role(route_setter, Role.ROUTE_SETTER)
+    climbing_route = route_factory()
+    client.force_login(route_setter)
+
+    response = client.get(reverse("climbs:route_image_upload", args=[climbing_route.pk]))
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert 'name="images"' in content
+    assert "multiple" in content
+    assert "data-multi-image-upload-form" in content
+    assert "data-multi-image-preview" in content
+    assert "route-image-upload.js" in content
 
 
 @pytest.mark.django_db
@@ -114,7 +168,7 @@ def test_invalid_image_upload_is_reported_without_creating_a_record(
 
     response = client.post(
         reverse("climbs:route_image_upload", args=[climbing_route.pk]),
-        {"image": fake_image},
+        {"images": fake_image},
     )
 
     assert response.status_code == 200
@@ -165,7 +219,7 @@ def test_route_setter_can_upload_and_annotate_image(
 
     upload_response = client.post(
         reverse("climbs:route_image_upload", args=[climbing_route.pk]),
-        {"image": route_image_upload_factory()},
+        {"images": route_image_upload_factory()},
     )
     route_image = RouteImage.objects.get(climbing_route=climbing_route)
     annotation_response = client.post(
@@ -187,6 +241,67 @@ def test_route_setter_can_upload_and_annotate_image(
             entity_id=str(route_image.pk),
         ).values_list("action", flat=True)
     ) == {AuditLogEntry.Action.UPLOAD, AuditLogEntry.Action.ANNOTATE}
+
+
+@pytest.mark.django_db
+def test_route_setter_can_upload_multiple_images_as_one_vertical_image(
+    client: Client,
+    user_factory: Callable[..., User],
+    route_factory: Callable[..., ClimbingRoute],
+    route_image_upload_factory: Callable[..., SimpleUploadedFile],
+    settings: Any,
+    tmp_path: Path,
+) -> None:
+    settings.MEDIA_ROOT = tmp_path / "media"
+    route_setter = user_factory()
+    assign_role(route_setter, Role.ROUTE_SETTER)
+    climbing_route = route_factory()
+    client.force_login(route_setter)
+
+    response = client.post(
+        reverse("climbs:route_image_upload", args=[climbing_route.pk]),
+        {
+            "images": [
+                route_image_upload_factory(name="top.png", size=(80, 120)),
+                route_image_upload_factory(name="bottom.png", size=(80, 100)),
+            ]
+        },
+    )
+
+    route_image = RouteImage.objects.get(climbing_route=climbing_route)
+    with Image.open(route_image.image.path) as merged_image:
+        merged_size = merged_image.size
+
+    assert response.status_code == 302
+    assert merged_size == (80, 220)
+    assert RouteImage.objects.filter(climbing_route=climbing_route).count() == 1
+
+
+@pytest.mark.django_db
+def test_uploading_too_many_route_images_is_rejected(
+    client: Client,
+    user_factory: Callable[..., User],
+    route_factory: Callable[..., ClimbingRoute],
+    route_image_upload_factory: Callable[..., SimpleUploadedFile],
+) -> None:
+    route_setter = user_factory()
+    assign_role(route_setter, Role.ROUTE_SETTER)
+    climbing_route = route_factory()
+    client.force_login(route_setter)
+
+    response = client.post(
+        reverse("climbs:route_image_upload", args=[climbing_route.pk]),
+        {
+            "images": [
+                route_image_upload_factory(name=f"route-{index}.png")
+                for index in range(MAX_ROUTE_IMAGE_COUNT + 1)
+            ]
+        },
+    )
+
+    assert response.status_code == 200
+    assert b"field-errors" in response.content
+    assert not RouteImage.objects.filter(climbing_route=climbing_route).exists()
 
 
 @pytest.mark.django_db
@@ -251,7 +366,7 @@ def test_replacing_image_clears_markers_and_removes_previous_file(
 
     response = client.post(
         reverse("climbs:route_image_upload", args=[route_image.climbing_route_id]),
-        {"image": route_image_upload_factory(name="replacement.png")},
+        {"images": route_image_upload_factory(name="replacement.png")},
     )
     route_image.refresh_from_db()
 
@@ -333,7 +448,7 @@ def test_image_mutations_are_csrf_protected(
     assert (
         csrf_client.post(
             reverse("climbs:route_image_upload", args=[route_image.climbing_route_id]),
-            {"image": route_image_upload_factory()},
+            {"images": route_image_upload_factory()},
         ).status_code
         == 403
     )

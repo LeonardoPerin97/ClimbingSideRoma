@@ -169,8 +169,18 @@ msgstr "Il nome inserito non corrisponde."
 msgid "Route image"
 msgstr "Immagine della via"
 
+msgid "Images to combine"
+msgstr "Immagini da unire"
+
 msgid "JPEG, PNG or WebP. Maximum 8 MB."
 msgstr "JPEG, PNG o WebP. Massimo 8 MB."
+
+msgid "Select up to 4 JPEG, PNG or WebP images. Maximum 8 MB per image."
+msgstr "Seleziona fino a 4 immagini JPEG, PNG o WebP. Massimo 8 MB per immagine."
+
+#, python-format
+msgid "You can upload at most %(limit)s images at once."
+msgstr "Puoi caricare al massimo %(limit)s immagini alla volta."
 
 msgid "Proposed grade"
 msgstr "Grado proposto"
@@ -223,6 +233,12 @@ msgstr "L'immagine contiene troppi pixel."
 
 msgid "Animated images are not supported."
 msgstr "Le immagini animate non sono supportate."
+
+msgid "Select at least one image."
+msgstr "Seleziona almeno un'immagine."
+
+msgid "The combined image is too large. Choose fewer or smaller images."
+msgstr "L'immagine unita è troppo grande. Scegli meno immagini o immagini più piccole."
 
 msgid "name"
 msgstr "nome"
@@ -891,6 +907,18 @@ msgstr "Sostituisci immagine della via"
 
 msgid "Upload route image"
 msgstr "Carica immagine della via"
+
+msgid "Select up to four images. They will be joined vertically from top to bottom before you add the route markers."
+msgstr "Seleziona fino a quattro immagini. Verranno unite verticalmente dall'alto verso il basso prima di aggiungere i marker della via."
+
+msgid "Move image up"
+msgstr "Sposta l'immagine in alto"
+
+msgid "Move image down"
+msgstr "Sposta l'immagine in basso"
+
+msgid "The images will be joined in this order."
+msgstr "Le immagini verranno unite in questo ordine."
 
 msgid "Replacing the file will clear the current annotation because its coordinates may no longer match."
 msgstr "Sostituendo il file verrà rimossa l'annotazione attuale, perché le coordinate potrebbero non corrispondere più."

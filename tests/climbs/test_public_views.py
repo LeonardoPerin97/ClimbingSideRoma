@@ -1,3 +1,4 @@
+import re
 from collections.abc import Callable
 
 import pytest
@@ -82,7 +83,11 @@ def test_route_list_hides_archived_routes_by_default(
     assert ">Gradi</span>" not in compact_header
     assert ">Attività</span>" not in compact_header
     assert ">Ripetizioni</span>" in compact_header
-    assert '<div class="route-type-cell">\n            Via\n' in content
+    assert re.search(
+        r'class="route-type-cell">.*?>\s*Via\s*</span>',
+        content,
+        re.DOTALL,
+    )
     assert content.index('class="route-beauty"') < content.index('class="route-ascent-count"')
     assert 'class="data-cell-compact-label">Proposto</span>' not in content
 
@@ -364,8 +369,16 @@ def test_wall_detail_exposes_disciplines_and_grade_distribution(
         .split('class="data-list-rows"', maxsplit=1)[0]
     )
     assert ">Ripetizioni</span>" in route_compact_header
-    assert '<div class="route-type-cell">\n            Via\n' in content
-    assert '<div class="route-type-cell">\n            Boulder\n' in content
+    assert re.search(
+        r'class="route-type-cell">.*?>\s*Via\s*</span>',
+        content,
+        re.DOTALL,
+    )
+    assert re.search(
+        r'class="route-type-cell">.*?>\s*Boulder\s*</span>',
+        content,
+        re.DOTALL,
+    )
     assert 'class="data-cell-compact-label">Proposto</span>' not in content
 
 
@@ -634,9 +647,9 @@ def test_route_detail_places_singular_type_badge_below_title(
     assert header.index('class="route-title-row"') < header.index(
         'class="badge-row route-title-badges"'
     )
-    assert (
-        f'<span class="badge badge-discipline">\n                        {expected_badge}\n'
-        in header
+    assert re.search(
+        rf'class="badge badge-discipline[^\"]*">\s*{expected_badge}\s*</span>',
+        header,
     )
     if discipline == ClimbingRoute.Discipline.ROUTE:
         assert ">Vie<" not in header

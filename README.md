@@ -350,14 +350,22 @@ template Django, lo stile è CSS nativo e gli script sono JavaScript senza dipen
    l’intero elenco e tornare successivamente alla visualizzazione paginata.
 5. Il template renderizza schede, filtri e statistiche senza query aggiuntive.
 
-### Caricamento di un’immagine
+### Caricamento delle immagini di una via
 
 1. La vista verifica il permesso sul modello `RouteImage`.
-2. Il form controlla dimensione, formato dichiarato e contenuto reale.
-3. Il servizio salva il record e il file in una transazione controllata.
-4. In produzione il file viene inviato a Cloudinary.
-5. Un eventuale file sostituito viene eliminato solo dopo il commit del database.
-6. L’operazione viene registrata nell’audit log.
+2. Il form accetta da una a quattro immagini e controlla dimensione, formato
+   dichiarato e contenuto reale di ciascun file.
+3. L’interfaccia mostra le anteprime e permette di definire l’ordine dall’alto
+   verso il basso.
+4. Se sono presenti più file, Pillow corregge l’orientamento, li ridimensiona e
+   li unisce verticalmente in un’unica immagine sicura.
+5. Il servizio salva un solo record `RouteImage` e un solo file finale in una
+   transazione controllata.
+6. In produzione il file finale viene inviato a Cloudinary; le immagini sorgente
+   non vengono conservate separatamente.
+7. Un eventuale file sostituito viene eliminato solo dopo il commit del database.
+8. L’operazione, incluso il numero di immagini sorgente, viene registrata
+   nell’audit log.
 
 ### Salvataggio dell’annotazione
 
@@ -390,7 +398,7 @@ climbingside/
 │   │   ├── annotations.py    # schema delle annotazioni
 │   │   ├── forms.py
 │   │   ├── grades.py         # scala francese e ordinamento
-│   │   ├── images.py         # validazione degli upload
+│   │   ├── images.py         # validazione e composizione degli upload
 │   │   ├── media_services.py # ciclo di vita dei file
 │   │   ├── models.py         # Wall, ClimbingRoute, Ascent, RouteImage
 │   │   ├── statistics.py     # aggregazioni statistiche
@@ -421,7 +429,8 @@ climbingside/
 │   ├── images/               # logo e asset statici
 │   └── js/
 │       ├── app.js            # interazioni generali
-│       └── route-annotation.js
+│       ├── route-annotation.js
+│       └── route-image-upload.js # anteprima e ordine delle immagini
 ├── templates/
 │   ├── accounts/
 │   ├── climbs/
@@ -490,7 +499,7 @@ Questa sezione indica dove cercare una responsabilità e come i moduli collabora
 | `urls.py` | URL di pareti, vie, immagini e ripetizioni | Collega ogni endpoint alla relativa vista |
 | `grades.py` | Scala francese e grado decimale | Fornisce ordinamento, codifica e presentazione dei gradi |
 | `statistics.py` | Statistiche personali e collettive | Produce bucket continui usati dagli istogrammi e dalle dashboard |
-| `images.py` | Sicurezza degli upload | Verifica nome, formato, dimensioni, pixel e animazioni |
+| `images.py` | Sicurezza e composizione degli upload | Verifica i file e produce l’unica immagine verticale finale |
 | `media_services.py` | Ciclo di vita delle immagini | Coordina database e storage durante sostituzione o cancellazione |
 | `annotations.py` | Contratto JSON delle annotazioni | Normalizza e valida marcatori e coordinate |
 | `templatetags/climbs_tags.py` | Filtri di presentazione dei gradi | Usato esclusivamente nei template |
@@ -522,6 +531,7 @@ Questa sezione indica dove cercare una responsabilità e come i moduli collabora
 | `static/css/app.css` | Design system, layout responsive e stati dei componenti |
 | `static/js/app.js` | Interazioni generali e filtro degli istogrammi |
 | `static/js/route-annotation.js` | Editor delle annotazioni sopra l’immagine |
+| `static/js/route-image-upload.js` | Anteprima e riordinamento verticale delle immagini selezionate |
 | `locale/it/LC_MESSAGES/` | Catalogo delle traduzioni italiane |
 
 ### Test e infrastruttura
@@ -913,10 +923,16 @@ Sono accettati:
 
 Limiti:
 
-- 8 MB;
+- massimo 4 immagini selezionate insieme;
+- 8 MB per ogni immagine sorgente;
 - 12.000 pixel per lato;
 - 36 megapixel complessivi;
-- una sola immagine per via.
+- una sola immagine finale per via.
+
+Quando vengono selezionate più immagini, l’applicazione le unisce verticalmente
+nell’ordine scelto dall’utente. La composizione viene convertita in JPEG,
+ridimensionata fino a una larghezza massima di 1.600 pixel e compressa entro gli
+stessi limiti di sicurezza previsti per un singolo upload.
 
 Il backend verifica:
 

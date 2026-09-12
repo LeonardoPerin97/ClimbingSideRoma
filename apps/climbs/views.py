@@ -4,7 +4,7 @@ from typing import Any, cast
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import Avg, BooleanField, Count, Exists, F, Max, OuterRef, Q, QuerySet, Value
 from django.db.models.deletion import ProtectedError
@@ -35,6 +35,7 @@ from .grades import (
     format_perceived_grade,
     grade_order_expression,
 )
+from .images import merge_route_images_vertically
 from .media_services import delete_route_image, save_route_image
 from .models import Ascent, ClimbingRoute, RouteImage, Wall
 from .statistics import (
@@ -689,11 +690,17 @@ def route_image_upload(request: HttpRequest, pk: int) -> HttpResponse:
     )
     if request.method == "POST" and form.is_valid():
         try:
+            source_images = form.cleaned_data["images"]
+            upload = (
+                source_images[0]
+                if len(source_images) == 1
+                else merge_route_images_vertically(source_images)
+            )
             with transaction.atomic():
                 route_image, created = save_route_image(
                     climbing_route=climbing_route,
                     actor=actor,
-                    upload=form.cleaned_data["image"],
+                    upload=upload,
                     existing=existing,
                 )
                 record_audit_event(
@@ -703,8 +710,13 @@ def route_image_upload(request: HttpRequest, pk: int) -> HttpResponse:
                     ),
                     entity_type="route_image",
                     entity_id=route_image.pk,
-                    metadata={"route_id": climbing_route.pk},
+                    metadata={
+                        "route_id": climbing_route.pk,
+                        "source_image_count": len(source_images),
+                    },
                 )
+        except ValidationError as error:
+            form.add_error("images", error)
         except IntegrityError:
             form.add_error(
                 None,
