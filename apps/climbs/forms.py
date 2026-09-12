@@ -27,6 +27,12 @@ RATING_CHOICES = (
     (1, _("1 star")),
 )
 
+PROPOSED_GRADE_DECIMAL_CHOICES = (
+    (0, _(".0 — Easy")),
+    *((value, f".{value}") for value in range(1, 9)),
+    (9, _(".9 — Hard")),
+)
+
 
 class WallForm(StyledFormMixin, forms.ModelForm):
     class Meta:
@@ -204,7 +210,7 @@ class AscentForm(StyledFormMixin, forms.ModelForm):
     )
     proposed_grade_decimal = forms.TypedChoiceField(
         label=_("Decimal"),
-        choices=tuple((value, str(value)) for value in range(10)),
+        choices=PROPOSED_GRADE_DECIMAL_CHOICES,
         coerce=int,
     )
 

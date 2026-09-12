@@ -103,8 +103,12 @@ def test_create_form_defaults_to_today_three_stars_and_official_grade_decimal_fi
     assert f'value="{timezone.localdate().isoformat()}"' in content
     assert 'class="ascent-grade-fields"' in content
     assert ">Proposed grade</label>" in content
-    assert ">Decimal</label>" in content
+    assert 'class="sr-only" for="id_proposed_grade_decimal">Decimal</label>' in content
+    assert ">.0 — Easy</option>" in content
+    assert ">.5</option>" in content
+    assert ">.9 — Hard</option>" in content
     assert ">Attempts</label>" in content
+    assert "Add ascent" in content
     assert content.count('type="radio"') == 5
     assert 'class="ascent-star-rating"' in content
     assert 'title="3 stars"' in content
@@ -120,6 +124,10 @@ def test_create_form_defaults_to_today_three_stars_and_official_grade_decimal_fi
     italian_content = italian_response.content.decode()
     assert ">Grado proposto</label>" in italian_content
     assert ">Tentativi</label>" in italian_content
+    assert 'class="sr-only" for="id_proposed_grade_decimal">Decimale</label>' in italian_content
+    assert ">.0 — Facile</option>" in italian_content
+    assert ">.9 — Difficile</option>" in italian_content
+    assert "Aggiungi ripetizione" in italian_content
 
 
 @pytest.mark.django_db

@@ -95,18 +95,23 @@ non prevede l’importazione dei dati della vecchia palestra.
 
 ### Ripetizioni
 
+Il registro pubblico `/ascents/` raccoglie tutte le ripetizioni della palestra,
+ordinate dalla data più recente. Mostra data, utente, via, parete, grado ufficiale,
+grado proposto, tentativi e bellezza; utilizza la paginazione generale da 50 elementi
+e una disposizione compatta dedicata agli smartphone.
+
 Ogni utente può registrare una ripetizione specificando:
 
 - via o boulder;
 - data;
 - valutazione da 1 a 5;
 - grado francese percepito;
-- decimale del grado da 0 a 9;
+- affinamento decimale da `.0 — Facile` a `.9 — Difficile`;
 - Onsight, Flash, numero di tentativi oppure N.D.
 
 È consentita una sola ripetizione per coppia utente/via. Il proprietario può modificarla
 o eliminarla. Le valutazioni negli elenchi sono rappresentate da cinque stelle con base
-grigia e riempimento giallo proporzionale, accompagnate dal valore numerico.
+grigia e riempimento giallo proporzionale.
 
 ### Statistiche
 
@@ -133,6 +138,7 @@ Le statistiche collettive comprendono:
 La home presenta una sintesi immediata della palestra:
 
 - numero di vie attive, pareti, climber e ripetizioni;
+- quattro schede riepilogative cliccabili che aprono i rispettivi elenchi;
 - ripetizioni recenti con climber, via e grado;
 - vie più ripetute;
 - collegamenti rapidi al catalogo e alla registrazione di una ripetizione;
@@ -332,14 +338,15 @@ template Django, lo stile è CSS nativo e gli script sono JavaScript senza dipen
 3. Dopo la soglia configurata, l’accesso viene bloccato temporaneamente.
 4. Un login riuscito elimina il relativo contatore di errori.
 
-### Registrazione di una ripetizione
+### Aggiunta di una ripetizione
 
 1. La vista richiede autenticazione e permesso `add_ascent`.
 2. `AscentForm` mostra solo le vie non ancora registrate dall’utente.
 3. Il form valida data, rating, grado percepito e tentativi.
 4. Il modello applica nuovamente i vincoli essenziali.
 5. Il database impedisce duplicati per utente e via.
-6. La ripetizione viene salvata e diventa visibile nei profili e nelle statistiche.
+6. La ripetizione viene salvata e diventa visibile nel registro pubblico, nei profili
+   e nelle statistiche.
 
 ### Consultazione del catalogo
 
@@ -735,6 +742,7 @@ La compilazione richiede GNU gettext.
 | `/routes/<id>/` | pubblico | Dettaglio via |
 | `/routes/<id>/image/` | RouteSetter/Admin | Immagine della via |
 | `/routes/<id>/annotation/` | RouteSetter/Admin | Editor annotazione |
+| `/ascents/` | pubblico | Registro completo delle ripetizioni |
 | `/ascents/new/` | autenticato | Nuova ripetizione |
 | `/ascents/<id>/edit/` | proprietario | Modifica ripetizione |
 | `/ascents/<id>/delete/` | proprietario | Elimina ripetizione |

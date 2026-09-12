@@ -1,11 +1,6 @@
 {% load i18n %}
 
-<section aria-labelledby="climbing-statistics-heading">
-    <div class="section-heading">
-        <h2 id="climbing-statistics-heading">{% translate "Climbing statistics" %}</h2>
-        {% if can_manage_ascents %}<a class="button button-primary" href="{% url 'climbs:ascent_create' %}">{% translate "Record ascent" %}</a>{% endif %}
-    </div>
-
+<section aria-label="{% translate 'Climbing overview' %}">
     <div class="summary-grid">
         <article><span>{% translate "Recorded ascents" context "profile statistic" %}</span><strong>{{ ascent_count }}</strong></article>
         <article><span>{% translate "Highest grade" %}</span><strong>{{ highest_grade }}</strong></article>

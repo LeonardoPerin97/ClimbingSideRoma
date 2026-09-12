@@ -1,10 +1,36 @@
 {% load i18n %}
 
 <div
-    class="data-list ascent-data-list{% if show_route %} ascent-data-list-profile{% else %} ascent-data-list-route{% endif %}"
+    class="data-list ascent-data-list{% if global_list %} ascent-data-list-global{% elif show_route %} ascent-data-list-profile{% else %} ascent-data-list-route{% endif %}"
     role="region"
     aria-label="{{ table_label }}"
 >
+    {% if global_list %}
+    <div class="data-list-header ascent-data-row data-list-header-desktop" aria-hidden="true">
+        <div class="ascent-global-user-group">
+            <span>{% translate "Date" %}</span>
+            <span>{% translate "User" %}</span>
+        </div>
+        <div class="ascent-global-route-group">
+            <span>{% translate "Climb" %}</span>
+            <span>{% translate "Wall" %}</span>
+        </div>
+        <div class="ascent-global-grade-group">
+            <span>{% translate "Grade" %}</span>
+            <span>{% translate "Proposed" %}</span>
+        </div>
+        <div class="ascent-global-activity-group">
+            <span>{% translate "Attempts" context "ascent form field" %}</span>
+            <span>{% translate "Beauty" %}</span>
+        </div>
+    </div>
+    <div class="data-list-header ascent-data-row data-list-header-compact" aria-hidden="true">
+        <span>{% translate "User" %}</span>
+        <span>{% translate "Climb" %}</span>
+        <span>{% translate "Grade" %}</span>
+        <span>{% translate "Attempts" context "ascent form field" %}</span>
+    </div>
+    {% else %}
     <div class="data-list-header ascent-data-row data-list-header-desktop" aria-hidden="true">
         <div class="ascent-data-identity">
             <span>{% translate "Date" %}</span>
@@ -34,9 +60,10 @@
         {% endif %}
         <span></span>
     </div>
+    {% endif %}
     <div class="data-list-rows">
         {% for ascent in ascents %}
-            {% include "components/ascent_card.html" with show_route=show_route show_user=show_user %}
+            {% include "components/ascent_card.html" with show_route=show_route show_user=show_user global_list=global_list %}
         {% endfor %}
     </div>
 </div>

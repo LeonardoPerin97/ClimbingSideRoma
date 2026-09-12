@@ -83,7 +83,7 @@
                         <a class="button button-danger" href="{% url 'climbs:ascent_delete' user_ascent.pk %}">{% translate "Delete my ascent" %}</a>
                     </div>
                 {% elif perms.climbs.add_ascent %}
-                    <a class="button button-accent" href="{% url 'climbs:ascent_create' %}?route={{ climbing_route.pk }}">{% translate "Record ascent" %}</a>
+                    <a class="button button-accent" href="{% url 'climbs:ascent_create' %}?route={{ climbing_route.pk }}">{% translate "Add ascent" %}</a>
                 {% endif %}
             </div>
         </div>

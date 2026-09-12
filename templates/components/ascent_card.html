@@ -1,6 +1,36 @@
 {% load i18n %}
 
 <article class="ascent-data-row">
+    {% if global_list %}
+    <div class="ascent-global-user-group">
+        <div class="ascent-global-user-cell">
+            {% if ascent.user.is_active %}
+                <h3><a class="list-name-link" href="{% url 'accounts:public_profile' ascent.user.username %}">{{ ascent.user.username }}</a></h3>
+            {% else %}
+                <h3>{% translate "Former user" %}</h3>
+            {% endif %}
+        </div>
+        <div class="ascent-global-date-cell">{{ ascent.date|date:"d/m/Y" }}</div>
+    </div>
+    <div class="ascent-global-route-group">
+        <div class="ascent-global-route-cell">
+            <h3><a class="list-name-link" href="{% url 'climbs:route_detail' ascent.climbing_route_id %}">{{ ascent.climbing_route.name }}</a></h3>
+        </div>
+        <div class="ascent-global-wall-cell">
+            <a class="list-name-link" href="{% url 'climbs:wall_detail' ascent.climbing_route.wall_id %}">{{ ascent.climbing_route.wall.name }}</a>
+        </div>
+    </div>
+    <div class="ascent-global-grade-group">
+        <div class="ascent-official-grade">{{ ascent.climbing_route.display_grade }}</div>
+        <div class="ascent-proposed-grade" aria-label="{% translate 'Proposed grade' %}: {{ ascent.display_proposed_grade }}">
+            {{ ascent.display_proposed_grade }}
+        </div>
+    </div>
+    <div class="ascent-global-activity-group">
+        <div class="ascent-attempts">{{ ascent.display_attempts }}</div>
+        <div class="ascent-beauty">{% include "components/star_rating.html" with rating=ascent.rating %}</div>
+    </div>
+    {% else %}
     <div class="ascent-data-identity">
         <div class="ascent-date-cell">{{ ascent.date|date:"d/m/Y" }}</div>
         {% if show_route %}
@@ -36,4 +66,5 @@
         <div class="ascent-attempts">{{ ascent.display_attempts }}</div>
         <div class="ascent-beauty">{% include "components/star_rating.html" with rating=ascent.rating %}</div>
     </div>
+    {% endif %}
 </article>

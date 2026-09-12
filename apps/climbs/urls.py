@@ -6,6 +6,7 @@ app_name = "climbs"
 
 urlpatterns = [
     path("users/", views.user_list, name="user_list"),
+    path("ascents/", views.ascent_list, name="ascent_list"),
     path("ascents/new/", views.ascent_create, name="ascent_create"),
     path("ascents/<int:pk>/edit/", views.ascent_edit, name="ascent_edit"),
     path("ascents/<int:pk>/delete/", views.ascent_delete, name="ascent_delete"),

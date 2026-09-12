@@ -14,7 +14,7 @@
         <div class="button-row hero-actions">
             <a class="button button-accent" href="{% url 'climbs:route_list' %}">{% translate "Explore climbs" %}</a>
             {% if request.user.is_authenticated %}
-                <a class="button button-ghost" href="{% url 'climbs:ascent_create' %}">{% translate "Record ascent" %}</a>
+                <a class="button button-ghost" href="{% url 'climbs:ascent_create' %}">{% translate "Add ascent" %}</a>
             {% else %}
                 <a class="button button-ghost" href="{% url 'accounts:register' %}">{% translate "Create an account" %}</a>
             {% endif %}
@@ -24,24 +24,24 @@
 
 <section class="home-content">
     <div class="container">
-        <dl class="home-summary" aria-label="{% translate 'Gym at a glance' %}">
-            <div>
-                <dt>{% translate "Active climbs" %}</dt>
-                <dd>{{ active_route_count }}</dd>
-            </div>
-            <div>
-                <dt>{% translate "Walls" %}</dt>
-                <dd>{{ active_wall_count }}</dd>
-            </div>
-            <div>
-                <dt>{% translate "Climbers" %}</dt>
-                <dd>{{ active_user_count }}</dd>
-            </div>
-            <div>
-                <dt>{% translate "Recorded ascents" %}</dt>
-                <dd>{{ ascent_count }}</dd>
-            </div>
-        </dl>
+        <nav class="home-summary" aria-label="{% translate 'Gym at a glance' %}">
+            <a class="home-summary-link" href="{% url 'climbs:route_list' %}">
+                <span class="home-summary-label">{% translate "Active climbs" %}</span>
+                <strong class="home-summary-value">{{ active_route_count }}</strong>
+            </a>
+            <a class="home-summary-link" href="{% url 'climbs:wall_list' %}">
+                <span class="home-summary-label">{% translate "Walls" %}</span>
+                <strong class="home-summary-value">{{ active_wall_count }}</strong>
+            </a>
+            <a class="home-summary-link" href="{% url 'climbs:user_list' %}">
+                <span class="home-summary-label">{% translate "Climbers" %}</span>
+                <strong class="home-summary-value">{{ active_user_count }}</strong>
+            </a>
+            <a class="home-summary-link" href="{% url 'climbs:ascent_list' %}">
+                <span class="home-summary-label">{% translate "Recorded ascents" %}</span>
+                <strong class="home-summary-value">{{ ascent_count }}</strong>
+            </a>
+        </nav>
 
         <div class="home-dashboard">
             <section class="home-feed" aria-labelledby="recent-ascents-heading">
@@ -49,8 +49,8 @@
                     <h2 id="recent-ascents-heading">
                         {% translate "Recent ascents" %}
                     </h2>
-                    <a href="{% url 'climbs:user_list' %}">
-                        {% translate "View climbers" %} →
+                    <a href="{% url 'climbs:ascent_list' %}">
+                        {% translate "View all" %} →
                     </a>
                 </div>
 
@@ -106,10 +106,12 @@
                                         </td>
 
                                         <td data-label="{% translate 'Grade' %}">
-                                            <span class="grade-inline">
-                                                {{ ascent.climbing_route.display_grade }}
+                                            <span class="activity-grade">
+                                                <span class="grade-inline">
+                                                    {{ ascent.climbing_route.display_grade }}
+                                                </span>
+                                                <small>{{ ascent.display_proposed_grade }}</small>
                                             </span>
-                                            <small>{{ ascent.display_proposed_grade }}</small>
                                         </td>
                                     </tr>
                                 {% endfor %}

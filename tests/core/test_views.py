@@ -31,6 +31,12 @@ def test_home_page_is_available(client: Client) -> None:
     assert "🇮🇹" in content
     assert "🇬🇧" in content
     assert "Pensata per la palestra di arrampicata" not in content
+    assert content.count('class="home-summary-link"') == 4
+    assert f'href="{reverse("climbs:route_list")}"' in content
+    assert f'href="{reverse("climbs:wall_list")}"' in content
+    assert f'href="{reverse("climbs:user_list")}"' in content
+    assert f'href="{reverse("climbs:ascent_list")}"' in content
+    assert ">Ripetizioni</a>" in content
 
 
 @pytest.mark.django_db
@@ -108,6 +114,9 @@ def test_home_page_summarises_public_gym_activity(
     assert 'class="activity-climb"' in content
     assert 'class="activity-route list-name-link"' in content
     assert 'class="activity-wall list-name-link"' in content
+    assert 'class="activity-grade"' in content
+    assert "6a" in content
+    assert "<small>6a.0</small>" in content
     assert "rating-stars" not in content
 
 

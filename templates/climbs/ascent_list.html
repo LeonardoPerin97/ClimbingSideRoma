@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Ascents" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <header class="catalog-header">
+            <div>
+                <p class="eyebrow">{% translate "Community logbook" %}</p>
+                <h1>{% translate "Ascents" %}</h1>
+                <p>{% translate "All community ascents, newest first." %}</p>
+            </div>
+            {% if perms.climbs.add_ascent %}
+                <a class="button button-primary" href="{% url 'climbs:ascent_create' %}">{% translate "Add ascent" %}</a>
+            {% endif %}
+        </header>
+
+        {% if page.object_list %}
+            <div class="result-count">
+                {% blocktranslate count total=page.paginator.count %}{{ total }} ascent{% plural %}{{ total }} ascents{% endblocktranslate %}
+            </div>
+            {% translate "All ascents" as ascent_table_label %}
+            {% include "components/ascent_table.html" with ascents=page global_list=True table_label=ascent_table_label %}
+            {% include "components/pagination.html" %}
+        {% else %}
+            <div class="empty-state catalog-empty">
+                <h2>{% translate "No ascents recorded" %}</h2>
+                <p>{% translate "Community ascents will appear here." %}</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

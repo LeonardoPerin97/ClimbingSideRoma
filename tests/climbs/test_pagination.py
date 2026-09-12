@@ -16,29 +16,40 @@ def test_catalogue_lists_use_the_shared_page_size(
     user_factory: Callable[..., User],
     wall_factory: Callable[..., Wall],
     route_factory: Callable[..., ClimbingRoute],
+    ascent_factory: Callable[..., Ascent],
 ) -> None:
     walls = [wall_factory(name=f"Page Wall {index}") for index in range(3)]
     for index in range(3):
-        user_factory(
+        user = user_factory(
             username=f"page-user-{index}",
             email=f"page-user-{index}@example.com",
         )
-        route_factory(name=f"Page Route {index}", wall=walls[0])
+        climbing_route = route_factory(name=f"Page Route {index}", wall=walls[0])
+        ascent_factory(user=user, climbing_route=climbing_route)
 
     walls_response = client.get(reverse("climbs:wall_list"))
     routes_response = client.get(reverse("climbs:route_list"))
     users_response = client.get(reverse("climbs:user_list"))
+    ascents_response = client.get(reverse("climbs:ascent_list"))
     all_walls_response = client.get(reverse("climbs:wall_list"), {"per_page": "all"})
     all_routes_response = client.get(reverse("climbs:route_list"), {"per_page": "all"})
     all_users_response = client.get(reverse("climbs:user_list"), {"per_page": "all"})
+    all_ascents_response = client.get(reverse("climbs:ascent_list"), {"per_page": "all"})
 
     assert len(walls_response.context["page"]) == 2
     assert len(routes_response.context["page"]) == 2
     assert len(users_response.context["page"]) == 2
+    assert len(ascents_response.context["page"]) == 2
     assert walls_response.context["page"].paginator.num_pages == 2
     assert routes_response.context["page"].paginator.num_pages == 2
     assert users_response.context["page"].paginator.num_pages == 2
-    for response in (all_walls_response, all_routes_response, all_users_response):
+    assert ascents_response.context["page"].paginator.num_pages == 2
+    for response in (
+        all_walls_response,
+        all_routes_response,
+        all_users_response,
+        all_ascents_response,
+    ):
         assert len(response.context["page"]) == 3
         assert response.context["pagination_show_all"] is True
         assert response.context["page"].paginator.num_pages == 1

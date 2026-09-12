@@ -864,6 +864,25 @@ def user_list(request: HttpRequest) -> HttpResponse:
     )
 
 
+def ascent_list(request: HttpRequest) -> HttpResponse:
+    """Show the complete public ascent log, newest ascent date first."""
+    ascents = Ascent.objects.select_related(
+        "user",
+        "climbing_route",
+        "climbing_route__wall",
+    ).order_by("-date", "-created_at", "-pk")
+    page, pagination_show_all = paginate(request, ascents)
+    return render(
+        request,
+        "climbs/ascent_list.html",
+        {
+            "page": page,
+            "pagination_show_all": pagination_show_all,
+            "pagination_page_size": settings.PAGINATION_PAGE_SIZE,
+        },
+    )
+
+
 @login_required
 @require_http_methods(["GET", "POST"])
 def ascent_create(request: HttpRequest) -> HttpResponse:

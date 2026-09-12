@@ -182,7 +182,6 @@ def profile(request: HttpRequest) -> HttpResponse:
         {
             "profile_user": profile_user,
             "role": role_label_for(profile_user),
-            "can_manage_ascents": True,
         }
     )
     return render(
@@ -194,11 +193,6 @@ def profile(request: HttpRequest) -> HttpResponse:
 
 def public_profile(request: HttpRequest, username: str) -> HttpResponse:
     profile_user = get_object_or_404(User, username__iexact=username, is_active=True)
-    can_manage_ascents = (
-        request.user.is_authenticated
-        and request.user.pk == profile_user.pk
-        and request.user.has_perm("climbs.change_ascent")
-    )
     context = user_climbing_context(
         profile_user,
         ascent_sort=request.GET.get("sort", "date_desc"),
@@ -209,7 +203,6 @@ def public_profile(request: HttpRequest, username: str) -> HttpResponse:
         {
             "profile_user": profile_user,
             "role": role_label_for(profile_user),
-            "can_manage_ascents": can_manage_ascents,
         }
     )
     return render(

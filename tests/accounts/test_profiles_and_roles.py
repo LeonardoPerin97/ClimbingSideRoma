@@ -150,9 +150,10 @@ def test_account_information_is_at_the_end_of_personal_profile(
     content = response.content.decode()
 
     assert response.status_code == 200
-    assert content.index('id="climbing-statistics-heading"') < content.index(
-        'id="account-information-heading"'
-    )
+    assert content.index('class="summary-grid"') < content.index('id="account-information-heading"')
+    assert 'id="climbing-statistics-heading"' not in content
+    assert "Statistiche di arrampicata" not in content
+    assert reverse("climbs:ascent_create") not in content
 
 
 @pytest.mark.django_db

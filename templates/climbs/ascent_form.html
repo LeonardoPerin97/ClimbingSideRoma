@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% if editing %}{% translate "Edit ascent" %}{% else %}{% translate "Record ascent" %}{% endif %} · ClimbingSide{% endblock %}
+{% block title %}{% if editing %}{% translate "Edit ascent" %}{% else %}{% translate "Add ascent" %}{% endif %} · ClimbingSide{% endblock %}
 
 {% block content %}
 <section class="page-section"><div class="container narrow-container"><div class="form-card">
     <p class="eyebrow">{% translate "Personal logbook" %}</p>
-    <h1>{% if editing %}{% translate "Edit ascent" %}{% else %}{% translate "Record ascent" %}{% endif %}</h1>
+    <h1>{% if editing %}{% translate "Edit ascent" %}{% else %}{% translate "Add ascent" %}{% endif %}</h1>
     <form method="post" novalidate>
         {% csrf_token %}
         {% if form.non_field_errors %}
@@ -38,7 +38,16 @@
 
         <div class="ascent-grade-fields">
             {% include "components/form_field.html" with field=form.proposed_grade_base %}
-            {% include "components/form_field.html" with field=form.proposed_grade_decimal %}
+            <div class="form-group ascent-grade-decimal-field{% if form.proposed_grade_decimal.errors %} has-error{% endif %}">
+                <label class="sr-only" for="{{ form.proposed_grade_decimal.id_for_label }}">{{ form.proposed_grade_decimal.label }}</label>
+                <span class="form-label" aria-hidden="true">&nbsp;</span>
+                {{ form.proposed_grade_decimal }}
+                {% if form.proposed_grade_decimal.errors %}
+                    <div class="field-errors" id="{{ form.proposed_grade_decimal.id_for_label }}-errors" role="alert">
+                        {% for error in form.proposed_grade_decimal.errors %}<p>{{ error }}</p>{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
         </div>
 
         {% include "components/form_field.html" with field=form.attempt_type %}
