@@ -1,18 +1,28 @@
 :root {
-  --color-bg: #f5f5f3;
+  --color-bg: #f4f4f1;
   --color-surface: #ffffff;
-  --color-ink: #262626;
-  --color-muted: #676767;
-  --color-brand: #262626;
+  --color-surface-soft: #ecede9;
+  --color-ink: #252525;
+  --color-muted: #6b6d68;
+  --color-brand: #252525;
   --color-brand-dark: #151515;
-  --color-accent: #f4ad24;
-  --color-accent-dark: #c97c00;
+  --color-accent: #f4b223;
+  --color-accent-dark: #c98208;
   --color-chart: #55b9e8;
   --color-chart-dark: #2386b5;
-  --color-border: #cfcfcb;
-  --color-soft: #ececea;
-  --shadow: 0 8px 24px rgb(0 0 0 / 7%);
-  --radius: 0.2rem;
+  --color-border: #d7d9d3;
+  --color-soft: #ecede9;
+  --color-route-soft: #e5f2f6;
+  --color-route-ink: #236b80;
+  --color-boulder-soft: #fff1d2;
+  --color-boulder-ink: #815800;
+  --color-success: #2f8a5b;
+  --color-danger: #a3291d;
+  --shadow: 0 8px 24px rgb(0 0 0 / 4%);
+  --shadow-soft: 0 4px 16px rgb(0 0 0 / 4%);
+  --radius: 0.5rem;
+  --radius-control: 0.4rem;
+  --radius-pill: 999px;
   --container: 78rem;
 }
 
@@ -45,6 +55,12 @@ h2,
 h3 {
   font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
   line-height: 1.05;
+}
+
+h2,
+h3 {
+  font-family: Barlow, "Segoe UI", Arial, sans-serif;
+  line-height: 1.15;
 }
 
 main {
@@ -95,7 +111,7 @@ input {
   top: 0;
   z-index: 20;
   color: white;
-  background: rgb(32 32 32 / 98%);
+  background: rgb(37 37 37 / 97%);
   border-bottom: 1px solid rgb(255 255 255 / 18%);
   backdrop-filter: blur(8px);
 }
@@ -117,9 +133,10 @@ input {
 }
 
 .brand-logo {
-  width: 2.2rem;
-  height: 2.2rem;
-  object-fit: cover;
+  width: 2.15rem;
+  height: 2.15rem;
+  object-fit: contain;
+  border-radius: var(--radius-control);
 }
 
 .brand-word {
@@ -136,22 +153,26 @@ input {
 }
 
 .nav-content > a {
+  padding: 0.4rem 0.5rem;
   color: rgb(255 255 255 / 88%);
   font-size: 0.9rem;
   font-weight: 700;
+  border-radius: var(--radius-control);
   text-decoration: none;
+  transition: background-color 120ms ease, color 120ms ease;
 }
 
 .nav-content > a:hover,
 .nav-content > a:focus-visible {
   color: var(--color-accent);
+  background: rgb(255 255 255 / 8%);
 }
 
 .nav-content > .nav-cta {
   padding: 0.35rem 0.7rem;
   color: var(--color-brand-dark);
   background: var(--color-accent);
-  border-radius: var(--radius);
+  border-radius: var(--radius-control);
 }
 
 .nav-content > .nav-cta:hover,
@@ -197,7 +218,7 @@ input {
   color: white;
   background: #202020;
   border: 1px solid rgb(255 255 255 / 35%);
-  border-radius: var(--radius);
+  border-radius: var(--radius-control);
   font-size: 1.1rem;
   text-align: center;
 }
@@ -228,8 +249,8 @@ input {
 
 .home-hero-overlay {
   background:
-    linear-gradient(90deg, rgb(0 0 0 / 88%) 0%, rgb(0 0 0 / 58%) 48%, rgb(0 0 0 / 34%) 100%),
-    linear-gradient(0deg, rgb(0 0 0 / 66%) 0%, transparent 58%);
+    linear-gradient(90deg, rgb(0 0 0 / 84%) 0%, rgb(0 0 0 / 52%) 46%, rgb(0 0 0 / 24%) 100%),
+    linear-gradient(0deg, rgb(0 0 0 / 58%) 0%, transparent 62%);
 }
 
 .home-hero-content {
@@ -267,7 +288,7 @@ input {
 }
 
 .button-accent {
-  color: #202020;
+  color: var(--color-ink);
   background: var(--color-accent);
 }
 
@@ -301,6 +322,8 @@ input {
   background: white;
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 .home-summary > div {
@@ -335,12 +358,16 @@ input {
 .home-feed,
 .home-sidebar {
   min-width: 0;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
 }
 
 .section-heading-bordered {
   margin: 0 0 0.5rem;
   padding-bottom: 0.65rem;
-  border-bottom: 2px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .section-heading-bordered a {
@@ -482,7 +509,7 @@ input {
   padding: 0;
   margin: 0;
   list-style: none;
-  background: #eeeeec;
+  background: transparent;
 }
 
 .popular-list li {
@@ -494,7 +521,7 @@ input {
 }
 
 .popular-list li + li {
-  border-top: 1px solid #c8c8c4;
+  border-top: 1px solid var(--color-border);
 }
 
 .popular-rank {
@@ -540,7 +567,7 @@ input {
 }
 
 .message-success {
-  border-left-color: #23834b;
+  border-left-color: var(--color-success);
 }
 
 .message-error {
@@ -568,7 +595,7 @@ input {
 .data-card h2 {
   margin-top: 0;
   padding-bottom: 0.65rem;
-  border-bottom: 2px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .table-scroll {
@@ -611,7 +638,7 @@ meter::-webkit-meter-optimum-value {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  box-shadow: 0 4px 16px rgb(0 0 0 / 5%);
+  box-shadow: var(--shadow-soft);
 }
 
 .form-card h1,
@@ -635,9 +662,9 @@ meter::-webkit-meter-optimum-value {
 .form-label {
   display: block;
   margin-bottom: 0.4rem;
-  font-size: 0.82rem;
+  color: var(--color-muted);
+  font-size: 0.85rem;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .form-control,
@@ -648,8 +675,8 @@ meter::-webkit-meter-optimum-value {
   padding: 0.65rem 0.75rem;
   color: var(--color-ink);
   background: white;
-  border: 1px solid #9f9f9b;
-  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
 }
 
 .form-card select[multiple] {
@@ -662,8 +689,8 @@ meter::-webkit-meter-optimum-value {
   gap: 0.5rem;
   padding: 0.75rem;
   background: white;
-  border: 1px solid #9f9f9b;
-  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
 }
 
 .checkbox-choice-list > div label {
@@ -767,7 +794,7 @@ meter::-webkit-meter-optimum-value {
 .form-card input:focus,
 .form-card select:focus {
   border-color: var(--color-ink);
-  outline: 3px solid rgb(244 173 36 / 30%);
+  outline: 2px solid rgb(244 178 35 / 34%);
 }
 
 .has-error .form-control,
@@ -804,7 +831,7 @@ meter::-webkit-meter-optimum-value {
   padding: 0.75rem;
   background: #fff2f0;
   border-left: 0.25rem solid #b42318;
-  border-radius: 0.4rem;
+  border-radius: var(--radius-control);
 }
 
 .button {
@@ -814,19 +841,18 @@ meter::-webkit-meter-optimum-value {
   justify-content: center;
   padding: 0.65rem 1rem;
   border: 1px solid transparent;
-  border-radius: var(--radius);
-  font-size: 0.78rem;
+  border-radius: var(--radius-control);
+  font-size: 0.84rem;
   font-weight: 700;
-  letter-spacing: 0.045em;
+  letter-spacing: 0.01em;
   line-height: 1.2;
-  text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
 }
 
 .button-primary {
   color: white;
-  background: #262626;
+  background: var(--color-brand);
 }
 
 .button-primary:hover,
@@ -835,7 +861,7 @@ meter::-webkit-meter-optimum-value {
 }
 
 .button-secondary {
-  color: #262626;
+  color: var(--color-ink);
   background: white;
   border-color: var(--color-border);
 }
@@ -843,7 +869,7 @@ meter::-webkit-meter-optimum-value {
 .button-secondary:hover,
 .button-secondary:focus-visible {
   border-color: #262626;
-  background: #f0f0ed;
+  background: var(--color-surface-soft);
 }
 
 .button-block {
@@ -929,9 +955,8 @@ meter::-webkit-meter-optimum-value {
 
 .profile-data dt {
   color: var(--color-muted);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .profile-data dd {
@@ -943,7 +968,7 @@ meter::-webkit-meter-optimum-value {
 .empty-state {
   margin-top: 1.5rem;
   padding: 1.25rem;
-  background: #ececea;
+  background: var(--color-surface-soft);
   border-radius: var(--radius);
 }
 
@@ -971,7 +996,7 @@ meter::-webkit-meter-optimum-value {
   align-items: end;
   margin-bottom: 2rem;
   padding-bottom: 1.4rem;
-  border-bottom: 2px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .catalog-header h1,
@@ -996,7 +1021,7 @@ meter::-webkit-meter-optimum-value {
   align-items: end;
   margin-bottom: 2rem;
   padding: 1rem;
-  background: #e9e9e6;
+  background: var(--color-surface-soft);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
 }
@@ -1037,9 +1062,8 @@ meter::-webkit-meter-optimum-value {
   display: block;
   margin-bottom: 0.3rem;
   color: var(--color-muted);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .filter-bar input,
@@ -1048,8 +1072,8 @@ meter::-webkit-meter-optimum-value {
   min-height: 2.8rem;
   padding: 0.55rem 0.65rem;
   background: white;
-  border: 1px solid #9f9f9b;
-  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
 }
 
 .wall-grid {
@@ -1062,13 +1086,13 @@ meter::-webkit-meter-optimum-value {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  box-shadow: none;
+  box-shadow: var(--shadow-soft);
 }
 
 .wall-card {
   min-height: 12rem;
   padding: 1.2rem;
-  border-top: 3px solid var(--color-ink);
+  border-top: 1px solid var(--color-border);
 }
 
 .wall-card h2 {
@@ -1098,6 +1122,7 @@ meter::-webkit-meter-optimum-value {
   min-height: 6.25rem;
   padding: 0.8rem;
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
 }
 
 .wall-stat dt {
@@ -1153,8 +1178,8 @@ meter::-webkit-meter-optimum-value {
 .data-list {
   overflow: hidden;
   background: var(--color-surface);
-  border-top: 2px solid var(--color-ink);
-  border-bottom: 1px solid var(--color-border);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
 }
 
 .data-list-header {
@@ -1305,12 +1330,12 @@ meter::-webkit-meter-optimum-value {
 }
 
 .route-data-row.is-completed {
-  background: #fff4c7;
-  box-shadow: inset 0.3rem 0 #e5a018;
+  background: #fff7de;
+  box-shadow: inset 0.25rem 0 var(--color-accent);
 }
 
 .data-list-rows > .route-data-row.is-completed:hover {
-  background: #ffefb0;
+  background: #fff1c5;
 }
 
 .ascent-data-list-route .ascent-data-row {
@@ -1437,15 +1462,25 @@ meter::-webkit-meter-optimum-value {
 .badge {
   display: inline-flex;
   padding: 0.25rem 0.5rem;
-  border-radius: var(--radius);
+  border-radius: var(--radius-pill);
   font-size: 0.72rem;
   font-weight: 700;
   line-height: 1.2;
 }
 
 .badge-discipline {
-  color: #202020;
-  background: rgb(244 173 36 / 52%);
+  color: var(--color-route-ink);
+  background: var(--color-route-soft);
+}
+
+.badge-route {
+  color: var(--color-route-ink);
+  background: var(--color-route-soft);
+}
+
+.badge-boulder {
+  color: var(--color-boulder-ink);
+  background: var(--color-boulder-soft);
 }
 
 .badge-muted {
@@ -1490,7 +1525,7 @@ meter::-webkit-meter-optimum-value {
 
 .button-danger {
   color: white;
-  background: #a3291d;
+  background: var(--color-danger);
 }
 
 .button-danger:hover,
@@ -1510,7 +1545,7 @@ meter::-webkit-meter-optimum-value {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  border-top: 3px solid var(--color-ink);
+  border-top: 1px solid var(--color-border);
 }
 
 .summary-grid > div {
@@ -1518,7 +1553,7 @@ meter::-webkit-meter-optimum-value {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  border-top: 3px solid var(--color-ink);
+  border-top: 1px solid var(--color-border);
 }
 
 .summary-grid dt {
@@ -1800,7 +1835,7 @@ meter::-webkit-meter-optimum-value {
   display: flex;
   margin-bottom: 1.25rem;
   padding-bottom: 1.25rem;
-  border-bottom: 2px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .breadcrumb {
@@ -1859,6 +1894,8 @@ meter::-webkit-meter-optimum-value {
   margin: 0 0 1rem;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 .route-summary > div {
@@ -1888,8 +1925,9 @@ meter::-webkit-meter-optimum-value {
   gap: 1rem;
   align-items: center;
   padding: 0.75rem;
-  background: #e9e9e6;
+  background: var(--color-surface-soft);
   border: 1px solid var(--color-border);
+  border-radius: var(--radius);
 }
 
 .route-user-actions {
@@ -1927,6 +1965,7 @@ meter::-webkit-meter-optimum-value {
   margin: 0;
   background: white;
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
 }
 
 .my-ascent-summary > div {
@@ -2062,7 +2101,9 @@ meter::-webkit-meter-optimum-value {
 .user-list {
   display: grid;
   gap: 0;
-  border-top: 2px solid var(--color-ink);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 .user-card {
@@ -2123,8 +2164,10 @@ meter::-webkit-meter-optimum-value {
 .route-media-section {
   margin: 2.5rem 0;
   padding: clamp(1rem, 3vw, 1.5rem);
-  color: white;
-  background: #202020;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
 }
 
 .route-media-section .section-heading {
@@ -2132,7 +2175,7 @@ meter::-webkit-meter-optimum-value {
 }
 
 .route-media-section .section-heading h2 {
-  color: white;
+  color: var(--color-ink);
 }
 
 .route-media-section .empty-state {
@@ -2194,8 +2237,8 @@ meter::-webkit-meter-optimum-value {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  box-shadow: none;
-  border-top: 3px solid var(--color-ink);
+  box-shadow: var(--shadow-soft);
+  border-top: 1px solid var(--color-border);
 }
 
 .annotation-toolbar,
@@ -2547,14 +2590,14 @@ meter::-webkit-meter-optimum-value {
   }
 
   .filter-bar {
-    gap: 0.3rem;
+    gap: 0.55rem;
     margin-bottom: 0.85rem;
-    padding: 0.35rem;
+    padding: 0.75rem;
   }
 
   .filter-bar label {
     margin-bottom: 0.1rem;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
 
   .filter-bar input,
@@ -2587,7 +2630,7 @@ meter::-webkit-meter-optimum-value {
   .summary-grid article,
   .summary-grid > div {
     padding: 0.65rem 0.7rem;
-    border-top-width: 2px;
+    border-top-width: 1px;
   }
 
   .summary-grid dt,

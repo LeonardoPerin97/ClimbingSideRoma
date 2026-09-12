@@ -12,7 +12,9 @@
             </div>
         {% endif %}
         <div class="route-type-cell">
-            {% if climbing_route.discipline == "route" %}{% translate "Route" %}{% else %}{% translate "Boulder" %}{% endif %}
+            <span class="badge badge-discipline{% if climbing_route.discipline == 'route' %} badge-route{% else %} badge-boulder{% endif %}">
+                {% if climbing_route.discipline == "route" %}{% translate "Route" %}{% else %}{% translate "Boulder" %}{% endif %}
+            </span>
         </div>
     </div>
     <div class="route-data-grades">

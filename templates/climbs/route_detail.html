@@ -26,7 +26,7 @@
                     </h1>
                 </div>
                 <div class="badge-row route-title-badges">
-                    <span class="badge badge-discipline">
+                    <span class="badge badge-discipline{% if climbing_route.discipline == 'route' %} badge-route{% else %} badge-boulder{% endif %}">
                         {% if climbing_route.discipline == "route" %}{% translate "Route" %}{% else %}{% translate "Boulder" %}{% endif %}
                     </span>
                     {% if climbing_route.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
@@ -102,7 +102,7 @@
 
         <section class="route-media-section" aria-labelledby="route-image-heading">
             <div class="section-heading">
-                <h2 id="route-image-heading">{% translate "Route image" %}</h2>
+                <!--<h2 id="route-image-heading">{% translate "Route image" %}</h2>-->
                 <div class="button-row media-actions">
                     {% if route_image %}
                         {% if perms.climbs.change_routeimage %}
@@ -136,8 +136,9 @@
                 {{ route_image.annotations|json_script:"route-annotation-data" }}
             {% else %}
                 <div class="empty-state catalog-empty">
-                    <h3>{% translate "No route image" %}</h3>
-                    <p>{% translate "An authorised route setter can upload one image for this route." %}</p>
+                    <!--<h3>{% translate "No route image" %}</h3>
+                    <p>{% translate "An authorised route setter can upload one image for this route." %}</p>-->
+                    <p>{% translate "No route image" %}</p>
                 </div>
             {% endif %}
         </section>
