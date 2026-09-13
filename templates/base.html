@@ -43,7 +43,7 @@
                 <a href="{% url 'climbs:ascent_list' %}">{% translate "Ascents" %}</a>
                 <a href="{% url 'core:statistics' %}">{% translate "Statistics" %}</a>
                 {% if request.user.is_authenticated %}
-                    <a href="{% url 'accounts:profile' %}">{% translate "My profile" %}</a>
+                    <a href="{% url 'accounts:public_profile' request.user.username %}">{% translate "My profile" %}</a>
                     {% if request.user.is_staff %}
                         <a href="{% url 'core:management_dashboard' %}">{% translate "Management" %}</a>
                         <a href="{% url 'admin:index' %}">{% translate "Administration" %}</a>

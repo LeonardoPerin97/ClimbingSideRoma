@@ -42,15 +42,17 @@
         </form>
 
         {% if page.object_list %}
-            <div class="wall-grid">
+            <div class="wall-list">
                 {% for wall in page %}
                     <article class="wall-card{% if wall.is_archived %} is-archived{% endif %}">
-                        <div class="badge-row">
-                            {% if wall.is_archived %}<span class="badge badge-muted">{% translate "Archived" %}</span>{% endif %}
+                        <div>
+                            {% if wall.is_archived %}
+                                <div class="badge-row"><span class="badge badge-muted">{% translate "Archived" %}</span></div>
+                            {% endif %}
+                            <h2><a class="list-name-link" href="{% url 'climbs:wall_detail' wall.pk %}">{{ wall.name }}</a></h2>
                         </div>
-                        <h2><a class="list-name-link" href="{% url 'climbs:wall_detail' wall.pk %}">{{ wall.name }}</a></h2>
-                        <dl class="wall-stats">
-                            <div class="wall-stat wall-stat-climbs">
+                        <dl class="wall-card-stats">
+                            <div>
                                 <dt>{% translate "Climbs" %}</dt>
                                 <dd>
                                     <strong>{{ wall.route_count }}</strong>
@@ -60,7 +62,7 @@
                                     </span>
                                 </dd>
                             </div>
-                            <div class="wall-stat wall-stat-ascents">
+                            <div>
                                 <dt>{% translate "Ascents" %}</dt>
                                 <dd><strong>{{ wall.ascent_count }}</strong></dd>
                             </div>

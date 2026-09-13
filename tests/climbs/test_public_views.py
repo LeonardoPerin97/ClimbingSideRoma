@@ -36,8 +36,9 @@ def test_wall_list_counts_only_active_routes(
     assert listed_wall.route_discipline_count == 1
     assert listed_wall.boulder_count == 0
     content = response.content.decode()
-    assert 'class="wall-stat wall-stat-climbs"' in content
-    assert 'class="wall-stat wall-stat-ascents"' in content
+    assert 'class="wall-list"' in content
+    assert 'class="wall-card-stats"' in content
+    assert 'class="wall-stat' not in content
     assert 'class="list-name-link"' in content
     assert "<dt>Vie</dt>" in content
     assert "<dt>Ripetizioni</dt>" in content

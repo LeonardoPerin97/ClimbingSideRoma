@@ -139,7 +139,7 @@ def test_profile_requires_authentication(client: Client) -> None:
 
 
 @pytest.mark.django_db
-def test_account_information_is_at_the_end_of_personal_profile(
+def test_personal_area_redirects_to_own_climber_profile(
     client: Client,
     user_factory: Callable[..., User],
 ) -> None:
@@ -147,10 +147,31 @@ def test_account_information_is_at_the_end_of_personal_profile(
     client.force_login(user)
 
     response = client.get(reverse("accounts:profile"))
+
+    assert response.status_code == 302
+    assert response.headers["Location"] == reverse(
+        "accounts:public_profile",
+        args=[user.username],
+    )
+
+
+@pytest.mark.django_db
+def test_own_climber_profile_places_private_account_information_at_the_end(
+    client: Client,
+    user_factory: Callable[..., User],
+) -> None:
+    user = user_factory(email="owner-private@example.com")
+    client.force_login(user)
+
+    response = client.get(reverse("accounts:public_profile", args=[user.username]))
     content = response.content.decode()
 
     assert response.status_code == 200
     assert content.index('class="summary-grid"') < content.index('id="account-information-heading"')
+    assert "owner-private@example.com" in content
+    assert reverse("accounts:profile_edit") in content
+    assert reverse("accounts:password_change") in content
+    assert 'id="profile-information-heading"' not in content
     assert 'id="climbing-statistics-heading"' not in content
     assert "Statistiche di arrampicata" not in content
     assert reverse("climbs:ascent_create") not in content
@@ -169,6 +190,27 @@ def test_public_profile_is_visible_but_does_not_expose_email(
     content = response.content.decode()
     assert "visible-climber" in content
     assert "private@example.com" not in content
+    assert 'id="account-information-heading"' not in content
+
+
+@pytest.mark.django_db
+def test_authenticated_user_cannot_see_another_climbers_account_information(
+    client: Client,
+    user_factory: Callable[..., User],
+) -> None:
+    viewer = user_factory(username="profile-viewer", email="viewer@example.com")
+    other = user_factory(username="other-climber", email="other-private@example.com")
+    client.force_login(viewer)
+
+    response = client.get(reverse("accounts:public_profile", args=[other.username]))
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert "other-private@example.com" not in content
+    assert 'id="account-information-heading"' not in content
+    assert reverse("accounts:profile_edit") not in content
+    assert reverse("accounts:password_change") not in content
+    assert 'id="profile-information-heading"' in content
 
 
 @pytest.mark.django_db

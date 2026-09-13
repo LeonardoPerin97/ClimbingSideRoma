@@ -15,7 +15,7 @@
                 {% include "components/form.html" %}
                 <div class="button-row">
                     <button class="button button-primary" type="submit">{% translate "Save changes" %}</button>
-                    <a class="button button-secondary" href="{% url 'accounts:profile' %}">{% translate "Cancel" %}</a>
+                    <a class="button button-secondary" href="{% url 'accounts:public_profile' request.user.username %}">{% translate "Cancel" %}</a>
                 </div>
             </form>
         </div>

@@ -122,7 +122,7 @@ def test_projects_count_without_grades_and_archived_ascents_are_included() -> No
 
 
 @pytest.mark.django_db
-def test_profile_monthly_summary_uses_one_query_and_only_the_profile_owner(
+def test_profile_statistics_use_three_constant_queries_and_only_the_profile_owner(
     user_factory: Callable[..., User],
     wall_factory: Callable[..., Wall],
     route_factory: Callable[..., ClimbingRoute],
@@ -149,7 +149,7 @@ def test_profile_monthly_summary_uses_one_query_and_only_the_profile_owner(
         context = user_climbing_context(owner, today=date(2026, 3, 15))
         summary = context["monthly_summary"]
 
-    assert len(queries) == 1
+    assert len(queries) == 3
     assert context["ascent_count"] == 7
     assert sum(month.total for month in summary) == 6
     assert summary[0] == MonthlyClimbingSummary(date(2026, 3, 1), 4, "6a", 2, "6a")
@@ -207,7 +207,7 @@ def test_monthly_summary_is_translated_on_both_profiles_and_keeps_account_info_l
     monkeypatch.setattr("apps.climbs.statistics.timezone.localdate", lambda: today)
     if profile_kind == "personal":
         client.force_login(owner)
-        url = reverse("accounts:profile")
+        url = reverse("accounts:public_profile", args=[owner.username])
         footer_heading = "account-information-heading"
     else:
         url = reverse("accounts:public_profile", args=[owner.username])

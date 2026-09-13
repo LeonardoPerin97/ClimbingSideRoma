@@ -171,23 +171,9 @@ class ClimbingSideLogoutView(auth_views.LogoutView):
 
 @login_required
 def profile(request: HttpRequest) -> HttpResponse:
-    profile_user = cast(User, request.user)
-    context = user_climbing_context(
-        profile_user,
-        ascent_sort=request.GET.get("sort", "date_desc"),
-        ascent_discipline=request.GET.get("discipline", ""),
-    )
-    _add_ascent_page(context, request)
-    context.update(
-        {
-            "profile_user": profile_user,
-            "role": role_label_for(profile_user),
-        }
-    )
-    return render(
-        request,
-        "accounts/profile.html",
-        context,
+    return redirect(
+        "accounts:public_profile",
+        username=cast(User, request.user).username,
     )
 
 
@@ -203,6 +189,7 @@ def public_profile(request: HttpRequest, username: str) -> HttpResponse:
         {
             "profile_user": profile_user,
             "role": role_label_for(profile_user),
+            "is_own_profile": request.user.is_authenticated and request.user.pk == profile_user.pk,
         }
     )
     return render(
@@ -217,9 +204,9 @@ def public_profile(request: HttpRequest, username: str) -> HttpResponse:
 def edit_profile(request: HttpRequest) -> HttpResponse:
     form = ProfileUpdateForm(request.POST or None, instance=request.user)
     if request.method == "POST" and form.is_valid():
-        form.save()
+        profile_user = form.save()
         messages.success(request, _("Profile updated successfully."))
-        return redirect("accounts:profile")
+        return redirect("accounts:public_profile", username=profile_user.username)
     return render(request, "accounts/profile_edit.html", {"form": form})
 
 

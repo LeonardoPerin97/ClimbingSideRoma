@@ -24,6 +24,7 @@
   --radius-control: 0.4rem;
   --radius-pill: 999px;
   --container: 78rem;
+  --route-image-max-width: 60rem;
 }
 
 *,
@@ -111,7 +112,7 @@ input {
   top: 0;
   z-index: 20;
   color: white;
-  background: rgb(37 37 37 / 97%);
+  background: var(--color-brand-dark);
   border-bottom: 1px solid rgb(255 255 255 / 18%);
   backdrop-filter: blur(8px);
 }
@@ -1160,28 +1161,34 @@ meter::-webkit-meter-optimum-value {
   border-radius: var(--radius-control);
 }
 
-.wall-grid {
+.wall-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-  gap: 1rem;
-}
-
-.wall-card {
+  gap: 0;
+  overflow: hidden;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
 }
 
 .wall-card {
-  min-height: 12rem;
-  padding: 1.2rem;
-  border-top: 1px solid var(--color-border);
+  display: flex;
+  min-height: 0;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  background: var(--color-surface);
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
+}
+
+.wall-card:last-child {
+  border-bottom: 0;
 }
 
 .wall-card h2 {
-  margin: 0.45rem 0 0.2rem;
-  font-size: 1.55rem;
+  margin: 0;
 }
 
 .wall-card h2 a {
@@ -1194,69 +1201,40 @@ meter::-webkit-meter-optimum-value {
   text-decoration: none;
 }
 
-.wall-stats {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(6.5rem, 0.65fr);
-  gap: 0.65rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0;
+.wall-card-stats {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin: 0;
+  color: var(--color-muted);
+  text-align: right;
 }
 
-.wall-stat {
-  min-height: 6.25rem;
-  padding: 0.8rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
+.wall-card-stats > div {
+  min-width: 7rem;
 }
 
-.wall-stat dt {
-  font-size: 0.7rem;
+.wall-card-stats dt {
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.wall-stat dd {
-  margin: 0.35rem 0 0;
+.wall-card-stats dd {
+  margin: 0.1rem 0 0;
 }
 
-.wall-stat strong {
+.wall-card-stats strong {
   display: block;
-  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
-  font-size: 2.25rem;
-  line-height: 0.95;
-}
-
-.wall-stat-climbs {
-  color: var(--color-muted);
-  background: var(--color-soft);
-}
-
-.wall-stat-climbs strong {
   color: var(--color-ink);
+  font-size: 1.35rem;
+  line-height: 1.1;
 }
 
-.wall-stat-climbs span {
+.wall-card-stats span {
   display: block;
-  margin-top: 0.4rem;
-  font-size: 0.76rem;
-}
-
-.wall-stat-ascents {
-  /*
-  color: rgb(255 255 255 / 72%);
-  background: var(--color-ink);
-  border-color: var(--color-ink);
-  */
-  color: var(--color-muted);
-  background: var(--color-soft);
-}
-
-.wall-stat-ascents strong {
-  /*
-  color: var(--color-accent);
-  */
-  color: var(--color-ink);
+  margin-top: 0.18rem;
+  font-size: 0.72rem;
 }
 
 .data-list {
@@ -2186,6 +2164,63 @@ meter::-webkit-meter-optimum-value {
   margin-top: 1rem;
 }
 
+.profile-progress-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.profile-progress-subheading {
+  margin: 1.6rem 0 0.8rem;
+  color: var(--color-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.profile-progress-item {
+  display: grid;
+  gap: 0.38rem;
+}
+
+.profile-progress-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.profile-progress-heading > a,
+.profile-progress-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.profile-progress-value {
+  flex: none;
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.profile-progress-value strong {
+  color: var(--color-ink);
+}
+
+.profile-progress-track {
+  height: 0.55rem;
+  overflow: hidden;
+  background: var(--color-soft);
+  border-radius: var(--radius-pill);
+}
+
+.profile-progress-track > span {
+  display: block;
+  width: var(--profile-progress);
+  height: 100%;
+  background: var(--color-chart);
+  border-radius: inherit;
+}
+
 .profile-monthly-summary {
   margin-top: 1rem;
   min-width: 0;
@@ -2333,7 +2368,7 @@ meter::-webkit-meter-optimum-value {
 .route-image-stage {
   position: relative;
   display: block;
-  width: 100%;
+  width: min(100%, var(--route-image-max-width));
   max-width: 100%;
   margin: 1rem auto 0;
   overflow: hidden;
@@ -2893,6 +2928,21 @@ meter::-webkit-meter-optimum-value {
 
   .statistics-grid {
     grid-template-columns: 1fr;
+  }
+
+  .wall-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .wall-card-stats {
+    width: 100%;
+    justify-content: space-between;
+    text-align: left;
+  }
+
+  .wall-card-stats > div {
+    min-width: 0;
   }
 
   .user-card {

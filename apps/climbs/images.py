@@ -16,6 +16,8 @@ MAX_ROUTE_IMAGE_PIXELS = 36_000_000
 MAX_ROUTE_IMAGE_SIDE = 12_000
 MAX_ROUTE_IMAGE_COUNT = 4
 MAX_MERGED_IMAGE_WIDTH = 1_600
+EXIF_ORIENTATION_TAG = 274
+EXIF_ORIENTATIONS_THAT_SWAP_AXES = {5, 6, 7, 8}
 ALLOWED_ROUTE_IMAGE_FORMATS = {"JPEG", "PNG", "WEBP"}
 ALLOWED_ROUTE_IMAGE_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
 ALLOWED_ROUTE_IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
@@ -78,77 +80,128 @@ def merge_route_images_vertically(uploads: list[Any]) -> ContentFile:
             params={"limit": MAX_ROUTE_IMAGE_COUNT},
         )
 
-    prepared_images: list[Image.Image] = []
     try:
         for upload in uploads:
             validate_route_image(upload)
-            prepared_images.append(_open_route_image(upload))
 
-        target_width = min(
-            MAX_MERGED_IMAGE_WIDTH,
-            *(image.width for image in prepared_images),
-        )
-        resized_images = _resize_for_vertical_merge(prepared_images, target_width)
-        total_height = sum(image.height for image in resized_images)
-        scale = min(
-            1.0,
-            MAX_ROUTE_IMAGE_SIDE / total_height,
-            sqrt(MAX_ROUTE_IMAGE_PIXELS / (target_width * total_height)),
-        )
-        if scale < 1.0:
-            for image in resized_images:
-                image.close()
-            target_width = max(1, int(target_width * scale))
-            resized_images = _resize_for_vertical_merge(prepared_images, target_width)
-            total_height = sum(image.height for image in resized_images)
+        source_sizes = [_oriented_image_size(upload) for upload in uploads]
+        target_width, target_heights = _merged_image_dimensions(source_sizes)
+        total_height = sum(target_heights)
 
         merged = Image.new("RGB", (target_width, total_height), color="white")
-        offset_y = 0
-        for image in resized_images:
-            merged.paste(image, (0, offset_y))
-            offset_y += image.height
-            image.close()
-
         try:
+            offset_y = 0
+            for upload, target_height in zip(uploads, target_heights, strict=True):
+                image = _prepare_image_for_merge(
+                    upload,
+                    (target_width, target_height),
+                )
+                try:
+                    merged.paste(image, (0, offset_y))
+                    offset_y += target_height
+                finally:
+                    image.close()
             return _encode_merged_image(merged)
         finally:
             merged.close()
     finally:
-        for image in prepared_images:
-            image.close()
         for upload in uploads:
             with suppress(AttributeError, OSError):
                 upload.seek(0)
 
 
-def _open_route_image(upload: Any) -> Image.Image:
+def _oriented_image_size(upload: Any) -> tuple[int, int]:
     upload.seek(0)
-    with Image.open(upload) as source:
-        image = ImageOps.exif_transpose(source)
-        image.load()
-        if image.mode in {"RGBA", "LA"} or (image.mode == "P" and "transparency" in image.info):
-            rgba_image = image.convert("RGBA")
-            rgb_image = Image.new("RGB", rgba_image.size, color="white")
-            rgb_image.paste(rgba_image, mask=rgba_image.getchannel("A"))
-            rgba_image.close()
-            return rgb_image
-        return image.convert("RGB")
+    try:
+        with Image.open(upload) as image:
+            width, height = image.size
+            orientation = image.getexif().get(EXIF_ORIENTATION_TAG, 1)
+            if orientation in EXIF_ORIENTATIONS_THAT_SWAP_AXES:
+                return height, width
+            return width, height
+    finally:
+        with suppress(AttributeError, OSError):
+            upload.seek(0)
 
 
-def _resize_for_vertical_merge(
-    images: list[Image.Image],
-    target_width: int,
-) -> list[Image.Image]:
-    resized_images = []
-    for image in images:
-        target_height = max(1, round(image.height * target_width / image.width))
-        resized_images.append(
-            image.resize(
-                (target_width, target_height),
+def _merged_image_dimensions(
+    source_sizes: list[tuple[int, int]],
+) -> tuple[int, list[int]]:
+    target_width = min(MAX_MERGED_IMAGE_WIDTH, *(width for width, _height in source_sizes))
+
+    def target_heights(width: int) -> list[int]:
+        return [
+            max(1, round(source_height * width / source_width))
+            for source_width, source_height in source_sizes
+        ]
+
+    heights = target_heights(target_width)
+    total_height = sum(heights)
+    scale = min(
+        1.0,
+        MAX_ROUTE_IMAGE_SIDE / total_height,
+        sqrt(MAX_ROUTE_IMAGE_PIXELS / (target_width * total_height)),
+    )
+    target_width = max(1, int(target_width * scale))
+    heights = target_heights(target_width)
+
+    while (
+        sum(heights) > MAX_ROUTE_IMAGE_SIDE or target_width * sum(heights) > MAX_ROUTE_IMAGE_PIXELS
+    ):
+        if target_width <= 1:
+            raise ValidationError(
+                _("The combined image is too large. Choose fewer or smaller images."),
+            )
+        target_width -= 1
+        heights = target_heights(target_width)
+
+    return target_width, heights
+
+
+def _prepare_image_for_merge(
+    upload: Any,
+    target_size: tuple[int, int],
+) -> Image.Image:
+    upload.seek(0)
+    try:
+        with Image.open(upload) as source:
+            orientation = source.getexif().get(EXIF_ORIENTATION_TAG, 1)
+            draft_size = (
+                (target_size[1], target_size[0])
+                if orientation in EXIF_ORIENTATIONS_THAT_SWAP_AXES
+                else target_size
+            )
+            if source.format == "JPEG":
+                source.draft("RGB", draft_size)
+
+            ImageOps.exif_transpose(source, in_place=True)
+            source.thumbnail(
+                target_size,
+                Image.Resampling.LANCZOS,
+                reducing_gap=3.0,
+            )
+
+            if source.mode in {"RGBA", "LA"} or (
+                source.mode == "P" and "transparency" in source.info
+            ):
+                rgba_image = source.convert("RGBA")
+                rgb_image = Image.new("RGB", rgba_image.size, color="white")
+                rgb_image.paste(rgba_image, mask=rgba_image.getchannel("A"))
+                rgba_image.close()
+            else:
+                rgb_image = source.convert("RGB")
+
+            if rgb_image.size == target_size:
+                return rgb_image
+            resized_image = rgb_image.resize(
+                target_size,
                 Image.Resampling.LANCZOS,
             )
-        )
-    return resized_images
+            rgb_image.close()
+            return resized_image
+    finally:
+        with suppress(AttributeError, OSError):
+            upload.seek(0)
 
 
 def _encode_merged_image(image: Image.Image) -> ContentFile:

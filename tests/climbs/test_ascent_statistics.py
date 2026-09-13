@@ -315,7 +315,7 @@ def test_profile_ascent_list_hides_actions_but_route_detail_keeps_them(
     edit_url = reverse("climbs:ascent_edit", args=[ascent.pk])
     delete_url = reverse("climbs:ascent_delete", args=[ascent.pk])
 
-    profile_response = client.get(reverse("accounts:profile"))
+    profile_response = client.get(reverse("accounts:public_profile", args=[ascent.user.username]))
     route_response = client.get(reverse("climbs:route_detail", args=[ascent.climbing_route_id]))
 
     profile_content = profile_response.content.decode()
@@ -464,6 +464,14 @@ def test_profile_context_contains_histogram_distributions_without_progression(
         discipline=ClimbingRoute.Discipline.BOULDER,
         is_project=True,
     )
+    route_factory(name="Uncompleted Route", wall=wall, official_grade="5b")
+    untouched_wall = wall_factory(name="Untouched Wall")
+    route_factory(
+        name="Uncompleted Boulder",
+        wall=untouched_wall,
+        discipline=ClimbingRoute.Discipline.BOULDER,
+        official_grade="5c",
+    )
     ascent_factory(user=user, climbing_route=easy, date=date(2026, 1, 10))
     ascent_factory(user=user, climbing_route=harder, date=date(2026, 2, 10))
     ascent_factory(user=user, climbing_route=project, date=date(2026, 3, 10))
@@ -472,8 +480,14 @@ def test_profile_context_contains_histogram_distributions_without_progression(
     content = response.content.decode()
 
     assert response.context["ascent_count"] == 3
+    assert response.context["total_climb_count"] == 5
+    assert response.context["climb_completion_percentage"] == 60.0
     assert response.context["highest_grade"] == "6a"
     assert response.context["discipline_counts"] == {"route": 1, "boulder": 2}
+    assert response.context["total_route_count"] == 2
+    assert response.context["route_completion_percentage"] == 50.0
+    assert response.context["total_boulder_count"] == 3
+    assert response.context["boulder_completion_percentage"] == 66.7
     assert response.context["maximum_grade_count"] == 1
     distribution = response.context["grade_distribution"]
     assert [bucket.label for bucket in distribution] == [
@@ -504,6 +518,23 @@ def test_profile_context_contains_histogram_distributions_without_progression(
     assert response.context["project_count"] == 1
     assert "progression" not in response.context
     assert response.context["wall_distribution"][0].label == "Progress Wall"
+    assert response.context["wall_distribution"][0].completed == 3
+    assert response.context["wall_distribution"][0].total == 4
+    assert response.context["wall_distribution"][0].percentage == 75.0
+    assert response.context["wall_distribution"][1].label == "Untouched Wall"
+    assert response.context["wall_distribution"][1].completed == 0
+    assert response.context["wall_distribution"][1].percentage == 0.0
+    assert 'class="summary-percentage"' not in content
+    assert "Completamento catalogo" not in content
+    assert content.count('class="profile-progress-list"') == 2
+    assert content.count('class="profile-progress-track"') == 5
+    assert content.index("Totale") < content.index("Per parete:")
+    assert content.index("Per parete:") < content.index("Progress Wall")
+    assert "<strong>3</strong> / 5 · 60%" in content
+    assert "<strong>1</strong> / 2 · 50%" in content
+    assert "<strong>2</strong> / 3 · 66,7%" in content
+    assert 'style="--profile-progress: 75.0%;"' in content
+    assert reverse("climbs:wall_detail", args=[wall.pk]) in content
     assert 'class="grade-histogram"' in content
     assert 'data-histogram-filter="all"' in content
     assert 'data-histogram-filter="route"' in content

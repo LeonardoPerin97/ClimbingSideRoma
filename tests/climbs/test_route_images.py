@@ -15,6 +15,7 @@ from PIL import Image
 
 from apps.accounts.models import User
 from apps.accounts.roles import Role, assign_role
+from apps.climbs import images as image_services
 from apps.climbs.images import (
     MAX_ROUTE_IMAGE_BYTES,
     MAX_ROUTE_IMAGE_COUNT,
@@ -127,6 +128,35 @@ def test_images_are_merged_vertically_in_the_selected_order(
 
     assert top_pixel[0] > top_pixel[1]
     assert bottom_pixel[1] > bottom_pixel[0]
+
+
+def test_vertical_merge_closes_each_prepared_image_before_opening_the_next(
+    route_image_upload_factory: Callable[..., SimpleUploadedFile],
+) -> None:
+    uploads = [
+        route_image_upload_factory(name=f"part-{index}.png", size=(80, 120)) for index in range(3)
+    ]
+    prepared_images: list[Image.Image] = []
+    original_prepare = image_services._prepare_image_for_merge
+
+    def tracked_prepare(upload: Any, target_size: tuple[int, int]) -> Image.Image:
+        if prepared_images:
+            with pytest.raises(ValueError, match="closed image"):
+                prepared_images[-1].getpixel((0, 0))
+        prepared = original_prepare(upload, target_size)
+        prepared_images.append(prepared)
+        return prepared
+
+    with patch.object(
+        image_services,
+        "_prepare_image_for_merge",
+        side_effect=tracked_prepare,
+    ):
+        merge_route_images_vertically(uploads)
+
+    assert len(prepared_images) == 3
+    with pytest.raises(ValueError, match="closed image"):
+        prepared_images[-1].getpixel((0, 0))
 
 
 @pytest.mark.django_db

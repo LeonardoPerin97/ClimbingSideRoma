@@ -1,11 +1,20 @@
-{% load i18n %}
+{% load i18n l10n %}
 
 <section aria-label="{% translate 'Climbing overview' %}">
     <div class="summary-grid">
-        <article><span>{% translate "Recorded ascents" context "profile statistic" %}</span><strong>{{ ascent_count }}</strong></article>
+        <article>
+            <span>{% translate "Recorded ascents" context "profile statistic" %}</span>
+            <strong>{{ ascent_count }}</strong>
+        </article>
         <article><span>{% translate "Highest grade" %}</span><strong>{{ highest_grade }}</strong></article>
-        <article><span>{% translate "Routes" %}</span><strong>{{ discipline_counts.route }}</strong></article>
-        <article><span>{% translate "Boulders" %}</span><strong>{{ discipline_counts.boulder }}</strong></article>
+        <article>
+            <span>{% translate "Routes" %}</span>
+            <strong>{{ discipline_counts.route }}</strong>
+        </article>
+        <article>
+            <span>{% translate "Boulders" %}</span>
+            <strong>{{ discipline_counts.boulder }}</strong>
+        </article>
     </div>
 
     <article class="profile-card profile-histogram-card profile-primary-histogram">
@@ -19,10 +28,21 @@
 
     <div class="statistics-grid profile-statistics-grid profile-secondary-statistics">
         <article class="profile-card">
-            <h3>{% translate "Routes by wall" %}</h3>
+            <div class="profile-progress-list">
+                {% translate "Total" as climbs_label %}
+                {% include "components/profile_progress_item.html" with label=climbs_label completed=ascent_count total=total_climb_count percentage=climb_completion_percentage only %}
+                {% translate "Routes" as routes_label %}
+                {% include "components/profile_progress_item.html" with label=routes_label completed=discipline_counts.route total=total_route_count percentage=route_completion_percentage only %}
+                {% translate "Boulders" as boulders_label %}
+                {% include "components/profile_progress_item.html" with label=boulders_label completed=discipline_counts.boulder total=total_boulder_count percentage=boulder_completion_percentage only %}
+            </div>
+            <p class="profile-progress-subheading">{% translate "By wall:" %}</p>
             {% if wall_distribution %}
-                <div class="grade-distribution">
-                    {% for bucket in wall_distribution %}<span><strong>{{ bucket.label }}</strong> {{ bucket.count }}</span>{% endfor %}
+                <div class="profile-progress-list">
+                    {% for bucket in wall_distribution %}
+                        {% url 'climbs:wall_detail' bucket.wall.pk as wall_url %}
+                        {% include "components/profile_progress_item.html" with label=bucket.label completed=bucket.completed total=bucket.total percentage=bucket.percentage url=wall_url only %}
+                    {% endfor %}
                 </div>
             {% else %}<p class="muted-text">{% translate "No walls available yet." %}</p>{% endif %}
         </article>

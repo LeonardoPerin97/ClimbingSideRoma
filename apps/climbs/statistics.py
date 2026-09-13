@@ -27,6 +27,25 @@ class StatisticBucket:
 
 
 @dataclass(frozen=True)
+class UserWallProgressBucket:
+    wall: Wall
+    completed: int
+    total: int
+
+    @property
+    def label(self) -> str:
+        return self.wall.name
+
+    @property
+    def count(self) -> int:
+        return self.completed
+
+    @property
+    def percentage(self) -> float:
+        return percentage(self.completed, self.total)
+
+
+@dataclass(frozen=True)
 class CollectiveGradeBucket:
     label: str
     total: int
@@ -64,6 +83,13 @@ class MonthlyClimbingSummary:
     @property
     def total(self) -> int:
         return self.route_count + self.boulder_count
+
+
+def percentage(completed: int, total: int) -> float:
+    """Return a bounded completion percentage, including the empty-catalogue case."""
+    if total <= 0:
+        return 0.0
+    return min(round((completed / total) * 100, 1), 100.0)
 
 
 def continuous_perceived_grade_distribution(
@@ -333,7 +359,7 @@ def user_climbing_context(
         ClimbingRoute.Discipline.ROUTE: 0,
         ClimbingRoute.Discipline.BOULDER: 0,
     }
-    wall_counter: Counter[str] = Counter()
+    wall_counter: Counter[int] = Counter()
     official_grade_counts: dict[str, dict[str, int]] = {}
     project_counts: dict[str, int] = {
         ClimbingRoute.Discipline.ROUTE: 0,
@@ -344,7 +370,7 @@ def user_climbing_context(
     for ascent in all_ascents:
         climbing_route = ascent.climbing_route
         discipline_counts[climbing_route.discipline] += 1
-        wall_counter[climbing_route.wall.name] += 1
+        wall_counter[climbing_route.wall_id] += 1
         if climbing_route.is_project:
             project_counts[climbing_route.discipline] += 1
             continue
@@ -365,13 +391,30 @@ def user_climbing_context(
         official_grade_counts,
         project_counts=project_counts,
     )
-    wall_distribution = [
-        StatisticBucket(wall_name, count)
-        for wall_name, count in sorted(
-            wall_counter.items(),
-            key=lambda item: (-item[1], item[0].casefold()),
-        )
-    ]
+    catalogue_counts = {
+        row["discipline"]: row["count"]
+        for row in ClimbingRoute.objects.order_by().values("discipline").annotate(count=Count("id"))
+    }
+    total_route_count = catalogue_counts.get(ClimbingRoute.Discipline.ROUTE, 0)
+    total_boulder_count = catalogue_counts.get(ClimbingRoute.Discipline.BOULDER, 0)
+    total_climb_count = total_route_count + total_boulder_count
+
+    catalogue_walls = (
+        Wall.objects.annotate(total_climbs=Count("climbing_routes"))
+        .filter(total_climbs__gt=0)
+        .order_by(Lower("name"))
+    )
+    wall_distribution = sorted(
+        (
+            UserWallProgressBucket(
+                wall=wall,
+                completed=wall_counter[wall.pk],
+                total=int(getattr(wall, "total_climbs", 0)),
+            )
+            for wall in catalogue_walls
+        ),
+        key=lambda bucket: (-bucket.completed, bucket.label.casefold()),
+    )
 
     return {
         "ascents": ascents,
@@ -379,8 +422,20 @@ def user_climbing_context(
         "selected_discipline": selected_discipline,
         "disciplines": ClimbingRoute.Discipline.choices,
         "ascent_count": len(all_ascents),
+        "total_climb_count": total_climb_count,
+        "climb_completion_percentage": percentage(len(all_ascents), total_climb_count),
         "highest_grade": format_grade_index(highest_grade_order),
         "discipline_counts": discipline_counts,
+        "total_route_count": total_route_count,
+        "route_completion_percentage": percentage(
+            discipline_counts[ClimbingRoute.Discipline.ROUTE],
+            total_route_count,
+        ),
+        "total_boulder_count": total_boulder_count,
+        "boulder_completion_percentage": percentage(
+            discipline_counts[ClimbingRoute.Discipline.BOULDER],
+            total_boulder_count,
+        ),
         "grade_distribution": grade_distribution,
         "maximum_grade_count": max(
             (bucket.total for bucket in grade_distribution),

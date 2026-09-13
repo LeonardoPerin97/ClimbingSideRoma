@@ -16,13 +16,38 @@
             </div>
         </header>
         {% include "components/climbing_profile_stats.html" %}
-        <div class="profile-card account-card compact-account-card profile-account-footer" aria-labelledby="profile-information-heading">
-            <h2 id="profile-information-heading">{% translate "Profile information" %}</h2>
-            <dl class="profile-data">
-                <div><dt>{% translate "Role" %}</dt><dd>{{ role }}</dd></div>
-                <div><dt>{% translate "Member since" %}</dt><dd>{{ profile_user.date_joined|date:"d/m/Y" }}</dd></div>
-            </dl>
-        </div>
+        {% if is_own_profile %}
+            <div class="profile-card account-card profile-account-footer" aria-labelledby="account-information-heading">
+                <h2 id="account-information-heading">{% translate "Account information" %}</h2>
+                <dl class="profile-data">
+                    <div><dt>{% translate "Email" %}</dt><dd>{{ profile_user.email }}</dd></div>
+                    <div>
+                        <dt>{% translate "Email status" %}</dt>
+                        <dd>
+                            {% if profile_user.email_is_verified %}
+                                {% translate "Verified" %}
+                            {% else %}
+                                {% translate "Not verified" %}
+                            {% endif %}
+                        </dd>
+                    </div>
+                    <div><dt>{% translate "Role" %}</dt><dd>{{ role }}</dd></div>
+                    <div><dt>{% translate "Language" %}</dt><dd>{{ profile_user.get_preferred_language_display }}</dd></div>
+                </dl>
+                <div class="button-row">
+                    <a class="button button-primary" href="{% url 'accounts:profile_edit' %}">{% translate "Edit profile" %}</a>
+                    <a class="button button-secondary" href="{% url 'accounts:password_change' %}">{% translate "Change password" %}</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="profile-card account-card compact-account-card profile-account-footer" aria-labelledby="profile-information-heading">
+                <h2 id="profile-information-heading">{% translate "Profile information" %}</h2>
+                <dl class="profile-data">
+                    <div><dt>{% translate "Role" %}</dt><dd>{{ role }}</dd></div>
+                    <div><dt>{% translate "Member since" %}</dt><dd>{{ profile_user.date_joined|date:"d/m/Y" }}</dd></div>
+                </dl>
+            </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

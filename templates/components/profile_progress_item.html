@@ -1,0 +1,22 @@
+{% load l10n %}
+
+<article class="profile-progress-item">
+    <div class="profile-progress-heading">
+        {% if url %}
+            <a class="list-name-link" href="{{ url }}">{{ label }}</a>
+        {% else %}
+            <span class="profile-progress-label">{{ label }}</span>
+        {% endif %}
+        <span class="profile-progress-value"><strong>{{ completed }}</strong> / {{ total }} · {{ percentage|floatformat:"-1" }}%</span>
+    </div>
+    <div
+        class="profile-progress-track"
+        role="progressbar"
+        aria-label="{{ label }}"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="{{ percentage|unlocalize }}"
+    >
+        <span style="--profile-progress: {{ percentage|unlocalize }}%;"></span>
+    </div>
+</article>

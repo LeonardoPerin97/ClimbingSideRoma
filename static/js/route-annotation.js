@@ -60,10 +60,10 @@ document.querySelectorAll("[data-annotation-viewer], [data-annotation-editor]").
     const y = marker.y * height;
     const isTop = marker.type === "top";
     const isIntermediateHold = marker.type === "move" || marker.type === "hold";
-    const radius = Math.max(9, Math.min(14, width / 44));
+    const radius = Math.max(8, Math.min(12, width / 50));
 
     context.save();
-    context.lineWidth = 2;
+    context.lineWidth = 1.75;
     context.strokeStyle = "#ffffff";
     context.fillStyle = isIntermediateHold ? "#c33127" : "#177245";
     if (isTop) {
@@ -82,14 +82,14 @@ document.querySelectorAll("[data-annotation-viewer], [data-annotation-editor]").
 
     if (index === selectedIndex) {
       context.beginPath();
-      context.arc(x, y, isTop ? radius * 1.9 : radius + 4, 0, Math.PI * 2);
+      context.arc(x, y, isTop ? radius * 1.85 : radius + 3, 0, Math.PI * 2);
       context.strokeStyle = "#f2c94c";
-      context.lineWidth = 3;
+      context.lineWidth = 2.5;
       context.stroke();
     }
 
     context.fillStyle = "#ffffff";
-    context.font = `800 ${Math.max(9, radius * 0.78)}px system-ui, sans-serif`;
+    context.font = `800 ${Math.max(8, radius * 0.76)}px system-ui, sans-serif`;
     context.textAlign = "center";
     context.textBaseline = "middle";
     const label = markerLabel(marker);

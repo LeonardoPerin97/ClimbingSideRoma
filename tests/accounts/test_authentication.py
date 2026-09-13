@@ -24,8 +24,14 @@ def test_verified_user_can_login_and_logout(
     assert login_response.headers["Location"] == reverse("accounts:profile")
 
     profile_response = client.get(reverse("accounts:profile"))
-    assert profile_response.status_code == 200
-    assert 'data-confirm-logout="' in profile_response.content.decode()
+    assert profile_response.status_code == 302
+    assert profile_response.headers["Location"] == reverse(
+        "accounts:public_profile",
+        args=[user.username],
+    )
+    climber_profile_response = client.get(profile_response.headers["Location"])
+    assert climber_profile_response.status_code == 200
+    assert 'data-confirm-logout="' in climber_profile_response.content.decode()
 
     logout_response = client.post(reverse("accounts:logout"))
     assert logout_response.status_code == 302
@@ -121,7 +127,12 @@ def test_password_change_updates_hash_and_keeps_session(
     assert response.status_code == 302
     user.refresh_from_db()
     assert user.check_password("A-New-Secure-Password-43!")
-    assert client.get(reverse("accounts:profile")).status_code == 200
+    profile_response = client.get(reverse("accounts:profile"))
+    assert profile_response.status_code == 302
+    assert profile_response.headers["Location"] == reverse(
+        "accounts:public_profile",
+        args=[user.username],
+    )
 
 
 @pytest.mark.django_db

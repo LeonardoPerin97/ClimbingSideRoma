@@ -60,8 +60,9 @@ non prevede l’importazione dei dati della vecchia palestra.
 - login case-insensitive e logout sicuro;
 - recupero e modifica della password;
 - protezione dai tentativi ripetuti di login;
-- profilo personale modificabile;
-- profilo pubblico senza esposizione dell’email;
+- unico profilo climber pubblico con statistiche e ripetizioni;
+- informazioni e azioni dell’account visibili esclusivamente al proprietario del
+  profilo;
 - selezione persistente della lingua italiana o inglese;
 - elenco pubblico dei climber ordinabile per nome, numero di ripetizioni e grado
   massimo.
@@ -118,10 +119,11 @@ grigia e riempimento giallo proporzionale.
 Le statistiche personali comprendono:
 
 - numero di ripetizioni;
+- percentuale di climb completate sul catalogo complessivo;
 - grado massimo ufficiale;
 - distribuzione delle vie completate per grado;
-- conteggio distinto di vie e boulder;
-- distribuzione per parete;
+- conteggio e percentuale distinti di vie e boulder completati;
+- avanzamento per parete con numero completato, totale e percentuale;
 - elenco filtrabile e ordinabile delle ripetizioni;
 - andamento mensile: ripetizioni totali e, separatamente per vie e boulder, numero di ripetizioni e grado massimo di ciascun mese negli ultimi dodici mesi.
 
@@ -364,8 +366,10 @@ template Django, lo stile è CSS nativo e gli script sono JavaScript senza dipen
    dichiarato e contenuto reale di ciascun file.
 3. L’interfaccia mostra le anteprime e permette di definire l’ordine dall’alto
    verso il basso.
-4. Se sono presenti più file, Pillow corregge l’orientamento, li ridimensiona e
-   li unisce verticalmente in un’unica immagine sicura.
+4. Se sono presenti più file, Pillow calcola prima le dimensioni finali e poi
+   apre, corregge, ridimensiona e chiude una sola immagine alla volta. Le parti
+   vengono unite verticalmente senza conservare contemporaneamente in memoria
+   tutte le fotografie originali.
 5. Il servizio salva un solo record `RouteImage` e un solo file finale in una
    transazione controllata.
 6. In produzione il file finale viene inviato a Cloudinary; le immagini sorgente
@@ -735,10 +739,10 @@ La compilazione richiede GNU gettext.
 | `/login/` | pubblico | Login |
 | `/logout/` | autenticato, POST | Logout |
 | `/password-reset/` | pubblico | Recupero password |
-| `/account/` | autenticato | Profilo personale |
+| `/account/` | autenticato | Reindirizza al proprio profilo climber |
 | `/account/edit/` | autenticato | Modifica profilo |
 | `/users/` | pubblico | Elenco climber |
-| `/users/<username>/` | pubblico | Profilo pubblico |
+| `/users/<username>/` | pubblico | Profilo climber; mostra i dati dell’account solo al proprietario |
 | `/walls/` | pubblico | Elenco pareti |
 | `/walls/<id>/` | pubblico | Dettaglio parete |
 | `/routes/` | pubblico | Catalogo vie e boulder |
