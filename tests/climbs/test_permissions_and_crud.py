@@ -32,11 +32,22 @@ def test_catalogue_mutations_require_authentication(client: Client) -> None:
 def test_standard_user_cannot_create_walls_or_routes(
     client: Client,
     user_factory: Callable[..., User],
+    route_factory: Callable[..., ClimbingRoute],
 ) -> None:
     client.force_login(user_factory())
+    climbing_route = route_factory(notes="Original note.")
 
     assert client.get(reverse("climbs:wall_create")).status_code == 403
     assert client.get(reverse("climbs:route_create")).status_code == 403
+    assert (
+        client.post(
+            reverse("climbs:route_edit", args=[climbing_route.pk]),
+            route_form_data(climbing_route.wall, notes="Unauthorised change."),
+        ).status_code
+        == 403
+    )
+    climbing_route.refresh_from_db()
+    assert climbing_route.notes == "Original note."
 
 
 @pytest.mark.django_db
@@ -53,7 +64,7 @@ def test_route_setter_can_create_edit_and_archive_route_without_setter(
     form_response = client.get(reverse("climbs:route_create"))
     create_response = client.post(
         reverse("climbs:route_create"),
-        route_form_data(wall),
+        route_form_data(wall, notes="Use the blue holds.\nTechnical finish."),
     )
     climbing_route = ClimbingRoute.objects.get(name="Created Route")
 
@@ -61,18 +72,26 @@ def test_route_setter_can_create_edit_and_archive_route_without_setter(
     assert ">Tipo</label>" in form_response.content.decode()
     assert ">Grado</label>" in form_response.content.decode()
     assert "Grado ufficiale" not in form_response.content.decode()
+    assert ">Note</label>" in form_response.content.decode()
     assert create_response.status_code == 302
     assert not climbing_route.route_setters.exists()
+    assert climbing_route.notes == "Use the blue holds.\nTechnical finish."
 
     edit_response = client.post(
         reverse("climbs:route_edit", args=[climbing_route.pk]),
-        route_form_data(wall, name="Edited Route", official_grade="6b+"),
+        route_form_data(
+            wall,
+            name="Edited Route",
+            official_grade="6b+",
+            notes="Updated beta.",
+        ),
     )
     climbing_route.refresh_from_db()
 
     assert edit_response.status_code == 302
     assert climbing_route.name == "Edited Route"
     assert climbing_route.official_grade == "6b+"
+    assert climbing_route.notes == "Updated beta."
 
     archive_response = client.post(reverse("climbs:route_archive", args=[climbing_route.pk]))
     climbing_route.refresh_from_db()

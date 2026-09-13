@@ -46,7 +46,21 @@ class RegistrationForm(StyledFormMixin, UserCreationForm):
 class ProfileUpdateForm(StyledFormMixin, forms.ModelForm):
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "preferred_language")
+        fields = (
+            "username",
+            "first_name",
+            "last_name",
+            "profile_image",
+            "preferred_language",
+        )
+        widgets = {
+            "profile_image": forms.FileInput(
+                attrs={"accept": "image/jpeg,image/png,image/webp"},
+            ),
+        }
+        help_texts = {
+            "profile_image": _("JPEG, PNG or WebP. Maximum 4 MB."),
+        }
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)

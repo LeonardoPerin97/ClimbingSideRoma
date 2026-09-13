@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Delete profile image" %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container narrow-container">
+        <div class="form-card centered-card">
+            <h1>{% translate "Delete profile image" %}</h1>
+            {% if profile_user.profile_image %}
+                <img
+                    class="profile-avatar profile-image-delete-preview"
+                    src="{{ profile_user.profile_image.url }}"
+                    alt="{% blocktranslate with username=profile_user.username %}Profile image of {{ username }}{% endblocktranslate %}"
+                    width="112"
+                    height="112"
+                >
+                <p>{% blocktranslate with username=profile_user.username %}Are you sure you want to delete the profile image of {{ username }}?{% endblocktranslate %}</p>
+            {% else %}
+                <p>{% translate "This profile has no image to delete." %}</p>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="button-row">
+                    {% if profile_user.profile_image %}
+                        <button class="button button-danger" type="submit">{% translate "Delete image" %}</button>
+                    {% endif %}
+                    <a class="button button-secondary" href="{% url 'accounts:public_profile' profile_user.username %}">{% translate "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

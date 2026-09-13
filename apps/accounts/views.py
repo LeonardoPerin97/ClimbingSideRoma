@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -20,6 +21,7 @@ from apps.climbs.statistics import user_climbing_context
 from apps.core.pagination import paginate
 
 from .forms import ProfileUpdateForm, RegistrationForm, VerificationResendForm
+from .media_services import delete_profile_image, save_profile_changes
 from .models import User
 from .rate_limit import clear_login_failures, record_login_failure, seconds_until_unlock
 from .roles import Role, assign_role, role_label_for
@@ -190,6 +192,14 @@ def public_profile(request: HttpRequest, username: str) -> HttpResponse:
             "profile_user": profile_user,
             "role": role_label_for(profile_user),
             "is_own_profile": request.user.is_authenticated and request.user.pk == profile_user.pk,
+            "can_delete_profile_image": (
+                bool(profile_user.profile_image)
+                and request.user.is_authenticated
+                and (
+                    request.user.pk == profile_user.pk
+                    or request.user.has_perm("accounts.change_user")
+                )
+            ),
         }
     )
     return render(
@@ -202,12 +212,57 @@ def public_profile(request: HttpRequest, username: str) -> HttpResponse:
 @login_required
 @require_http_methods(["GET", "POST"])
 def edit_profile(request: HttpRequest) -> HttpResponse:
-    form = ProfileUpdateForm(request.POST or None, instance=request.user)
+    profile_user = cast(User, request.user)
+    old_image_name = profile_user.profile_image.name
+    form = ProfileUpdateForm(
+        request.POST or None,
+        request.FILES or None,
+        instance=profile_user,
+    )
     if request.method == "POST" and form.is_valid():
-        profile_user = form.save()
+        profile_user, image_action = save_profile_changes(
+            form,
+            actor=profile_user,
+            old_image_name=old_image_name,
+        )
+        if image_action is not None:
+            logger.info(
+                "profile_image_action actor_id=%s action=%s profile_user_id=%s",
+                profile_user.pk,
+                image_action,
+                profile_user.pk,
+            )
         messages.success(request, _("Profile updated successfully."))
         return redirect("accounts:public_profile", username=profile_user.username)
     return render(request, "accounts/profile_edit.html", {"form": form})
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def delete_profile_image_view(request: HttpRequest, username: str) -> HttpResponse:
+    profile_user = get_object_or_404(User, username__iexact=username)
+    actor = cast(User, request.user)
+    if actor.pk != profile_user.pk and not actor.has_perm("accounts.change_user"):
+        raise PermissionDenied
+
+    if request.method == "POST":
+        deleted = delete_profile_image(profile_user=profile_user, actor=actor)
+        if deleted:
+            logger.info(
+                "profile_image_action actor_id=%s action=delete profile_user_id=%s",
+                actor.pk,
+                profile_user.pk,
+            )
+            messages.success(request, _("Profile image deleted."))
+        else:
+            messages.info(request, _("This profile has no image to delete."))
+        return redirect("accounts:public_profile", username=profile_user.username)
+
+    return render(
+        request,
+        "accounts/profile_image_delete_confirm.html",
+        {"profile_user": profile_user},
+    )
 
 
 class PasswordChangeView(auth_views.PasswordChangeView):

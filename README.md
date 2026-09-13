@@ -61,6 +61,8 @@ non prevede l’importazione dei dati della vecchia palestra.
 - recupero e modifica della password;
 - protezione dai tentativi ripetuti di login;
 - unico profilo climber pubblico con statistiche e ripetizioni;
+- immagine del profilo facoltativa, pubblica e visualizzata in formato circolare;
+- caricamento, sostituzione e cancellazione controllata della propria immagine;
 - informazioni e azioni dell’account visibili esclusivamente al proprietario del
   profilo;
 - selezione persistente della lingua italiana o inglese;
@@ -359,6 +361,18 @@ template Django, lo stile è CSS nativo e gli script sono JavaScript senza dipen
    l’intero elenco e tornare successivamente alla visualizzazione paginata.
 5. Il template renderizza schede, filtri e statistiche senza query aggiuntive.
 
+### Immagine del profilo
+
+1. L’utente seleziona un file JPEG, PNG o WebP dal form di modifica del profilo.
+2. Il backend verifica estensione, content type, formato reale, dimensioni, numero di
+   pixel e assenza di animazioni.
+3. Il file viene salvato con un nome UUID nello storage multimediale configurato.
+4. L’immagine precedente viene eliminata soltanto dopo il commit del database.
+5. L’utente può rimuoverla da una pagina di conferma; un Admin può eseguire la stessa
+   operazione sui profili degli altri utenti.
+6. Caricamento, sostituzione e cancellazione vengono registrati nell’audit log senza
+   memorizzare il nome originale del file.
+
 ### Caricamento delle immagini di una via
 
 1. La vista verifica il permesso sul modello `RouteImage`.
@@ -398,12 +412,14 @@ climbingside/
 │   │   ├── admin.py          # utenti e ruoli nel Django Admin
 │   │   ├── backends.py       # autenticazione case-insensitive
 │   │   ├── forms.py          # registrazione e profilo
+│   │   ├── images.py         # validazione delle immagini del profilo
+│   │   ├── media_services.py # ciclo di vita delle immagini del profilo
 │   │   ├── middleware.py     # applicazione della lingua preferita
 │   │   ├── models.py         # User e LoginAttempt
 │   │   ├── rate_limit.py     # limitazione dei tentativi di login
 │   │   ├── roles.py          # ruoli, gruppi e permessi
 │   │   ├── services.py       # invio email
-│   │   ├── signals.py        # sincronizzazione permessi post-migrate
+│   │   ├── signals.py        # permessi post-migrate e pulizia file utente
 │   │   ├── tokens.py         # token di verifica email
 │   │   ├── urls.py
 │   │   └── views.py
@@ -494,10 +510,12 @@ Questa sezione indica dove cercare una responsabilità e come i moduli collabora
 | `forms.py` | Registrazione, aggiornamento profilo e reinvio verifica | Valida unicità case-insensitive e usa `StyledFormMixin` |
 | `views.py` | Flussi di account e profili | Usa form, token, rate limiter, servizi email e statistiche personali |
 | `urls.py` | URL di autenticazione e profilo | Incluso alla radice da `config/urls.py` |
+| `images.py` | Sicurezza degli upload del profilo | Verifica estensione, contenuto, dimensioni e numero di frame |
+| `media_services.py` | Ciclo di vita delle immagini del profilo | Coordina storage, transazioni, sostituzione, cancellazione e audit |
 | `backends.py` | Login case-insensitive | Registrato in `AUTHENTICATION_BACKENDS` |
 | `rate_limit.py` | Blocco temporaneo dei login ripetuti | Legge e aggiorna `LoginAttempt` |
 | `roles.py` | Definizione di User, RouteSetter e Admin | Crea gruppi e assegna permessi Django |
-| `signals.py` | Sincronizzazione automatica dei ruoli | Richiama `sync_role_permissions` dopo le migrazioni |
+| `signals.py` | Sincronizzazione ruoli e pulizia file | Aggiorna i permessi dopo le migrazioni e rimuove l’immagine quando l’utente viene eliminato |
 | `tokens.py` | Token firmati per la verifica email | Utilizzato dalle viste e dai link inviati per email |
 | `services.py` | Composizione e invio della verifica email | Renderizza i template email e usa il backend configurato |
 | `middleware.py` | Lingua preferita dell’utente | Attiva la lingua salvata dopo l’autenticazione |
@@ -581,6 +599,7 @@ Estende `AbstractUser` e aggiunge:
 
 - email obbligatoria e univoca;
 - lingua preferita;
+- immagine del profilo facoltativa;
 - data di verifica email.
 
 Username ed email sono univoci anche senza distinzione tra maiuscole e minuscole.
@@ -614,6 +633,7 @@ Rappresenta una via o un boulder:
 - grado ufficiale;
 - flag Project;
 - route setter opzionali;
+- note facoltative gestite da route setter e amministratori;
 - stato archiviato.
 
 ### `Ascent`
@@ -678,10 +698,12 @@ ID utente fissi.
 |---|:---:|:---:|:---:|
 | Consultare catalogo e statistiche | ✓ | ✓ | ✓ |
 | Gestire le proprie ripetizioni | ✓ | ✓ | ✓ |
+| Gestire la propria immagine del profilo | ✓ | ✓ | ✓ |
+| Eliminare l’immagine del profilo di altri utenti | — | — | ✓ |
 | Creare e modificare vie | — | ✓ | ✓ |
 | Archiviare e ripristinare vie | — | ✓ | ✓ |
 | Caricare, sostituire e annotare immagini | — | ✓ | ✓ |
-| Eliminare immagini | — | ✓ | ✓ |
+| Eliminare immagini delle vie | — | ✓ | ✓ |
 | Creare, modificare e archiviare pareti | — | ✓ | ✓ |
 | Eliminare definitivamente pareti e vie | — | ✓ | ✓ |
 | Gestire utenti e ruoli | — | — | ✓ |
@@ -743,6 +765,7 @@ La compilazione richiede GNU gettext.
 | `/account/edit/` | autenticato | Modifica profilo |
 | `/users/` | pubblico | Elenco climber |
 | `/users/<username>/` | pubblico | Profilo climber; mostra i dati dell’account solo al proprietario |
+| `/users/<username>/profile-image/delete/` | proprietario/Admin | Conferma ed elimina l’immagine del profilo |
 | `/walls/` | pubblico | Elenco pareti |
 | `/walls/<id>/` | pubblico | Dettaglio parete |
 | `/routes/` | pubblico | Catalogo vie e boulder |
@@ -944,6 +967,9 @@ Limiti:
 - 36 megapixel complessivi;
 - una sola immagine finale per via.
 
+Per le immagini del profilo valgono limiti dedicati: un solo file, massimo 4 MB,
+8.000 pixel per lato e 20 megapixel complessivi.
+
 Quando vengono selezionate più immagini, l’applicazione le unisce verticalmente
 nell’ordine scelto dall’utente. La composizione viene convertita in JPEG,
 ridimensionata fino a una larghezza massima di 1.600 pixel e compressa entro gli
@@ -958,15 +984,17 @@ Il backend verifica:
 - numero di frame;
 - coerenza tra formato ed estensione.
 
-Il nome salvato include un UUID e non riutilizza il nome originale dell’utente.
+Il nome salvato include un UUID e non riutilizza il nome originale dell’utente, sia
+per le immagini delle vie sia per quelle dei profili.
 
 ### Storage
 
 - sviluppo: `FileSystemStorage` nella cartella `media/`;
 - produzione: `CloudinaryMediaStorage`.
 
-Il database conserva il riferimento all’immagine, mentre i byte sono gestiti dal
-servizio esterno.
+Il database conserva i riferimenti alle immagini delle vie e dei profili, mentre i
+byte sono gestiti dallo storage. I file sostituiti o eliminati vengono rimossi dopo
+il completamento della transazione sul database.
 
 ### Annotazioni
 

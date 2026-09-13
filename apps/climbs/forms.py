@@ -65,6 +65,7 @@ class ClimbingRouteForm(StyledFormMixin, forms.ModelForm):
             "is_project",
             "official_grade",
             "route_setters",
+            "notes",
         )
         labels = {
             "official_grade": _("Grade"),
@@ -73,6 +74,7 @@ class ClimbingRouteForm(StyledFormMixin, forms.ModelForm):
             "is_project": forms.CheckboxInput(attrs={"data-project-toggle": ""}),
             "official_grade": forms.Select(attrs={"data-grade-field": ""}),
             "route_setters": forms.CheckboxSelectMultiple(),
+            "notes": forms.Textarea(attrs={"rows": 4}),
         }
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

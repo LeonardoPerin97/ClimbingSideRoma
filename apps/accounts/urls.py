@@ -36,4 +36,9 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("users/<str:username>/", views.public_profile, name="public_profile"),
+    path(
+        "users/<str:username>/profile-image/delete/",
+        views.delete_profile_image_view,
+        name="profile_image_delete",
+    ),
 ]

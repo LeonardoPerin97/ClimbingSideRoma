@@ -10,7 +10,22 @@
             <h1>{% translate "Edit profile" %}</h1>
             <p>{% translate "Your verified email cannot be changed from this form." %}</p>
             <p class="read-only-value"><strong>{% translate "Email" %}:</strong> {{ request.user.email }}</p>
-            <form method="post" novalidate>
+            {% if request.user.profile_image %}
+                <div class="current-profile-image">
+                    <img
+                        class="profile-avatar"
+                        src="{{ request.user.profile_image.url }}"
+                        alt="{% translate 'Current profile image' %}"
+                        width="80"
+                        height="80"
+                    >
+                    <div>
+                        <strong>{% translate "Current profile image" %}</strong>
+                        <p>{% translate "Choose another image below to replace it." %}</p>
+                    </div>
+                </div>
+            {% endif %}
+            <form method="post" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
                 {% include "components/form.html" %}
                 <div class="button-row">

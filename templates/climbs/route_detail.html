@@ -173,6 +173,9 @@
                             {% endfor %}
                         </dd>
                     </div>
+                    {% if climbing_route.notes %}
+                        <div><dt>{% translate "Notes" %}</dt><dd>{{ climbing_route.notes|linebreaksbr }}</dd></div>
+                    {% endif %}
                 </dl>
             </article>
         </div>

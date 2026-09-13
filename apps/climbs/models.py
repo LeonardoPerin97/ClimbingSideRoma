@@ -63,6 +63,7 @@ class ClimbingRoute(models.Model):
         limit_choices_to={"groups__name": "RouteSetter", "is_active": True},
         verbose_name=_("route setters"),
     )
+    notes = models.TextField(_("Notes"), blank=True)
     is_archived = models.BooleanField(_("archived"), default=False)
 
     class Meta:

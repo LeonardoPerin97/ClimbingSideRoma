@@ -119,6 +119,20 @@ def test_route_setters_are_optional_and_multiple(
 
 
 @pytest.mark.django_db
+def test_route_notes_are_optional_and_preserve_multiple_lines(
+    route_factory: Callable[..., ClimbingRoute],
+) -> None:
+    route_without_notes = route_factory(name="Route without notes")
+    route_with_notes = route_factory(
+        name="Route with notes",
+        notes="First note line.\nSecond note line.",
+    )
+
+    assert route_without_notes.notes == ""
+    assert route_with_notes.notes == "First note line.\nSecond note line."
+
+
+@pytest.mark.django_db
 def test_wall_with_routes_is_protected_from_deletion(
     route_factory: Callable[..., ClimbingRoute],
 ) -> None:

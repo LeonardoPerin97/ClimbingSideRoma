@@ -1,7 +1,10 @@
 from collections.abc import Callable
+from pathlib import Path
+from typing import Any
 
 import pytest
 from django.contrib.auth.models import Group
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client
 from django.urls import reverse
 
@@ -287,6 +290,232 @@ def test_profile_update_persists_username_and_language(
 
     home_response = client.get(reverse("core:home"))
     assert "Climbing Side Roma" in home_response.content.decode()
+
+
+@pytest.mark.django_db
+def test_user_can_upload_profile_image_and_it_is_shown_on_public_profile(
+    client: Client,
+    user_factory: Callable[..., User],
+    profile_image_upload_factory: Callable[..., SimpleUploadedFile],
+    settings: Any,
+    tmp_path: Path,
+) -> None:
+    settings.MEDIA_ROOT = tmp_path / "media"
+    user = user_factory(username="pictured-climber")
+    client.force_login(user)
+
+    response = client.post(
+        reverse("accounts:profile_edit"),
+        {
+            "username": user.username,
+            "first_name": "",
+            "last_name": "",
+            "preferred_language": user.preferred_language,
+            "profile_image": profile_image_upload_factory(),
+        },
+    )
+    user.refresh_from_db()
+
+    assert response.status_code == 302
+    assert user.profile_image.name.startswith(f"profiles/{user.pk}/")
+    assert Path(user.profile_image.path).exists()
+    audit_entry = AuditLogEntry.objects.get(
+        entity_type="profile_image",
+        entity_id=str(user.pk),
+    )
+    assert audit_entry.actor == user
+    assert audit_entry.action == AuditLogEntry.Action.UPLOAD
+
+    profile_response = client.get(
+        reverse("accounts:public_profile", args=[user.username]),
+    )
+    profile_content = profile_response.content.decode()
+    assert 'class="profile-avatar"' in profile_content
+    assert user.profile_image.url in profile_content
+    assert reverse("accounts:profile_image_delete", args=[user.username]) in profile_content
+
+
+@pytest.mark.django_db(transaction=True)
+def test_replacing_profile_image_removes_previous_stored_file(
+    client: Client,
+    user_factory: Callable[..., User],
+    profile_image_upload_factory: Callable[..., SimpleUploadedFile],
+    settings: Any,
+    tmp_path: Path,
+) -> None:
+    settings.MEDIA_ROOT = tmp_path / "media"
+    user = user_factory()
+    user.profile_image = profile_image_upload_factory(name="old.png")
+    user.full_clean()
+    user.save(update_fields=("profile_image",))
+    old_path = Path(user.profile_image.path)
+    client.force_login(user)
+
+    response = client.post(
+        reverse("accounts:profile_edit"),
+        {
+            "username": user.username,
+            "first_name": "",
+            "last_name": "",
+            "preferred_language": user.preferred_language,
+            "profile_image": profile_image_upload_factory(
+                name="new.png",
+                color=(85, 185, 232),
+            ),
+        },
+    )
+    user.refresh_from_db()
+
+    assert response.status_code == 302
+    assert not old_path.exists()
+    assert Path(user.profile_image.path).exists()
+    assert AuditLogEntry.objects.filter(
+        actor=user,
+        action=AuditLogEntry.Action.REPLACE,
+        entity_type="profile_image",
+        entity_id=str(user.pk),
+    ).exists()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_user_can_delete_own_profile_image_after_confirmation(
+    client: Client,
+    user_factory: Callable[..., User],
+    profile_image_upload_factory: Callable[..., SimpleUploadedFile],
+    settings: Any,
+    tmp_path: Path,
+) -> None:
+    settings.MEDIA_ROOT = tmp_path / "media"
+    user = user_factory(username="self-delete-image")
+    user.profile_image = profile_image_upload_factory()
+    user.full_clean()
+    user.save(update_fields=("profile_image",))
+    image_path = Path(user.profile_image.path)
+    delete_url = reverse("accounts:profile_image_delete", args=[user.username])
+    client.force_login(user)
+
+    confirmation_response = client.get(delete_url)
+    delete_response = client.post(delete_url)
+    user.refresh_from_db()
+
+    assert confirmation_response.status_code == 200
+    assert delete_response.status_code == 302
+    assert not user.profile_image
+    assert not image_path.exists()
+    assert AuditLogEntry.objects.filter(
+        actor=user,
+        action=AuditLogEntry.Action.DELETE,
+        entity_type="profile_image",
+        entity_id=str(user.pk),
+    ).exists()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_admin_can_delete_another_users_profile_image(
+    client: Client,
+    user_factory: Callable[..., User],
+    profile_image_upload_factory: Callable[..., SimpleUploadedFile],
+    settings: Any,
+    tmp_path: Path,
+) -> None:
+    settings.MEDIA_ROOT = tmp_path / "media"
+    admin_user = user_factory(username="profile-image-admin", email="image-admin@example.com")
+    assign_role(admin_user, Role.ADMIN)
+    target_user = user_factory(username="profile-image-target", email="image-target@example.com")
+    target_user.profile_image = profile_image_upload_factory()
+    target_user.full_clean()
+    target_user.save(update_fields=("profile_image",))
+    image_path = Path(target_user.profile_image.path)
+    delete_url = reverse("accounts:profile_image_delete", args=[target_user.username])
+    client.force_login(admin_user)
+
+    profile_response = client.get(
+        reverse("accounts:public_profile", args=[target_user.username]),
+    )
+    delete_response = client.post(delete_url)
+    target_user.refresh_from_db()
+
+    assert delete_url in profile_response.content.decode()
+    assert delete_response.status_code == 302
+    assert not target_user.profile_image
+    assert not image_path.exists()
+    assert AuditLogEntry.objects.filter(
+        actor=admin_user,
+        action=AuditLogEntry.Action.DELETE,
+        entity_type="profile_image",
+        entity_id=str(target_user.pk),
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_route_setter_cannot_delete_another_users_profile_image(
+    client: Client,
+    user_factory: Callable[..., User],
+    profile_image_upload_factory: Callable[..., SimpleUploadedFile],
+    settings: Any,
+    tmp_path: Path,
+) -> None:
+    settings.MEDIA_ROOT = tmp_path / "media"
+    route_setter = user_factory(username="image-route-setter", email="setter-image@example.com")
+    assign_role(route_setter, Role.ROUTE_SETTER)
+    target_user = user_factory(username="protected-image-user", email="protected@example.com")
+    target_user.profile_image = profile_image_upload_factory()
+    target_user.full_clean()
+    target_user.save(update_fields=("profile_image",))
+    stored_name = target_user.profile_image.name
+    client.force_login(route_setter)
+
+    response = client.post(
+        reverse("accounts:profile_image_delete", args=[target_user.username]),
+    )
+    target_user.refresh_from_db()
+
+    assert response.status_code == 403
+    assert target_user.profile_image.name == stored_name
+
+
+@pytest.mark.django_db
+def test_profile_image_deletion_is_csrf_protected(
+    user_factory: Callable[..., User],
+) -> None:
+    user = user_factory()
+    csrf_client = Client(enforce_csrf_checks=True)
+    csrf_client.force_login(user)
+
+    response = csrf_client.post(
+        reverse("accounts:profile_image_delete", args=[user.username]),
+    )
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_invalid_profile_image_is_rejected(
+    client: Client,
+    user_factory: Callable[..., User],
+) -> None:
+    user = user_factory()
+    client.force_login(user)
+
+    response = client.post(
+        reverse("accounts:profile_edit"),
+        {
+            "username": user.username,
+            "first_name": "",
+            "last_name": "",
+            "preferred_language": user.preferred_language,
+            "profile_image": SimpleUploadedFile(
+                "fake.png",
+                b"not an image",
+                content_type="image/png",
+            ),
+        },
+    )
+    user.refresh_from_db()
+
+    assert response.status_code == 200
+    assert "profile_image" in response.context["form"].errors
+    assert not user.profile_image
 
 
 @pytest.mark.django_db

@@ -7,6 +7,8 @@ from django.db.models.functions import Lower
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from .images import profile_image_upload_path, validate_profile_image
+
 
 class UserManager(DjangoUserManager["User"]):
     use_in_migrations = True
@@ -70,6 +72,13 @@ class User(AbstractUser):
         max_length=2,
         choices=Language.choices,
         default=Language.ITALIAN,
+    )
+    profile_image = models.ImageField(
+        _("profile image"),
+        upload_to=profile_image_upload_path,
+        validators=(validate_profile_image,),
+        max_length=255,
+        blank=True,
     )
     email_verified_at = models.DateTimeField(
         _("email verified at"),

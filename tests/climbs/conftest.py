@@ -64,6 +64,7 @@ def route_factory(
             "discipline": ClimbingRoute.Discipline.ROUTE,
             "official_grade": "6a",
             "is_project": False,
+            "notes": "",
         }
         values.update(overrides)
         climbing_route = ClimbingRoute(**cast(Any, values))

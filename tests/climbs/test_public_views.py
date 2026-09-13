@@ -613,6 +613,28 @@ def test_route_detail_lists_setters_without_exposing_email(
 
 
 @pytest.mark.django_db
+def test_route_detail_shows_notes_only_when_present(
+    client: Client,
+    route_factory: Callable[..., ClimbingRoute],
+) -> None:
+    with_notes = route_factory(
+        name="Route with public notes",
+        notes="Start on the left.\nAvoid the grey hold.",
+    )
+    without_notes = route_factory(name="Route without public notes")
+
+    notes_response = client.get(reverse("climbs:route_detail", args=[with_notes.pk]))
+    empty_response = client.get(reverse("climbs:route_detail", args=[without_notes.pk]))
+
+    notes_content = notes_response.content.decode()
+    empty_content = empty_response.content.decode()
+    assert "Start on the left.<br>" in notes_content
+    assert "Avoid the grey hold." in notes_content
+    assert ">Note</dt>" in notes_content
+    assert ">Note</dt>" not in empty_content
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize(
     ("discipline", "expected_badge"),
     [
