@@ -28,7 +28,17 @@ ANNOTATION = {
     "version": 1,
     "markers": [
         {"type": "start-left", "x": 0.15, "y": 0.85},
-        {"type": "move", "number": 1, "x": 0.5, "y": 0.5},
+        {"type": "move", "number": 1, "hand": "left", "x": 0.5, "y": 0.5},
+        {"type": "top", "x": 0.6, "y": 0.1},
+    ],
+}
+
+BOULDER_ANNOTATION = {
+    "version": 1,
+    "markers": [
+        {"type": "start", "x": 0.15, "y": 0.85},
+        {"type": "start", "x": 0.25, "y": 0.85},
+        {"type": "hold", "x": 0.5, "y": 0.5},
         {"type": "top", "x": 0.6, "y": 0.1},
     ],
 }
@@ -241,6 +251,71 @@ def test_route_setter_can_upload_and_annotate_image(
             entity_id=str(route_image.pk),
         ).values_list("action", flat=True)
     ) == {AuditLogEntry.Action.UPLOAD, AuditLogEntry.Action.ANNOTATE}
+
+
+@pytest.mark.django_db
+def test_boulder_annotation_accepts_its_dedicated_markers(
+    client: Client,
+    user_factory: Callable[..., User],
+    route_factory: Callable[..., ClimbingRoute],
+    route_image_factory: Callable[..., RouteImage],
+) -> None:
+    route_setter = user_factory()
+    assign_role(route_setter, Role.ROUTE_SETTER)
+    climbing_route = route_factory(discipline=ClimbingRoute.Discipline.BOULDER)
+    route_image = route_image_factory(
+        climbing_route=climbing_route,
+        uploaded_by=route_setter,
+    )
+    client.force_login(route_setter)
+
+    response = client.post(
+        reverse("climbs:route_annotation_edit", args=[climbing_route.pk]),
+        {"annotations": json.dumps(BOULDER_ANNOTATION)},
+    )
+
+    route_image.refresh_from_db()
+    assert response.status_code == 302
+    assert route_image.annotations == BOULDER_ANNOTATION
+
+
+@pytest.mark.django_db
+def test_annotation_editor_uses_tools_for_the_climb_type(
+    client: Client,
+    user_factory: Callable[..., User],
+    route_factory: Callable[..., ClimbingRoute],
+    route_image_factory: Callable[..., RouteImage],
+) -> None:
+    route_setter = user_factory()
+    assign_role(route_setter, Role.ROUTE_SETTER)
+    route = route_factory(discipline=ClimbingRoute.Discipline.ROUTE)
+    boulder = route_factory(
+        name="Toolbar Boulder",
+        discipline=ClimbingRoute.Discipline.BOULDER,
+    )
+    route_image_factory(climbing_route=route, uploaded_by=route_setter)
+    route_image_factory(climbing_route=boulder, uploaded_by=route_setter)
+    client.force_login(route_setter)
+
+    route_response = client.get(
+        reverse("climbs:route_annotation_edit", args=[route.pk]),
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+    boulder_response = client.get(
+        reverse("climbs:route_annotation_edit", args=[boulder.pk]),
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+    route_content = route_response.content.decode()
+    boulder_content = boulder_response.content.decode()
+
+    assert 'data-annotation-mode="route"' in route_content
+    assert 'data-marker-tool="move-left"' in route_content
+    assert 'data-marker-tool="move-right"' in route_content
+    assert 'data-marker-tool="hold"' not in route_content
+    assert 'data-annotation-mode="boulder"' in boulder_content
+    assert 'data-marker-tool="start"' in boulder_content
+    assert 'data-marker-tool="hold"' in boulder_content
+    assert 'data-marker-tool="move-left"' not in boulder_content
 
 
 @pytest.mark.django_db

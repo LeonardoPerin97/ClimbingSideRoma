@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ClimbingSide 0.9.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-12 17:37+0200\n"
+"POT-Creation-Date: 2026-09-13 16:44+0200\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -119,56 +119,68 @@ msgstr "Profilo aggiornato correttamente."
 msgid "Password recovery by email is temporarily unavailable. Contact an administrator if you cannot log in."
 msgstr "Il recupero della password via email è temporaneamente non disponibile. Contatta un amministratore se non riesci ad accedere."
 
-#: apps/climbs/annotations.py:21
+#: apps/climbs/annotations.py:24
 msgid "The annotation data is not valid JSON."
 msgstr "I dati dell'annotazione non sono in formato JSON valido."
 
-#: apps/climbs/annotations.py:27
+#: apps/climbs/annotations.py:30
 msgid "The annotation data has an invalid structure."
 msgstr "I dati dell'annotazione hanno una struttura non valida."
 
-#: apps/climbs/annotations.py:29
+#: apps/climbs/annotations.py:32
 msgid "This annotation version is not supported."
 msgstr "Questa versione dell'annotazione non è supportata."
 
-#: apps/climbs/annotations.py:33
+#: apps/climbs/annotations.py:36
 msgid "The annotation markers must be a list."
 msgstr "I marcatori dell'annotazione devono essere un elenco."
 
-#: apps/climbs/annotations.py:36
+#: apps/climbs/annotations.py:39
 #, python-format
 msgid "An annotation can contain at most %(limit)s markers."
 msgstr "Un'annotazione può contenere al massimo %(limit)s marcatori."
 
-#: apps/climbs/annotations.py:45
+#: apps/climbs/annotations.py:49
 msgid "Every annotation marker must be an object."
 msgstr "Ogni marcatore dell'annotazione deve essere un oggetto."
 
-#: apps/climbs/annotations.py:48
+#: apps/climbs/annotations.py:52
 msgid "An annotation marker has an invalid type."
 msgstr "Un marcatore dell'annotazione ha un tipo non valido."
 
-#: apps/climbs/annotations.py:60
+#: apps/climbs/annotations.py:62
 msgid "An annotation marker has invalid fields."
 msgstr "Un marcatore dell'annotazione contiene campi non validi."
 
-#: apps/climbs/annotations.py:69
-msgid "Move marker numbers must be integers."
-msgstr "I numeri dei movimenti devono essere interi."
+#: apps/climbs/annotations.py:71 apps/climbs/annotations.py:84
+msgid "Numbered marker values must be integers."
+msgstr "I numeri dei marcatori numerati devono essere interi."
 
-#: apps/climbs/annotations.py:71
-msgid "Move markers must be numbered consecutively."
-msgstr "I movimenti devono essere numerati consecutivamente."
+#: apps/climbs/annotations.py:73 apps/climbs/annotations.py:86
+msgid "Numbered markers must be numbered consecutively."
+msgstr "I marcatori numerati devono essere numerati consecutivamente."
 
-#: apps/climbs/annotations.py:76
-msgid "Start and top markers may only be used once."
-msgstr "I marcatori di partenza e top possono essere usati una sola volta."
+#: apps/climbs/annotations.py:79
+msgid "Only the first route hold may specify left or right."
+msgstr "Solo la prima presa della via può indicare sinistra o destra."
 
-#: apps/climbs/annotations.py:90
+#: apps/climbs/annotations.py:91
+msgid "This annotation marker may only be used once."
+msgstr "Questo marcatore può essere usato una sola volta."
+
+#: apps/climbs/annotations.py:111
+msgid "The annotation contains markers that do not match the climb type."
+msgstr "L'annotazione contiene marcatori non compatibili con il tipo di via."
+
+#: apps/climbs/annotations.py:120
+msgid "The first route hold must indicate left or right."
+msgstr "La prima presa della via deve indicare sinistra o destra."
+
+#: apps/climbs/annotations.py:127
 msgid "Marker coordinates must be numbers."
 msgstr "Le coordinate dei marcatori devono essere numeriche."
 
-#: apps/climbs/annotations.py:93
+#: apps/climbs/annotations.py:130
 msgid "Marker coordinates must be between 0 and 1."
 msgstr "Le coordinate dei marcatori devono essere comprese tra 0 e 1."
 
@@ -176,39 +188,39 @@ msgstr "Le coordinate dei marcatori devono essere comprese tra 0 e 1."
 msgid "Climbing catalogue"
 msgstr "Catalogo di arrampicata"
 
-#: apps/climbs/forms.py:23
+#: apps/climbs/forms.py:27
 msgid "5 stars"
 msgstr "5 stelle"
 
-#: apps/climbs/forms.py:24
+#: apps/climbs/forms.py:28
 msgid "4 stars"
 msgstr "4 stelle"
 
-#: apps/climbs/forms.py:25
+#: apps/climbs/forms.py:29
 msgid "3 stars"
 msgstr "3 stelle"
 
-#: apps/climbs/forms.py:26
+#: apps/climbs/forms.py:30
 msgid "2 stars"
 msgstr "2 stelle"
 
-#: apps/climbs/forms.py:27
+#: apps/climbs/forms.py:31
 msgid "1 star"
 msgstr "1 stella"
 
-#: apps/climbs/forms.py:31
+#: apps/climbs/forms.py:35
 msgid ".0 — Easy"
 msgstr ".0 — Facile"
 
-#: apps/climbs/forms.py:33
+#: apps/climbs/forms.py:37
 msgid ".9 — Hard"
 msgstr ".9 — Difficile"
 
-#: apps/climbs/forms.py:50
+#: apps/climbs/forms.py:54
 msgid "A wall with this name already exists."
 msgstr "Esiste già una parete con questo nome."
 
-#: apps/climbs/forms.py:66 templates/climbs/route_detail.html:162
+#: apps/climbs/forms.py:70 templates/climbs/route_detail.html:163
 #: templates/climbs/route_list.html:56 templates/climbs/route_list.html:67
 #: templates/components/ascent_table.html:19
 #: templates/components/ascent_table.html:30
@@ -220,40 +232,40 @@ msgstr "Esiste già una parete con questo nome."
 msgid "Grade"
 msgstr "Grado"
 
-#: apps/climbs/forms.py:80
+#: apps/climbs/forms.py:84
 msgid "Optional. You may select one or more route setters."
 msgstr "Facoltativo. Puoi selezionare uno o più route setter."
 
-#: apps/climbs/forms.py:105
+#: apps/climbs/forms.py:109
 msgid "A climbing route with this name already exists."
 msgstr "Esiste già una via con questo nome."
 
-#: apps/climbs/forms.py:116
+#: apps/climbs/forms.py:120
 msgid "Choose a grade or mark the route as Project."
 msgstr "Scegli un grado oppure contrassegna la via come Project."
 
-#: apps/climbs/forms.py:122
+#: apps/climbs/forms.py:126
 msgid "Type the name to confirm"
 msgstr "Digita il nome per confermare"
 
-#: apps/climbs/forms.py:132
+#: apps/climbs/forms.py:136
 msgid "The entered name does not match."
 msgstr "Il nome inserito non corrisponde."
 
-#: apps/climbs/forms.py:151 apps/climbs/images.py:77
+#: apps/climbs/forms.py:155 apps/climbs/images.py:77
 #, python-format
 msgid "You can upload at most %(limit)s images at once."
 msgstr "Puoi caricare al massimo %(limit)s immagini alla volta."
 
-#: apps/climbs/forms.py:160
+#: apps/climbs/forms.py:164
 msgid "Images to combine"
 msgstr "Immagini da unire"
 
-#: apps/climbs/forms.py:168
+#: apps/climbs/forms.py:172
 msgid "Select up to 4 JPEG, PNG or WebP images. Maximum 8 MB per image."
 msgstr "Seleziona fino a 4 immagini JPEG, PNG o WebP. Massimo 8 MB per immagine."
 
-#: apps/climbs/forms.py:208 templates/climbs/route_detail.html:56
+#: apps/climbs/forms.py:216 templates/climbs/route_detail.html:56
 #: templates/climbs/route_detail.html:77
 #: templates/components/ascent_card.html:25
 #: templates/components/ascent_card.html:61
@@ -261,15 +273,15 @@ msgstr "Seleziona fino a 4 immagini JPEG, PNG o WebP. Massimo 8 MB per immagine.
 msgid "Proposed grade"
 msgstr "Grado proposto"
 
-#: apps/climbs/forms.py:209 templates/climbs/route_list.html:71
+#: apps/climbs/forms.py:217 templates/climbs/route_list.html:71
 msgid "Choose a grade"
 msgstr "Scegli un grado"
 
-#: apps/climbs/forms.py:212
+#: apps/climbs/forms.py:220
 msgid "Decimal"
 msgstr "Decimale"
 
-#: apps/climbs/forms.py:245 templates/climbs/route_detail.html:60
+#: apps/climbs/forms.py:253 templates/climbs/route_detail.html:60
 #: templates/climbs/route_detail.html:78
 #: templates/components/ascent_table.html:24
 #: templates/components/ascent_table.html:50
@@ -277,22 +289,22 @@ msgstr "Decimale"
 msgid "Beauty"
 msgstr "Bellezza"
 
-#: apps/climbs/forms.py:246 templates/components/ascent_table.html:23
+#: apps/climbs/forms.py:254 templates/components/ascent_table.html:23
 #: templates/components/ascent_table.html:31
 #: templates/components/ascent_table.html:49
 msgctxt "ascent form field"
 msgid "Attempts"
 msgstr "Tentativi"
 
-#: apps/climbs/forms.py:277 apps/climbs/models.py:192
+#: apps/climbs/forms.py:285 apps/climbs/models.py:192
 msgid "The ascent date cannot be in the future."
 msgstr "La data della ripetizione non può essere futura."
 
-#: apps/climbs/forms.py:291 apps/climbs/views.py:926 apps/climbs/views.py:961
+#: apps/climbs/forms.py:299 apps/climbs/views.py:926 apps/climbs/views.py:961
 msgid "You have already recorded an ascent for this route."
 msgstr "Hai già registrato una ripetizione per questa via."
 
-#: apps/climbs/forms.py:300 apps/climbs/models.py:195
+#: apps/climbs/forms.py:308 apps/climbs/models.py:195
 msgid "Enter a positive number of attempts."
 msgstr "Inserisci un numero di giri positivo."
 
@@ -866,7 +878,7 @@ msgstr "Salva modifiche"
 #: templates/climbs/ascent_delete_confirm.html:15
 #: templates/climbs/ascent_form.html:58 templates/climbs/ascent_form.html:60
 #: templates/climbs/delete_confirm.html:16
-#: templates/climbs/route_annotation_form.html:64
+#: templates/climbs/route_annotation_form.html:74
 #: templates/climbs/route_form.html:15
 #: templates/climbs/route_image_delete_confirm.html:15
 #: templates/climbs/route_image_form.html:29 templates/climbs/wall_form.html:14
@@ -974,7 +986,7 @@ msgstr "Climbers"
 
 #: templates/base.html:43 templates/climbs/ascent_list.html:4
 #: templates/climbs/ascent_list.html:12 templates/climbs/route_detail.html:54
-#: templates/climbs/route_detail.html:146 templates/climbs/user_list.html:25
+#: templates/climbs/route_detail.html:147 templates/climbs/user_list.html:25
 #: templates/climbs/wall_list.html:64
 #: templates/components/climbing_profile_stats.html:15
 #: templates/components/climbing_profile_stats.html:31
@@ -1067,7 +1079,7 @@ msgstr[1] "%(total)s ripetizioni"
 msgid "All ascents"
 msgstr "Tutte le ripetizioni"
 
-#: templates/climbs/ascent_list.html:29 templates/climbs/route_detail.html:153
+#: templates/climbs/ascent_list.html:29 templates/climbs/route_detail.html:154
 #: templates/components/climbing_profile_stats.html:63
 #: templates/core/home.html:123
 msgid "No ascents recorded"
@@ -1105,68 +1117,89 @@ msgstr "Modifica annotazione della via"
 msgid "Choose a marker, tap the corresponding hold, and drag an existing marker to reposition it."
 msgstr "Scegli un marcatore, tocca la presa corrispondente e trascina un marcatore esistente per riposizionarlo."
 
-#: templates/climbs/route_annotation_form.html:27
-#: templates/climbs/route_detail.html:125
+#: templates/climbs/route_annotation_form.html:28
+#: templates/climbs/route_detail.html:126
 msgid "L"
 msgstr "S"
 
-#: templates/climbs/route_annotation_form.html:28
-#: templates/climbs/route_detail.html:126
+#: templates/climbs/route_annotation_form.html:29
+#: templates/climbs/route_detail.html:127
 msgid "R"
 msgstr "D"
 
-#: templates/climbs/route_annotation_form.html:29
-#: templates/climbs/route_detail.html:127
+#: templates/climbs/route_annotation_form.html:30
+#: templates/climbs/route_detail.html:128
 msgid "TOP"
 msgstr "TOP"
 
-#: templates/climbs/route_annotation_form.html:30
+#: templates/climbs/route_annotation_form.html:31
 msgid "The maximum number of markers has been reached."
 msgstr "È stato raggiunto il numero massimo di marcatori."
 
 #: templates/climbs/route_annotation_form.html:32
+msgid "Choose whether the first route hold is left or right."
+msgstr "Indica se la prima presa della via è sinistra o destra."
+
+#: templates/climbs/route_annotation_form.html:34
 msgid "Annotation tools"
 msgstr "Strumenti di annotazione"
 
-#: templates/climbs/route_annotation_form.html:34
-msgid "Left start"
-msgstr "Partenza sinistra"
-
-#: templates/climbs/route_annotation_form.html:35
-msgid "Right start"
-msgstr "Partenza destra"
-
-#: templates/climbs/route_annotation_form.html:36
-msgid "Numbered move"
-msgstr "Movimento numerato"
-
 #: templates/climbs/route_annotation_form.html:37
+msgid "Start"
+msgstr "Partenza"
+
+#: templates/climbs/route_annotation_form.html:38
+msgid "Hold"
+msgstr "Presa"
+
+#: templates/climbs/route_annotation_form.html:39
+#: templates/climbs/route_annotation_form.html:46
 msgid "Top"
 msgstr "Top"
 
-#: templates/climbs/route_annotation_form.html:40
+#: templates/climbs/route_annotation_form.html:41
+msgid "Left start"
+msgstr "Partenza sinistra"
+
+#: templates/climbs/route_annotation_form.html:42
+msgid "Right start"
+msgstr "Partenza destra"
+
+#: templates/climbs/route_annotation_form.html:43
+msgid "First hold left"
+msgstr "Prima presa sinistra"
+
+#: templates/climbs/route_annotation_form.html:44
+msgid "First hold right"
+msgstr "Prima presa destra"
+
+#: templates/climbs/route_annotation_form.html:45
+msgid "Numbered move"
+msgstr "Movimento numerato"
+
+#: templates/climbs/route_annotation_form.html:50
 msgid "Undo"
 msgstr "Annulla ultima modifica"
 
-#: templates/climbs/route_annotation_form.html:41
+#: templates/climbs/route_annotation_form.html:51
 msgid "Delete selected"
 msgstr "Elimina selezionato"
 
-#: templates/climbs/route_annotation_form.html:42
+#: templates/climbs/route_annotation_form.html:52
 msgid "Clear"
 msgstr "Azzera"
 
-#: templates/climbs/route_annotation_form.html:50
-#: templates/climbs/route_detail.html:131
+#: templates/climbs/route_annotation_form.html:60
+#: templates/climbs/route_detail.html:132
 #, python-format
 msgid "Route %(route)s"
 msgstr "Via %(route)s"
 
-#: templates/climbs/route_annotation_form.html:56
+#: templates/climbs/route_annotation_form.html:66
 msgid "Interactive route annotation canvas"
 msgstr "Area interattiva per annotare la via"
 
-#: templates/climbs/route_annotation_form.html:63
+#: templates/climbs/route_annotation_form.html:73
 msgid "Save annotation"
 msgstr "Salva annotazione"
 
@@ -1262,28 +1295,28 @@ msgstr "Elimina immagine"
 msgid "Upload image"
 msgstr "Carica immagine"
 
-#: templates/climbs/route_detail.html:139
-#: templates/climbs/route_detail.html:141
+#: templates/climbs/route_detail.html:140
+#: templates/climbs/route_detail.html:142
 msgid "No route image"
 msgstr "Nessuna immagine della via"
 
-#: templates/climbs/route_detail.html:140
+#: templates/climbs/route_detail.html:141
 msgid "An authorised route setter can upload one image for this route."
 msgstr "Un route setter autorizzato può caricare un'immagine per questa via."
 
-#: templates/climbs/route_detail.html:148
+#: templates/climbs/route_detail.html:149
 msgid "Route ascents"
 msgstr "Ripetizioni della via"
 
-#: templates/climbs/route_detail.html:154
+#: templates/climbs/route_detail.html:155
 msgid "Be the first to record this route."
 msgstr "Registra per primo questa via."
 
-#: templates/climbs/route_detail.html:160
+#: templates/climbs/route_detail.html:161
 msgid "Route information"
 msgstr "Informazioni sulla via"
 
-#: templates/climbs/route_detail.html:163 templates/climbs/route_list.html:47
+#: templates/climbs/route_detail.html:164 templates/climbs/route_list.html:47
 #: templates/climbs/wall_detail.html:56
 #: templates/components/ascent_table.html:39
 #: templates/components/climbing_profile_stats.html:34
@@ -1292,19 +1325,19 @@ msgstr "Informazioni sulla via"
 msgid "Type"
 msgstr "Tipo"
 
-#: templates/climbs/route_detail.html:164 templates/climbs/route_list.html:38
+#: templates/climbs/route_detail.html:165 templates/climbs/route_list.html:38
 #: templates/components/ascent_table.html:16
 #: templates/components/route_table.html:11
 #: templates/core/statistics_dashboard.html:69
 msgid "Wall"
 msgstr "Parete"
 
-#: templates/climbs/route_detail.html:166
+#: templates/climbs/route_detail.html:167
 #: templates/core/management_dashboard.html:18
 msgid "Route setters"
 msgstr "Route setter"
 
-#: templates/climbs/route_detail.html:171
+#: templates/climbs/route_detail.html:172
 msgid "Not specified"
 msgstr "Non specificato"
 
@@ -1986,6 +2019,12 @@ msgstr "Non sono ancora disponibili pareti attive."
 #: templates/core/statistics_dashboard.html:103
 msgid "Ascents in the last 12 months"
 msgstr "Ripetizioni negli ultimi 12 mesi"
+
+#~ msgid "S"
+#~ msgstr "S"
+
+#~ msgid "Numbered hold"
+#~ msgstr "Presa numerata"
 
 #~ msgid "Follow the latest climbs completed by the gym community."
 #~ msgstr "Segui le ultime vie completate dalla community della palestra."

@@ -14,7 +14,11 @@ from django.utils.translation import pgettext_lazy
 from apps.accounts.models import User
 from apps.core.forms import StyledFormMixin
 
-from .annotations import empty_route_annotation, parse_route_annotation
+from .annotations import (
+    empty_route_annotation,
+    parse_route_annotation,
+    validate_annotation_for_discipline,
+)
 from .grades import FRENCH_GRADE_CHOICES, encode_perceived_grade
 from .images import MAX_ROUTE_IMAGE_COUNT, validate_route_image
 from .models import Ascent, ClimbingRoute, RouteImage, Wall
@@ -188,7 +192,11 @@ class RouteAnnotationForm(forms.Form):
         super().__init__(*args, **kwargs)
 
     def clean_annotations(self) -> dict[str, Any]:
-        return parse_route_annotation(self.cleaned_data["annotations"])
+        annotations = parse_route_annotation(self.cleaned_data["annotations"])
+        return validate_annotation_for_discipline(
+            annotations,
+            self.route_image.climbing_route.discipline,
+        )
 
     def save(self) -> RouteImage:
         self.route_image.annotations = self.cleaned_data.get(

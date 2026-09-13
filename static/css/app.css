@@ -2333,7 +2333,7 @@ meter::-webkit-meter-optimum-value {
 .route-image-stage {
   position: relative;
   display: block;
-  width: max-content;
+  width: 100%;
   max-width: 100%;
   margin: 1rem auto 0;
   overflow: hidden;
@@ -2345,10 +2345,9 @@ meter::-webkit-meter-optimum-value {
 
 .route-image-stage img {
   display: block;
-  width: auto;
+  width: 100%;
+  height: auto;
   max-width: 100%;
-  max-height: 75vh;
-  object-fit: contain;
 }
 
 .route-image-stage canvas {

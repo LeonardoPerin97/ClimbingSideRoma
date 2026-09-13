@@ -24,17 +24,27 @@
             class="annotation-editor"
             data-annotation-editor
             data-annotation-source="route-annotation-data"
+            data-annotation-mode="{{ climbing_route.discipline }}"
             data-label-left="{% translate 'L' %}"
             data-label-right="{% translate 'R' %}"
             data-label-top="{% translate 'TOP' %}"
             data-limit-message="{% translate 'The maximum number of markers has been reached.' %}"
+            data-first-move-message="{% translate 'Choose whether the first route hold is left or right.' %}"
         >
             <div class="annotation-toolbar" role="toolbar" aria-label="{% translate 'Annotation tools' %}">
                 <div class="annotation-tool-group">
-                    <button class="button button-secondary is-active" type="button" data-marker-tool="start-left" aria-pressed="true">{% translate "Left start" %}</button>
-                    <button class="button button-secondary" type="button" data-marker-tool="start-right" aria-pressed="false">{% translate "Right start" %}</button>
-                    <button class="button button-secondary" type="button" data-marker-tool="move" aria-pressed="false">{% translate "Numbered move" %}</button>
-                    <button class="button button-secondary" type="button" data-marker-tool="top" aria-pressed="false">{% translate "Top" %}</button>
+                    {% if climbing_route.discipline == "boulder" %}
+                        <button class="button button-secondary is-active" type="button" data-marker-tool="start" aria-pressed="true">{% translate "Start" %}</button>
+                        <button class="button button-secondary" type="button" data-marker-tool="hold" aria-pressed="false">{% translate "Hold" %}</button>
+                        <button class="button button-secondary" type="button" data-marker-tool="top" aria-pressed="false">{% translate "Top" %}</button>
+                    {% else %}
+                        <button class="button button-secondary is-active" type="button" data-marker-tool="start-left" aria-pressed="true">{% translate "Left start" %}</button>
+                        <button class="button button-secondary" type="button" data-marker-tool="start-right" aria-pressed="false">{% translate "Right start" %}</button>
+                        <button class="button button-secondary" type="button" data-marker-tool="move-left" aria-pressed="false">{% translate "First hold left" %}</button>
+                        <button class="button button-secondary" type="button" data-marker-tool="move-right" aria-pressed="false">{% translate "First hold right" %}</button>
+                        <button class="button button-secondary" type="button" data-marker-tool="move" aria-pressed="false">{% translate "Numbered move" %}</button>
+                        <button class="button button-secondary" type="button" data-marker-tool="top" aria-pressed="false">{% translate "Top" %}</button>
+                    {% endif %}
                 </div>
                 <div class="annotation-tool-group">
                     <button class="button button-secondary" type="button" data-annotation-undo>{% translate "Undo" %}</button>

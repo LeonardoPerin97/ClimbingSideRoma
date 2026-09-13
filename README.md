@@ -376,11 +376,14 @@ template Django, lo stile è CSS nativo e gli script sono JavaScript senza dipen
 
 ### Salvataggio dell’annotazione
 
-1. L’editor converte i marcatori in coordinate normalizzate.
-2. Il JSON viene inserito in un campo nascosto del form.
-3. Il backend verifica versione, struttura, tipi, coordinate e numerazione.
-4. Viene aggiornato solo il campo `annotations` del record `RouteImage`.
-5. L’immagine originale rimane invariata.
+1. L’editor seleziona automaticamente gli strumenti per Via o Boulder in base al
+   tipo della `ClimbingRoute`.
+2. I marcatori vengono convertiti in coordinate normalizzate.
+3. Il JSON viene inserito in un campo nascosto del form.
+4. Il backend verifica versione, struttura, compatibilità con il tipo di via,
+   coordinate e numerazione.
+5. Viene aggiornato solo il campo `annotations` del record `RouteImage`.
+6. L’immagine originale rimane invariata.
 
 ## Struttura del repository
 
@@ -973,13 +976,14 @@ L’immagine originale non viene alterata. L’annotazione è un documento JSON 
 
 Tipi supportati:
 
-- partenza sinistra;
-- partenza destra;
-- movimento;
-- top.
+- per le Vie: partenza sinistra, partenza destra, prima presa con indicazione
+  sinistra/destra, movimenti numerati e top;
+- per i Boulder: partenze multiple, prese multiple e un solo top.
 
-Il server accetta al massimo 100 marcatori, coordinate comprese tra 0 e 1 e movimenti
-numerati consecutivamente. Partenze e top sono unici.
+Partenze e top sono verdi; prese e movimenti intermedi sono rossi. Il server accetta
+al massimo 100 marcatori, coordinate comprese tra 0 e 1 e sequenze numerate
+consecutivamente. Nelle Vie le due partenze e il top sono unici; nei Boulder le
+partenze possono essere multiple e il top è unico.
 
 ## Test e qualità del codice
 
