@@ -1684,7 +1684,7 @@ msgstr "Community"
 
 #: templates/climbs/user_list.html:12
 msgid "The gym's climbers, their ascents and highest grades."
-msgstr "I climber della palestra, le loro ripetizioni e i gradi più alti."
+msgstr "I climbers della palestra, le loro ripetizioni e i gradi più alti."
 
 #: templates/climbs/user_list.html:19
 msgid "Username"
