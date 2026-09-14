@@ -2234,31 +2234,6 @@ meter::-webkit-meter-optimum-value {
   outline-offset: 3px;
 }
 
-.profile-image-action {
-  min-height: 1.7rem;
-  padding: 0.2rem 0.45rem;
-  color: var(--color-muted);
-  background: transparent;
-  border-color: color-mix(in srgb, var(--color-muted) 35%, transparent);
-  font-size: 0.64rem;
-  font-weight: 600;
-}
-
-.profile-image-action:hover,
-.profile-image-action:focus-visible {
-  color: var(--color-danger);
-  background: transparent;
-  border-color: var(--color-danger);
-}
-
-.profile-image-delete-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
-}
-
 .current-profile-image {
   display: flex;
   gap: 1rem;

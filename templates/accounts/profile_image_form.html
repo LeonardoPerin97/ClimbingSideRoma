@@ -37,12 +37,15 @@
                             {% if replacing %}{% translate "Replace image" %}{% else %}{% translate "Upload image" %}{% endif %}
                         </button>
                         <a class="button button-secondary" href="{% url 'accounts:public_profile' profile_user.username %}">{% translate "Cancel" %}</a>
+                        {% if can_delete %}
+                            <a class="button button-danger" href="{% url 'accounts:profile_image_delete' profile_user.username %}">{% translate "Delete profile image" %}</a>
+                        {% endif %}
                     </div>
                 </form>
-            {% endif %}
-            {% if can_delete %}
-                <div class="profile-image-delete-actions">
-                    <a class="button button-danger profile-image-action" href="{% url 'accounts:profile_image_delete' profile_user.username %}">{% translate "Delete profile image" %}</a>
+            {% elif can_delete %}
+                <div class="button-row">
+                    <a class="button button-danger" href="{% url 'accounts:profile_image_delete' profile_user.username %}">{% translate "Delete profile image" %}</a>
+                    <a class="button button-secondary" href="{% url 'accounts:public_profile' profile_user.username %}">{% translate "Cancel" %}</a>
                 </div>
             {% endif %}
         </div>
