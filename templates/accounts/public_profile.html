@@ -65,6 +65,7 @@
                     </div>
                     <div><dt>{% translate "Role" %}</dt><dd>{{ role }}</dd></div>
                     <div><dt>{% translate "Language" %}</dt><dd>{{ profile_user.get_preferred_language_display }}</dd></div>
+                    <div><dt>{% translate "Member since" %}</dt><dd>{{ profile_user.date_joined|date:"d/m/Y" }}</dd></div>
                 </dl>
                 <div class="button-row">
                     <a class="button button-primary" href="{% url 'accounts:profile_edit' %}">{% translate "Edit profile" %}</a>

@@ -2163,8 +2163,8 @@ meter::-webkit-meter-optimum-value {
 
 .profile-avatar {
   display: block;
-  width: clamp(5rem, 8vw, 7rem);
-  height: clamp(5rem, 8vw, 7rem);
+  width: clamp(6.5rem, 10vw, 9rem);
+  height: clamp(6.5rem, 10vw, 9rem);
   flex: 0 0 auto;
   object-fit: cover;
   background: var(--color-soft);
@@ -2184,8 +2184,8 @@ meter::-webkit-meter-optimum-value {
 
 .profile-avatar-link {
   display: block;
-  width: clamp(5rem, 8vw, 7rem);
-  height: clamp(5rem, 8vw, 7rem);
+  width: clamp(6.5rem, 10vw, 9rem);
+  height: clamp(6.5rem, 10vw, 9rem);
   flex: 0 0 auto;
   border-radius: 50%;
   text-decoration: none;
@@ -2235,9 +2235,20 @@ meter::-webkit-meter-optimum-value {
 }
 
 .profile-image-action {
-  min-height: 2.35rem;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.76rem;
+  min-height: 1.7rem;
+  padding: 0.2rem 0.45rem;
+  color: var(--color-muted);
+  background: transparent;
+  border-color: color-mix(in srgb, var(--color-muted) 35%, transparent);
+  font-size: 0.64rem;
+  font-weight: 600;
+}
+
+.profile-image-action:hover,
+.profile-image-action:focus-visible {
+  color: var(--color-danger);
+  background: transparent;
+  border-color: var(--color-danger);
 }
 
 .current-profile-image {
@@ -2909,8 +2920,8 @@ meter::-webkit-meter-optimum-value {
 
   .profile-identity .profile-avatar,
   .profile-identity .profile-avatar-link {
-    width: 4rem;
-    height: 4rem;
+    width: 5.25rem;
+    height: 5.25rem;
   }
 
   .profile-identity .profile-avatar-placeholder {

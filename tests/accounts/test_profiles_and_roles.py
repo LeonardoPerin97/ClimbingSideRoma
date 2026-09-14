@@ -172,6 +172,8 @@ def test_own_climber_profile_places_private_account_information_at_the_end(
     assert response.status_code == 200
     assert content.index('class="summary-grid"') < content.index('id="account-information-heading"')
     assert "owner-private@example.com" in content
+    assert "Iscritto dal" in content
+    assert user.date_joined.strftime("%d/%m/%Y") in content
     assert reverse("accounts:profile_edit") in content
     assert reverse("accounts:password_change") in content
     assert 'id="profile-information-heading"' not in content
