@@ -2251,6 +2251,14 @@ meter::-webkit-meter-optimum-value {
   border-color: var(--color-danger);
 }
 
+.profile-image-delete-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
 .current-profile-image {
   display: flex;
   gap: 1rem;
@@ -2434,6 +2442,38 @@ meter::-webkit-meter-optimum-value {
 
 .user-card h2 {
   margin: 0;
+}
+
+.user-card-identity {
+  display: flex;
+  min-width: 0;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.user-card-copy {
+  min-width: 0;
+}
+
+.user-list-avatar {
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 2.75rem;
+  object-fit: cover;
+  background: var(--color-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+}
+
+.user-list-avatar-placeholder {
+  display: grid;
+  place-items: center;
+  color: white;
+  background: #353535;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
 .list-name-link,
@@ -2928,10 +2968,6 @@ meter::-webkit-meter-optimum-value {
     font-size: 1.75rem;
   }
 
-  .profile-image-action {
-    align-self: flex-start;
-  }
-
   .filter-bar,
   .route-filters,
   .user-filters {
@@ -3112,6 +3148,12 @@ meter::-webkit-meter-optimum-value {
     width: 100%;
     justify-content: space-between;
     text-align: left;
+  }
+
+  .user-list-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-basis: 2.5rem;
   }
 
   .data-list-header-desktop {

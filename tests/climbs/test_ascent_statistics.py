@@ -441,6 +441,27 @@ def test_user_list_can_sort_by_ascents_and_highest_official_grade(
 
 
 @pytest.mark.django_db
+def test_user_list_displays_profile_images_and_initial_fallback(
+    client: Client,
+    user_factory: Callable[..., User],
+) -> None:
+    pictured = user_factory(username="pictured-list-climber", email="pictured-list@example.com")
+    pictured.profile_image = f"profiles/{pictured.pk}/pictured.png"
+    pictured.save(update_fields=("profile_image",))
+    user_factory(username="fallback-list-climber", email="fallback-list@example.com")
+
+    response = client.get(reverse("climbs:user_list"), HTTP_ACCEPT_LANGUAGE="en")
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert pictured.profile_image.url in content
+    assert 'class="user-list-avatar"' in content
+    assert "Profile image of pictured-list-climber" in content
+    assert 'class="user-list-avatar user-list-avatar-placeholder"' in content
+    assert ">F</span>" in content
+
+
+@pytest.mark.django_db
 def test_profile_context_contains_histogram_distributions_without_progression(
     client: Client,
     user_factory: Callable[..., User],

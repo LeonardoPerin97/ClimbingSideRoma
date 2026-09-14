@@ -42,6 +42,11 @@ urlpatterns = [
     ),
     path("users/<str:username>/", views.public_profile, name="public_profile"),
     path(
+        "users/<str:username>/profile-image/",
+        views.manage_profile_image,
+        name="profile_image_manage",
+    ),
+    path(
         "users/<str:username>/profile-image/delete/",
         views.delete_profile_image_view,
         name="profile_image_delete",

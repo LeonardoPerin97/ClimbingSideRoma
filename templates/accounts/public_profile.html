@@ -9,12 +9,12 @@
         <header class="catalog-header profile-heading">
             <div class="profile-identity">
                 {% if profile_user.profile_image %}
-                    {% if is_own_profile %}
+                    {% if profile_image_management_url %}
                         <a
                             class="profile-avatar-link"
-                            href="{% url 'accounts:profile_image_upload' %}"
-                            aria-label="{% translate 'Change profile image' %}"
-                            title="{% translate 'Change profile image' %}"
+                            href="{{ profile_image_management_url }}"
+                            aria-label="{% translate 'Manage profile image' %}"
+                            title="{% translate 'Manage profile image' %}"
                         >
                     {% endif %}
                         <img
@@ -24,7 +24,7 @@
                             width="112"
                             height="112"
                         >
-                    {% if is_own_profile %}</a>{% endif %}
+                    {% if profile_image_management_url %}</a>{% endif %}
                 {% elif is_own_profile %}
                     <a
                         class="profile-avatar profile-avatar-add"
@@ -43,9 +43,6 @@
                     {% endif %}
                 </div>
             </div>
-            {% if can_delete_profile_image %}
-                <a class="button button-danger profile-image-action" href="{% url 'accounts:profile_image_delete' profile_user.username %}">{% translate "Delete profile image" %}</a>
-            {% endif %}
         </header>
         {% include "components/climbing_profile_stats.html" %}
         {% if is_own_profile %}

@@ -10,7 +10,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
@@ -186,6 +186,16 @@ def profile(request: HttpRequest) -> HttpResponse:
 
 def public_profile(request: HttpRequest, username: str) -> HttpResponse:
     profile_user = get_object_or_404(User, username__iexact=username, is_active=True)
+    is_own_profile = request.user.is_authenticated and request.user.pk == profile_user.pk
+    profile_image_management_url = ""
+    if profile_user.profile_image:
+        if is_own_profile:
+            profile_image_management_url = reverse("accounts:profile_image_upload")
+        elif request.user.is_authenticated and request.user.has_perm("accounts.change_user"):
+            profile_image_management_url = reverse(
+                "accounts:profile_image_manage",
+                args=[profile_user.username],
+            )
     context = user_climbing_context(
         profile_user,
         ascent_sort=request.GET.get("sort", "date_desc"),
@@ -196,15 +206,8 @@ def public_profile(request: HttpRequest, username: str) -> HttpResponse:
         {
             "profile_user": profile_user,
             "role": role_label_for(profile_user),
-            "is_own_profile": request.user.is_authenticated and request.user.pk == profile_user.pk,
-            "can_delete_profile_image": (
-                bool(profile_user.profile_image)
-                and request.user.is_authenticated
-                and (
-                    request.user.pk == profile_user.pk
-                    or request.user.has_perm("accounts.change_user")
-                )
-            ),
+            "is_own_profile": is_own_profile,
+            "profile_image_management_url": profile_image_management_url,
         }
     )
     return render(
@@ -269,7 +272,38 @@ def upload_profile_image(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "accounts/profile_image_form.html",
-        {"form": form, "replacing": bool(old_image_name)},
+        {
+            "form": form,
+            "profile_user": profile_user,
+            "replacing": bool(old_image_name),
+            "can_upload": True,
+            "can_delete": bool(old_image_name),
+        },
+    )
+
+
+@login_required
+@require_http_methods(["GET"])
+def manage_profile_image(request: HttpRequest, username: str) -> HttpResponse:
+    profile_user = get_object_or_404(User, username__iexact=username, is_active=True)
+    actor = cast(User, request.user)
+    if actor.pk == profile_user.pk:
+        return redirect("accounts:profile_image_upload")
+    if not actor.has_perm("accounts.change_user"):
+        raise PermissionDenied
+    if not profile_user.profile_image:
+        messages.info(request, _("This profile has no image to delete."))
+        return redirect("accounts:public_profile", username=profile_user.username)
+    return render(
+        request,
+        "accounts/profile_image_form.html",
+        {
+            "form": None,
+            "profile_user": profile_user,
+            "replacing": True,
+            "can_upload": False,
+            "can_delete": True,
+        },
     )
 
 

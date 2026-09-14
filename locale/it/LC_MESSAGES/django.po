@@ -930,6 +930,11 @@ msgid "Change profile image"
 msgstr "Modifica immagine del profilo"
 
 #: templates/accounts/profile_image_form.html
+#: templates/accounts/public_profile.html
+msgid "Manage profile image"
+msgstr "Gestisci immagine del profilo"
+
+#: templates/accounts/profile_image_form.html
 msgid "Select an image for your climber profile."
 msgstr "Seleziona un'immagine per il tuo profilo climber."
 

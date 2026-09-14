@@ -33,9 +33,22 @@
         <div class="user-list">
             {% for profile_user in page %}
                 <article class="user-card">
-                    <div>
-                        <h2><a class="user-profile-link list-name-link" href="{% url 'accounts:public_profile' profile_user.username %}">{{ profile_user.username }}</a></h2>
-                        {% if profile_user.first_name or profile_user.last_name %}<p>{{ profile_user.get_full_name }}</p>{% endif %}
+                    <div class="user-card-identity">
+                        {% if profile_user.profile_image %}
+                            <img
+                                class="user-list-avatar"
+                                src="{{ profile_user.profile_image.url }}"
+                                alt="{% blocktranslate with username=profile_user.username %}Profile image of {{ username }}{% endblocktranslate %}"
+                                width="44"
+                                height="44"
+                            >
+                        {% else %}
+                            <span class="user-list-avatar user-list-avatar-placeholder" aria-hidden="true">{{ profile_user.username|first|upper }}</span>
+                        {% endif %}
+                        <div class="user-card-copy">
+                            <h2><a class="user-profile-link list-name-link" href="{% url 'accounts:public_profile' profile_user.username %}">{{ profile_user.username }}</a></h2>
+                            {% if profile_user.first_name or profile_user.last_name %}<p>{{ profile_user.get_full_name }}</p>{% endif %}
+                        </div>
                     </div>
                     <div class="user-card-stats">
                         <span><strong>{{ profile_user.ascent_count }}</strong> {% translate "ascents" %}</span>

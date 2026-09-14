@@ -769,6 +769,7 @@ La compilazione richiede GNU gettext.
 | `/account/profile-image/` | autenticato | Aggiunge o sostituisce solamente l'immagine del profilo |
 | `/users/` | pubblico | Elenco climber |
 | `/users/<username>/` | pubblico | Profilo climber; mostra i dati dell’account solo al proprietario |
+| `/users/<username>/profile-image/` | proprietario/Admin | Gestione dell’immagine; l’Admin può solamente eliminarla |
 | `/users/<username>/profile-image/delete/` | proprietario/Admin | Conferma ed elimina l’immagine del profilo |
 | `/walls/` | pubblico | Elenco pareti |
 | `/walls/<id>/` | pubblico | Dettaglio parete |

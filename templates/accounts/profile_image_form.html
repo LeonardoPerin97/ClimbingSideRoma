@@ -1,39 +1,50 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% if replacing %}{% translate "Change profile image" %}{% else %}{% translate "Add profile image" %}{% endif %} · ClimbingSide{% endblock %}
+{% block title %}{% if can_upload %}{% if replacing %}{% translate "Change profile image" %}{% else %}{% translate "Add profile image" %}{% endif %}{% else %}{% translate "Manage profile image" %}{% endif %} · ClimbingSide{% endblock %}
 
 {% block content %}
 <section class="page-section">
     <div class="container narrow-container">
         <div class="form-card">
-            <h1>{% if replacing %}{% translate "Change profile image" %}{% else %}{% translate "Add profile image" %}{% endif %}</h1>
-            <p>{% translate "Select an image for your climber profile." %}</p>
-            {% if request.user.profile_image %}
+            <h1>{% if can_upload %}{% if replacing %}{% translate "Change profile image" %}{% else %}{% translate "Add profile image" %}{% endif %}{% else %}{% translate "Manage profile image" %}{% endif %}</h1>
+            {% if can_upload %}
+                <p>{% translate "Select an image for your climber profile." %}</p>
+            {% else %}
+                <p>{% blocktranslate with username=profile_user.username %}Profile image of {{ username }}{% endblocktranslate %}</p>
+            {% endif %}
+            {% if profile_user.profile_image %}
                 <div class="current-profile-image">
                     <img
                         class="profile-avatar"
-                        src="{{ request.user.profile_image.url }}"
+                        src="{{ profile_user.profile_image.url }}"
                         alt="{% translate 'Current profile image' %}"
                         width="80"
                         height="80"
                     >
                     <div>
                         <strong>{% translate "Current profile image" %}</strong>
-                        <p>{% translate "Choose another image below to replace it." %}</p>
+                        {% if can_upload %}<p>{% translate "Choose another image below to replace it." %}</p>{% endif %}
                     </div>
                 </div>
             {% endif %}
-            <form method="post" enctype="multipart/form-data" novalidate>
-                {% csrf_token %}
-                {% include "components/form.html" %}
-                <div class="button-row">
-                    <button class="button button-primary" type="submit">
-                        {% if replacing %}{% translate "Replace image" %}{% else %}{% translate "Upload image" %}{% endif %}
-                    </button>
-                    <a class="button button-secondary" href="{% url 'accounts:public_profile' request.user.username %}">{% translate "Cancel" %}</a>
+            {% if can_upload %}
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    {% include "components/form.html" %}
+                    <div class="button-row">
+                        <button class="button button-primary" type="submit">
+                            {% if replacing %}{% translate "Replace image" %}{% else %}{% translate "Upload image" %}{% endif %}
+                        </button>
+                        <a class="button button-secondary" href="{% url 'accounts:public_profile' profile_user.username %}">{% translate "Cancel" %}</a>
+                    </div>
+                </form>
+            {% endif %}
+            {% if can_delete %}
+                <div class="profile-image-delete-actions">
+                    <a class="button button-danger profile-image-action" href="{% url 'accounts:profile_image_delete' profile_user.username %}">{% translate "Delete profile image" %}</a>
                 </div>
-            </form>
+            {% endif %}
         </div>
     </div>
 </section>
