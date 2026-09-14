@@ -275,7 +275,7 @@ def collective_statistics_context(*, today: date) -> dict[str, Any]:
     }
     monthly_ascents = [
         MonthlyAscentBucket(month=month, count=counts_by_month.get(month, 0))
-        for month in (_month_start(first_month, offset) for offset in range(12))
+        for month in (_month_start(current_month, offset) for offset in range(0, -12, -1))
     ]
 
     highest_grade_order = active_routes.filter(is_project=False).aggregate(

@@ -251,8 +251,8 @@ def upload_profile_image(request: HttpRequest) -> HttpResponse:
     profile_user = cast(User, request.user)
     old_image_name = profile_user.profile_image.name
     form = ProfileImageUploadForm(
-        request.POST or None,
-        request.FILES or None,
+        request.POST if request.method == "POST" else None,
+        request.FILES if request.method == "POST" else None,
         instance=profile_user,
     )
     if request.method == "POST" and form.is_valid():

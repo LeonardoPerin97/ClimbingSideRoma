@@ -938,6 +938,10 @@ msgstr "Gestisci immagine del profilo"
 msgid "Select an image for your climber profile."
 msgstr "Seleziona un'immagine per il tuo profilo climber."
 
+#: apps/accounts/forms.py
+msgid "Select an image before continuing."
+msgstr "Seleziona un'immagine prima di continuare."
+
 #: templates/accounts/profile_edit.html:32
 msgid "Save changes"
 msgstr "Salva modifiche"

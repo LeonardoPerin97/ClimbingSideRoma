@@ -66,6 +66,12 @@ class ProfileUpdateForm(StyledFormMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.apply_control_classes()
 
+    def _get_validation_exclusions(self) -> set[str]:
+        exclude = super()._get_validation_exclusions()
+        if self.is_bound and "profile_image" not in self.files:
+            exclude.add("profile_image")
+        return exclude
+
     def clean_username(self) -> str:
         username = self.cleaned_data["username"].strip()
         duplicate = User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk)
@@ -91,6 +97,14 @@ class ProfileImageUploadForm(StyledFormMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.apply_control_classes()
         self.fields["profile_image"].required = True
+        self.fields["profile_image"].error_messages["required"] = _(
+            "Select an image before continuing."
+        )
+
+    def clean_profile_image(self) -> Any:
+        if "profile_image" not in self.files:
+            raise ValidationError(_("Select an image before continuing."))
+        return self.cleaned_data["profile_image"]
 
 
 class VerificationResendForm(StyledFormMixin, forms.Form):

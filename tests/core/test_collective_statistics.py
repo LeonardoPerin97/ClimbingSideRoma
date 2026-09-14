@@ -55,6 +55,9 @@ def test_collective_statistics_split_disciplines_and_exclude_archived_grades(
     assert response.context["highest_grade"] == "7a"
     assert len(response.context["monthly_ascents"]) == 12
     assert sum(bucket.count for bucket in response.context["monthly_ascents"]) == 2
+    monthly_months = [bucket.month for bucket in response.context["monthly_ascents"]]
+    assert monthly_months == sorted(monthly_months, reverse=True)
+    assert monthly_months[0] == timezone.localdate().replace(day=1)
     assert [bucket.label for bucket in response.context["grade_distribution"]] == ["6a", "7a"]
     content = response.content.decode()
     assert "Collective statistics" in content

@@ -442,6 +442,31 @@ def test_dedicated_profile_image_form_only_changes_the_image(
 
 
 @pytest.mark.django_db
+def test_replacing_profile_image_without_a_new_file_returns_validation_error(
+    client: Client,
+    user_factory: Callable[..., User],
+    profile_image_upload_factory: Callable[..., SimpleUploadedFile],
+    settings: Any,
+    tmp_path: Path,
+) -> None:
+    settings.MEDIA_ROOT = tmp_path / "media"
+    user = user_factory(username="missing-replacement-image")
+    user.profile_image = profile_image_upload_factory(name="old.png")
+    user.full_clean()
+    user.save(update_fields=("profile_image",))
+    old_image_name = user.profile_image.name
+    client.force_login(user)
+
+    response = client.post(reverse("accounts:profile_image_upload"), {})
+
+    user.refresh_from_db()
+    assert response.status_code == 200
+    assert "profile_image" in response.context["form"].errors
+    assert response.context["form"].errors["profile_image"]
+    assert user.profile_image.name == old_image_name
+
+
+@pytest.mark.django_db
 def test_dedicated_profile_image_form_requires_authentication(client: Client) -> None:
     response = client.get(reverse("accounts:profile_image_upload"))
 
