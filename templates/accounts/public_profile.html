@@ -9,13 +9,29 @@
         <header class="catalog-header profile-heading">
             <div class="profile-identity">
                 {% if profile_user.profile_image %}
-                    <img
-                        class="profile-avatar"
-                        src="{{ profile_user.profile_image.url }}"
-                        alt="{% blocktranslate with username=profile_user.username %}Profile image of {{ username }}{% endblocktranslate %}"
-                        width="112"
-                        height="112"
-                    >
+                    {% if is_own_profile %}
+                        <a
+                            class="profile-avatar-link"
+                            href="{% url 'accounts:profile_image_upload' %}"
+                            aria-label="{% translate 'Change profile image' %}"
+                            title="{% translate 'Change profile image' %}"
+                        >
+                    {% endif %}
+                        <img
+                            class="profile-avatar"
+                            src="{{ profile_user.profile_image.url }}"
+                            alt="{% blocktranslate with username=profile_user.username %}Profile image of {{ username }}{% endblocktranslate %}"
+                            width="112"
+                            height="112"
+                        >
+                    {% if is_own_profile %}</a>{% endif %}
+                {% elif is_own_profile %}
+                    <a
+                        class="profile-avatar profile-avatar-add"
+                        href="{% url 'accounts:profile_image_upload' %}"
+                        aria-label="{% translate 'Add profile image' %}"
+                        title="{% translate 'Add profile image' %}"
+                    ><span aria-hidden="true">+</span></a>
                 {% else %}
                     <span class="profile-avatar profile-avatar-placeholder" aria-hidden="true">{{ profile_user.username|first|upper }}</span>
                 {% endif %}

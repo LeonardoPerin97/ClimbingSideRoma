@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% if replacing %}{% translate "Change profile image" %}{% else %}{% translate "Add profile image" %}{% endif %} · ClimbingSide{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container narrow-container">
+        <div class="form-card">
+            <h1>{% if replacing %}{% translate "Change profile image" %}{% else %}{% translate "Add profile image" %}{% endif %}</h1>
+            <p>{% translate "Select an image for your climber profile." %}</p>
+            {% if request.user.profile_image %}
+                <div class="current-profile-image">
+                    <img
+                        class="profile-avatar"
+                        src="{{ request.user.profile_image.url }}"
+                        alt="{% translate 'Current profile image' %}"
+                        width="80"
+                        height="80"
+                    >
+                    <div>
+                        <strong>{% translate "Current profile image" %}</strong>
+                        <p>{% translate "Choose another image below to replace it." %}</p>
+                    </div>
+                </div>
+            {% endif %}
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                {% include "components/form.html" %}
+                <div class="button-row">
+                    <button class="button button-primary" type="submit">
+                        {% if replacing %}{% translate "Replace image" %}{% else %}{% translate "Upload image" %}{% endif %}
+                    </button>
+                    <a class="button button-secondary" href="{% url 'accounts:public_profile' request.user.username %}">{% translate "Cancel" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -168,6 +168,10 @@ msgstr ""
 msgid "Profile updated successfully."
 msgstr "Profilo aggiornato correttamente."
 
+#: apps/accounts/views.py
+msgid "Profile image updated successfully."
+msgstr "Immagine del profilo aggiornata correttamente."
+
 #: apps/accounts/views.py:256
 msgid "Profile image deleted."
 msgstr "Immagine del profilo eliminata."
@@ -906,12 +910,28 @@ msgstr "L'email verificata non può essere modificata da questo modulo."
 
 #: templates/accounts/profile_edit.html:18
 #: templates/accounts/profile_edit.html:23
+#: templates/accounts/profile_image_form.html
 msgid "Current profile image"
 msgstr "Immagine del profilo attuale"
 
 #: templates/accounts/profile_edit.html:24
+#: templates/accounts/profile_image_form.html
 msgid "Choose another image below to replace it."
 msgstr "Scegli un'altra immagine qui sotto per sostituirla."
+
+#: templates/accounts/profile_image_form.html
+#: templates/accounts/public_profile.html
+msgid "Add profile image"
+msgstr "Aggiungi immagine del profilo"
+
+#: templates/accounts/profile_image_form.html
+#: templates/accounts/public_profile.html
+msgid "Change profile image"
+msgstr "Modifica immagine del profilo"
+
+#: templates/accounts/profile_image_form.html
+msgid "Select an image for your climber profile."
+msgstr "Seleziona un'immagine per il tuo profilo climber."
 
 #: templates/accounts/profile_edit.html:32
 msgid "Save changes"

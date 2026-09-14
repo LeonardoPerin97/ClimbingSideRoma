@@ -56,7 +56,11 @@ def test_collective_statistics_split_disciplines_and_exclude_archived_grades(
     assert len(response.context["monthly_ascents"]) == 12
     assert sum(bucket.count for bucket in response.context["monthly_ascents"]) == 2
     assert [bucket.label for bucket in response.context["grade_distribution"]] == ["6a", "7a"]
-    assert b"Collective statistics" in response.content
+    content = response.content.decode()
+    assert "Collective statistics" in content
+    header_start = content.index('<header class="catalog-header">')
+    header_end = content.index("</header>", header_start)
+    assert "<div>" in content[header_start:header_end]
 
 
 @pytest.mark.django_db

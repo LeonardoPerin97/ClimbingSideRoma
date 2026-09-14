@@ -11,13 +11,13 @@ from apps.core.models import AuditLogEntry
 from .models import User
 
 if TYPE_CHECKING:
-    from .forms import ProfileUpdateForm
+    from .forms import ProfileImageUploadForm, ProfileUpdateForm
 
 logger = logging.getLogger(__name__)
 
 
 def save_profile_changes(
-    form: "ProfileUpdateForm",
+    form: "ProfileUpdateForm | ProfileImageUploadForm",
     *,
     actor: User,
     old_image_name: str,

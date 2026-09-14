@@ -13,6 +13,11 @@ urlpatterns = [
     path("logout/", views.ClimbingSideLogoutView.as_view(), name="logout"),
     path("account/", views.profile, name="profile"),
     path("account/edit/", views.edit_profile, name="profile_edit"),
+    path(
+        "account/profile-image/",
+        views.upload_profile_image,
+        name="profile_image_upload",
+    ),
     path("account/password/", views.PasswordChangeView.as_view(), name="password_change"),
     path(
         "account/password/done/",

@@ -197,6 +197,40 @@ def test_public_profile_is_visible_but_does_not_expose_email(
 
 
 @pytest.mark.django_db
+def test_own_profile_without_image_shows_clickable_add_image_control(
+    client: Client,
+    user_factory: Callable[..., User],
+) -> None:
+    user = user_factory(username="profile-without-image")
+    client.force_login(user)
+
+    response = client.get(reverse("accounts:public_profile", args=[user.username]))
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert 'class="profile-avatar profile-avatar-add"' in content
+    assert f'href="{reverse("accounts:profile_image_upload")}"' in content
+    assert ">+</span>" in content
+
+
+@pytest.mark.django_db
+def test_other_profile_without_image_keeps_non_interactive_initial(
+    client: Client,
+    user_factory: Callable[..., User],
+) -> None:
+    profile_user = user_factory(username="different-climber")
+
+    response = client.get(
+        reverse("accounts:public_profile", args=[profile_user.username]),
+    )
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert 'class="profile-avatar profile-avatar-placeholder"' in content
+    assert 'class="profile-avatar profile-avatar-add"' not in content
+
+
+@pytest.mark.django_db
 def test_authenticated_user_cannot_see_another_climbers_account_information(
     client: Client,
     user_factory: Callable[..., User],
@@ -331,8 +365,55 @@ def test_user_can_upload_profile_image_and_it_is_shown_on_public_profile(
     )
     profile_content = profile_response.content.decode()
     assert 'class="profile-avatar"' in profile_content
+    assert 'class="profile-avatar-link"' in profile_content
+    assert reverse("accounts:profile_image_upload") in profile_content
     assert user.profile_image.url in profile_content
     assert reverse("accounts:profile_image_delete", args=[user.username]) in profile_content
+
+
+@pytest.mark.django_db
+def test_dedicated_profile_image_form_only_changes_the_image(
+    client: Client,
+    user_factory: Callable[..., User],
+    profile_image_upload_factory: Callable[..., SimpleUploadedFile],
+    settings: Any,
+    tmp_path: Path,
+) -> None:
+    settings.MEDIA_ROOT = tmp_path / "media"
+    user = user_factory(
+        username="dedicated-image-form",
+        first_name="Leonardo",
+        preferred_language="it",
+    )
+    client.force_login(user)
+    upload_url = reverse("accounts:profile_image_upload")
+
+    form_response = client.get(upload_url)
+    upload_response = client.post(
+        upload_url,
+        {"profile_image": profile_image_upload_factory()},
+    )
+    user.refresh_from_db()
+
+    assert form_response.status_code == 200
+    assert list(form_response.context["form"].fields) == ["profile_image"]
+    assert 'enctype="multipart/form-data"' in form_response.content.decode()
+    assert upload_response.status_code == 302
+    assert upload_response.headers["Location"] == reverse(
+        "accounts:public_profile",
+        args=[user.username],
+    )
+    assert user.first_name == "Leonardo"
+    assert user.preferred_language == "it"
+    assert user.profile_image.name.startswith(f"profiles/{user.pk}/")
+
+
+@pytest.mark.django_db
+def test_dedicated_profile_image_form_requires_authentication(client: Client) -> None:
+    response = client.get(reverse("accounts:profile_image_upload"))
+
+    assert response.status_code == 302
+    assert response.headers["Location"].startswith(reverse("accounts:login"))
 
 
 @pytest.mark.django_db(transaction=True)

@@ -20,7 +20,12 @@ from django.views.decorators.http import require_http_methods
 from apps.climbs.statistics import user_climbing_context
 from apps.core.pagination import paginate
 
-from .forms import ProfileUpdateForm, RegistrationForm, VerificationResendForm
+from .forms import (
+    ProfileImageUploadForm,
+    ProfileUpdateForm,
+    RegistrationForm,
+    VerificationResendForm,
+)
 from .media_services import delete_profile_image, save_profile_changes
 from .models import User
 from .rate_limit import clear_login_failures, record_login_failure, seconds_until_unlock
@@ -235,6 +240,37 @@ def edit_profile(request: HttpRequest) -> HttpResponse:
         messages.success(request, _("Profile updated successfully."))
         return redirect("accounts:public_profile", username=profile_user.username)
     return render(request, "accounts/profile_edit.html", {"form": form})
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def upload_profile_image(request: HttpRequest) -> HttpResponse:
+    profile_user = cast(User, request.user)
+    old_image_name = profile_user.profile_image.name
+    form = ProfileImageUploadForm(
+        request.POST or None,
+        request.FILES or None,
+        instance=profile_user,
+    )
+    if request.method == "POST" and form.is_valid():
+        profile_user, image_action = save_profile_changes(
+            form,
+            actor=profile_user,
+            old_image_name=old_image_name,
+        )
+        logger.info(
+            "profile_image_action actor_id=%s action=%s profile_user_id=%s",
+            profile_user.pk,
+            image_action,
+            profile_user.pk,
+        )
+        messages.success(request, _("Profile image updated successfully."))
+        return redirect("accounts:public_profile", username=profile_user.username)
+    return render(
+        request,
+        "accounts/profile_image_form.html",
+        {"form": form, "replacing": bool(old_image_name)},
+    )
 
 
 @login_required

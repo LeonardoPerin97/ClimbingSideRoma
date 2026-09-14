@@ -74,6 +74,25 @@ class ProfileUpdateForm(StyledFormMixin, forms.ModelForm):
         return username
 
 
+class ProfileImageUploadForm(StyledFormMixin, forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ("profile_image",)
+        widgets = {
+            "profile_image": forms.FileInput(
+                attrs={"accept": "image/jpeg,image/png,image/webp"},
+            ),
+        }
+        help_texts = {
+            "profile_image": _("JPEG, PNG or WebP. Maximum 4 MB."),
+        }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.apply_control_classes()
+        self.fields["profile_image"].required = True
+
+
 class VerificationResendForm(StyledFormMixin, forms.Form):
     email = forms.EmailField(label=_("Email"))
 

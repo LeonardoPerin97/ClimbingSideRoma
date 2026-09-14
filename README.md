@@ -62,7 +62,10 @@ non prevede l’importazione dei dati della vecchia palestra.
 - protezione dai tentativi ripetuti di login;
 - unico profilo climber pubblico con statistiche e ripetizioni;
 - immagine del profilo facoltativa, pubblica e visualizzata in formato circolare;
-- caricamento, sostituzione e cancellazione controllata della propria immagine;
+- caricamento e sostituzione della propria immagine sia dal form completo del profilo
+  sia da una pagina dedicata raggiungibile direttamente dall'avatar;
+- cancellazione controllata dell'immagine da parte del proprietario o di un
+  amministratore;
 - informazioni e azioni dell’account visibili esclusivamente al proprietario del
   profilo;
 - selezione persistente della lingua italiana o inglese;
@@ -762,7 +765,8 @@ La compilazione richiede GNU gettext.
 | `/logout/` | autenticato, POST | Logout |
 | `/password-reset/` | pubblico | Recupero password |
 | `/account/` | autenticato | Reindirizza al proprio profilo climber |
-| `/account/edit/` | autenticato | Modifica profilo |
+| `/account/edit/` | autenticato | Modifica dati del profilo e immagine |
+| `/account/profile-image/` | autenticato | Aggiunge o sostituisce solamente l'immagine del profilo |
 | `/users/` | pubblico | Elenco climber |
 | `/users/<username>/` | pubblico | Profilo climber; mostra i dati dell’account solo al proprietario |
 | `/users/<username>/profile-image/delete/` | proprietario/Admin | Conferma ed elimina l’immagine del profilo |
