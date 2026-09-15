@@ -130,15 +130,21 @@ Le statistiche personali comprendono:
 - conteggio e percentuale distinti di vie e boulder completati;
 - avanzamento per parete con numero completato, totale e percentuale;
 - elenco filtrabile e ordinabile delle ripetizioni;
-- andamento mensile: ripetizioni totali e, separatamente per vie e boulder, numero di ripetizioni e grado massimo di ciascun mese negli ultimi dodici mesi.
+- andamento grafico delle ripetizioni nel periodo selezionato, dal mese più vecchio a quello corrente;
+- andamento mensile del grado ufficiale più alto nelle ripetizioni, con serie separate per vie e boulder e scala adattata ai dati;
+- riepilogo del numero di ripetizioni e del grado massimo negli ultimi dodici mesi o sempre, tramite selettore del periodo.
 
 Le statistiche collettive comprendono:
 
 - numero di pareti, vie, boulder, Project, utenti e ripetizioni;
 - massimo grado ufficiale attivo;
+- massimo grado ripetuto e numero di ripetizioni associate;
 - distribuzione delle vie per grado e tipo;
 - distribuzione delle vie per parete;
-- ripetizioni registrate negli ultimi dodici mesi.
+- attività della comunità negli ultimi 30 giorni, con climber e via più attivi;
+- classifica dei climber per ultimi 30 giorni, ultimi dodici mesi o sempre;
+- distribuzione dei gradi in base alle ripetizioni;
+- grafico delle ripetizioni registrate negli ultimi dodici mesi, ordinato cronologicamente da sinistra a destra.
 
 ### Home
 

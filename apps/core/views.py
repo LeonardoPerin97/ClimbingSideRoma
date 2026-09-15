@@ -51,7 +51,10 @@ def statistics_dashboard(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "core/statistics_dashboard.html",
-        collective_statistics_context(today=timezone.localdate()),
+        collective_statistics_context(
+            today=timezone.localdate(),
+            community_period=request.GET.get("community_period", "30d"),
+        ),
     )
 
 

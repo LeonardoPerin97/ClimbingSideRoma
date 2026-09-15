@@ -1,7 +1,8 @@
 from collections import Counter
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
+from itertools import pairwise
 from typing import Any
 
 from django.db.models import Count, Max, Q
@@ -70,6 +71,27 @@ class WallDisciplineBucket:
 class MonthlyAscentBucket:
     month: date
     count: int
+    bar_height: int = 0
+
+
+@dataclass(frozen=True)
+class CommunityClimberBucket:
+    user_id: int
+    username: str
+    ascent_count: int
+    highest_grade: str
+
+
+@dataclass(frozen=True)
+class RepeatedGradeBucket:
+    label: str
+    count: int
+
+
+@dataclass(frozen=True)
+class RecentRouteBucket:
+    route: ClimbingRoute
+    ascent_count: int
 
 
 @dataclass(frozen=True)
@@ -83,6 +105,193 @@ class MonthlyClimbingSummary:
     @property
     def total(self) -> int:
         return self.route_count + self.boulder_count
+
+
+@dataclass(frozen=True)
+class MonthlyGradeTrendPoint:
+    month: date
+    x: int
+    route_grade: str
+    route_y: int | None
+    boulder_grade: str
+    boulder_y: int | None
+
+
+@dataclass(frozen=True)
+class GradeTrendSegment:
+    x1: int
+    y1: int
+    x2: int
+    y2: int
+
+
+@dataclass(frozen=True)
+class GradeTrendAxisTick:
+    label: str
+    y: int
+
+
+GRADE_TREND_TOP = 20
+GRADE_TREND_BOTTOM = 270
+GRADE_TREND_LEFT = 56
+GRADE_TREND_DEFAULT_RIGHT = 704
+GRADE_TREND_STEP = 59
+
+
+def _grade_trend_y(
+    grade: str,
+    *,
+    minimum_grade_index: int,
+    maximum_grade_index: int,
+) -> int | None:
+    grade_index = FRENCH_GRADE_INDEX.get(grade)
+    if grade_index is None:
+        return None
+    grade_range = maximum_grade_index - minimum_grade_index
+    if not grade_range:
+        return (GRADE_TREND_TOP + GRADE_TREND_BOTTOM) // 2
+    return GRADE_TREND_BOTTOM - round(
+        (grade_index - minimum_grade_index) / grade_range * (GRADE_TREND_BOTTOM - GRADE_TREND_TOP)
+    )
+
+
+def _monthly_grade_trend(
+    summaries: Iterable[MonthlyClimbingSummary],
+) -> tuple[
+    list[MonthlyGradeTrendPoint],
+    list[GradeTrendSegment],
+    list[GradeTrendSegment],
+    list[GradeTrendAxisTick],
+    int,
+    int,
+]:
+    chronological_summaries = list(reversed(list(summaries)))
+    month_count = len(chronological_summaries)
+    chart_right = max(
+        GRADE_TREND_DEFAULT_RIGHT,
+        GRADE_TREND_LEFT + max(month_count - 1, 1) * GRADE_TREND_STEP,
+    )
+    chart_width = chart_right + 16
+    step = (chart_right - GRADE_TREND_LEFT) / max(month_count - 1, 1)
+    grade_indexes = [
+        FRENCH_GRADE_INDEX[grade]
+        for summary in chronological_summaries
+        for grade in (summary.route_max_grade, summary.boulder_max_grade)
+        if grade in FRENCH_GRADE_INDEX
+    ]
+    if grade_indexes:
+        minimum_grade_index = min(grade_indexes)
+        maximum_grade_index = max(grade_indexes)
+    else:
+        minimum_grade_index = 0
+        maximum_grade_index = len(FRENCH_GRADE_BASES) - 1
+    if minimum_grade_index == maximum_grade_index:
+        minimum_grade_index = max(0, minimum_grade_index - 1)
+        maximum_grade_index = min(
+            len(FRENCH_GRADE_BASES) - 1,
+            maximum_grade_index + 1,
+        )
+    points = [
+        MonthlyGradeTrendPoint(
+            month=summary.month,
+            x=round(GRADE_TREND_LEFT + index * step),
+            route_grade=summary.route_max_grade,
+            route_y=_grade_trend_y(
+                summary.route_max_grade,
+                minimum_grade_index=minimum_grade_index,
+                maximum_grade_index=maximum_grade_index,
+            ),
+            boulder_grade=summary.boulder_max_grade,
+            boulder_y=_grade_trend_y(
+                summary.boulder_max_grade,
+                minimum_grade_index=minimum_grade_index,
+                maximum_grade_index=maximum_grade_index,
+            ),
+        )
+        for index, summary in enumerate(chronological_summaries)
+    ]
+
+    def make_segments(
+        values: list[int | None],
+    ) -> list[GradeTrendSegment]:
+        populated_points: list[tuple[MonthlyGradeTrendPoint, int]] = []
+        for point, point_y in zip(points, values, strict=True):
+            if point_y is not None:
+                populated_points.append((point, point_y))
+        return [
+            GradeTrendSegment(
+                x1=point.x,
+                y1=point_y,
+                x2=next_point.x,
+                y2=next_point_y,
+            )
+            for (point, point_y), (next_point, next_point_y) in pairwise(populated_points)
+        ]
+
+    axis_range = maximum_grade_index - minimum_grade_index
+    if axis_range <= 4:
+        axis_indexes = list(range(minimum_grade_index, maximum_grade_index + 1))
+    else:
+        axis_indexes = sorted(
+            {
+                round(
+                    minimum_grade_index + index * axis_range / 4,
+                )
+                for index in range(5)
+            }
+        )
+    axis_ticks = [
+        GradeTrendAxisTick(
+            label=FRENCH_GRADE_BASES[grade_index],
+            y=(
+                GRADE_TREND_BOTTOM
+                - round(
+                    (grade_index - minimum_grade_index)
+                    / max(axis_range, 1)
+                    * (GRADE_TREND_BOTTOM - GRADE_TREND_TOP)
+                )
+            ),
+        )
+        for grade_index in axis_indexes
+    ]
+    return (
+        points,
+        make_segments([point.route_y for point in points]),
+        make_segments([point.boulder_y for point in points]),
+        axis_ticks,
+        chart_width,
+        chart_right,
+    )
+
+
+def _monthly_chart_buckets(
+    summaries: Iterable[MonthlyClimbingSummary],
+) -> list[MonthlyAscentBucket]:
+    buckets = [
+        MonthlyAscentBucket(month=summary.month, count=summary.total) for summary in summaries
+    ]
+    maximum_count = max((bucket.count for bucket in buckets), default=0)
+    if not maximum_count:
+        return buckets
+    return [
+        MonthlyAscentBucket(
+            month=bucket.month,
+            count=bucket.count,
+            bar_height=round(bucket.count / maximum_count * 100),
+        )
+        for bucket in buckets
+    ]
+
+
+def _highest_grade_index(ascents: Iterable[Ascent]) -> int:
+    return max(
+        (
+            FRENCH_GRADE_INDEX.get(ascent.climbing_route.official_grade, -1)
+            for ascent in ascents
+            if not ascent.climbing_route.is_project
+        ),
+        default=-1,
+    )
 
 
 def percentage(completed: int, total: int) -> float:
@@ -153,19 +362,91 @@ def _month_start(month: date, offset: int) -> date:
     return date(year, zero_based_month + 1, 1)
 
 
+def _period_start(today: date, period: str) -> date | None:
+    if period == "30d":
+        return today - timedelta(days=29)
+    if period == "12m":
+        return _month_start(today.replace(day=1), -11)
+    return None
+
+
+def _community_climber_buckets(
+    *,
+    start_date: date | None,
+    today: date,
+) -> list[CommunityClimberBucket]:
+    period_filter = Q(ascents__date__lte=today)
+    if start_date is not None:
+        period_filter &= Q(ascents__date__gte=start_date)
+    users = (
+        User.objects.filter(is_active=True)
+        .annotate(
+            period_ascent_count=Count(
+                "ascents",
+                filter=period_filter,
+                distinct=True,
+            ),
+            period_highest_grade_order=Max(
+                grade_order_expression(
+                    "ascents__climbing_route__official_grade",
+                    default_value=-1,
+                ),
+                filter=period_filter,
+            ),
+        )
+        .filter(period_ascent_count__gt=0)
+        .order_by(
+            "-period_ascent_count",
+            "-period_highest_grade_order",
+            Lower("username"),
+        )[:5]
+    )
+    return [
+        CommunityClimberBucket(
+            user_id=user.pk,
+            username=user.username,
+            ascent_count=user.period_ascent_count,
+            highest_grade=format_grade_index(user.period_highest_grade_order),
+        )
+        for user in users
+    ]
+
+
+def _repeated_grade_buckets() -> list[RepeatedGradeBucket]:
+    rows = (
+        Ascent.objects.filter(climbing_route__is_project=False)
+        .values("climbing_route__official_grade")
+        .annotate(count=Count("id"))
+    )
+    counts = {row["climbing_route__official_grade"]: row["count"] for row in rows}
+    return [
+        RepeatedGradeBucket(label=grade, count=counts[grade])
+        for grade in FRENCH_GRADE_BASES
+        if counts.get(grade)
+    ]
+
+
 def user_monthly_ascent_summary(
     ascents: Iterable[Ascent],
     *,
     today: date,
+    first_month: date | None = None,
 ) -> list[MonthlyClimbingSummary]:
-    """Summarize the last 12 calendar months, newest first, by ascent date.
+    """Summarize calendar months, newest first, by ascent date.
 
     Maxima use current official grades, independently for each month and type.
     Archived climbs still count; Projects count without contributing a grade.
     Pass ascents with their climbing routes already loaded to avoid N+1 queries.
+
+    By default, summarize the current month and the previous 11 months.
     """
     current_month = today.replace(day=1)
-    first_month = _month_start(current_month, -11)
+    first_month = (first_month or _month_start(current_month, -11)).replace(day=1)
+    if first_month > current_month:
+        first_month = current_month
+    month_count = (
+        (current_month.year - first_month.year) * 12 + current_month.month - first_month.month + 1
+    )
     counts: Counter[tuple[date, str]] = Counter()
     maximum_grades: dict[tuple[date, str], int] = {}
 
@@ -180,7 +461,7 @@ def user_monthly_ascent_summary(
             maximum_grades[key] = max(maximum_grades.get(key, -1), grade_index)
 
     summaries: list[MonthlyClimbingSummary] = []
-    for offset in range(0, -12, -1):
+    for offset in range(0, -month_count, -1):
         month = _month_start(current_month, offset)
         route_key = (month, ClimbingRoute.Discipline.ROUTE)
         boulder_key = (month, ClimbingRoute.Discipline.BOULDER)
@@ -196,7 +477,14 @@ def user_monthly_ascent_summary(
     return summaries
 
 
-def collective_statistics_context(*, today: date) -> dict[str, Any]:
+def collective_statistics_context(
+    *,
+    today: date,
+    community_period: str = "30d",
+) -> dict[str, Any]:
+    if community_period not in {"30d", "12m", "all"}:
+        community_period = "30d"
+
     active_routes = ClimbingRoute.objects.filter(is_archived=False)
     discipline_rows = active_routes.values("discipline").annotate(count=Count("id"))
     discipline_counts = {row["discipline"]: row["count"] for row in discipline_rows}
@@ -277,6 +565,66 @@ def collective_statistics_context(*, today: date) -> dict[str, Any]:
         MonthlyAscentBucket(month=month, count=counts_by_month.get(month, 0))
         for month in (_month_start(current_month, offset) for offset in range(0, -12, -1))
     ]
+    maximum_monthly_ascent_count = max(
+        (bucket.count for bucket in monthly_ascents),
+        default=0,
+    )
+    if maximum_monthly_ascent_count:
+        monthly_ascents = [
+            MonthlyAscentBucket(
+                month=bucket.month,
+                count=bucket.count,
+                bar_height=round(bucket.count / maximum_monthly_ascent_count * 100),
+            )
+            for bucket in monthly_ascents
+        ]
+
+    recent_start = _period_start(today, "30d")
+    recent_filter = Q(date__gte=recent_start, date__lte=today)
+    recent_ascents = Ascent.objects.filter(recent_filter)
+    recent_active_climber_count = (
+        User.objects.filter(
+            is_active=True,
+            ascents__date__gte=recent_start,
+            ascents__date__lte=today,
+        )
+        .distinct()
+        .count()
+    )
+    recent_climbers = _community_climber_buckets(
+        start_date=recent_start,
+        today=today,
+    )
+    recent_route = (
+        ClimbingRoute.objects.select_related("wall")
+        .annotate(
+            recent_ascent_count=Count(
+                "ascents",
+                filter=Q(ascents__date__gte=recent_start, ascents__date__lte=today),
+                distinct=True,
+            )
+        )
+        .filter(recent_ascent_count__gt=0)
+        .order_by("-recent_ascent_count", Lower("name"))
+        .first()
+    )
+    recent_top_route = (
+        RecentRouteBucket(
+            route=recent_route,
+            ascent_count=recent_route.recent_ascent_count,
+        )
+        if recent_route is not None
+        else None
+    )
+    repeated_grade_distribution = _repeated_grade_buckets()
+    highest_repeated_grade = (
+        repeated_grade_distribution[-1] if repeated_grade_distribution else None
+    )
+    community_start = _period_start(today, community_period)
+    community_climbers = _community_climber_buckets(
+        start_date=community_start,
+        today=today,
+    )
 
     highest_grade_order = active_routes.filter(is_project=False).aggregate(
         highest=Max(grade_order_expression())
@@ -290,9 +638,20 @@ def collective_statistics_context(*, today: date) -> dict[str, Any]:
         "ascent_count": Ascent.objects.count(),
         "project_count": active_routes.filter(is_project=True).count(),
         "highest_grade": format_grade_index(highest_grade_order),
+        "highest_repeated_grade": highest_repeated_grade.label if highest_repeated_grade else "—",
+        "highest_repeated_grade_count": highest_repeated_grade.count
+        if highest_repeated_grade
+        else 0,
         "grade_distribution": grade_distribution,
+        "repeated_grade_distribution": repeated_grade_distribution,
         "routes_by_wall": routes_by_wall,
         "monthly_ascents": monthly_ascents,
+        "recent_ascent_count": recent_ascents.count(),
+        "recent_active_climber_count": recent_active_climber_count,
+        "recent_top_climber": recent_climbers[0] if recent_climbers else None,
+        "recent_top_route": recent_top_route,
+        "community_period": community_period,
+        "community_climbers": community_climbers,
         "maximum_grade_count": max(
             (bucket.total for bucket in grade_distribution),
             default=0,
@@ -305,6 +664,10 @@ def collective_statistics_context(*, today: date) -> dict[str, Any]:
             (bucket.count for bucket in monthly_ascents),
             default=0,
         ),
+        "maximum_repeated_grade_count": max(
+            (bucket.count for bucket in repeated_grade_distribution),
+            default=0,
+        ),
     }
 
 
@@ -313,6 +676,7 @@ def user_climbing_context(
     *,
     ascent_sort: str = "date_desc",
     ascent_discipline: str = "",
+    profile_period: str = "12m",
     today: date | None = None,
 ) -> dict[str, Any]:
     ascents_queryset = (
@@ -343,7 +707,40 @@ def user_climbing_context(
         ascents_queryset = ascents_queryset.order_by("-date", "-created_at")
     all_ascents = list(ascents_queryset)
     statistics_today = today if today is not None else timezone.localdate()
+    if profile_period not in {"12m", "all"}:
+        profile_period = "12m"
     monthly_summary = user_monthly_ascent_summary(all_ascents, today=statistics_today)
+    if profile_period == "12m":
+        first_month = _month_start(statistics_today.replace(day=1), -11)
+        period_ascents = [
+            ascent for ascent in all_ascents if first_month <= ascent.date <= statistics_today
+        ]
+        profile_monthly_summary = monthly_summary
+    else:
+        period_ascents = [ascent for ascent in all_ascents if ascent.date <= statistics_today]
+        earliest_ascent = min(
+            (ascent.date for ascent in period_ascents),
+            default=None,
+        )
+        first_month = (
+            earliest_ascent.replace(day=1)
+            if earliest_ascent is not None
+            else _month_start(statistics_today.replace(day=1), -11)
+        )
+        profile_monthly_summary = user_monthly_ascent_summary(
+            period_ascents,
+            today=statistics_today,
+            first_month=first_month,
+        )
+    profile_monthly_ascents = _monthly_chart_buckets(profile_monthly_summary)
+    (
+        profile_grade_trend,
+        profile_route_grade_segments,
+        profile_boulder_grade_segments,
+        profile_grade_trend_axis,
+        profile_grade_trend_width,
+        profile_grade_trend_right,
+    ) = _monthly_grade_trend(profile_monthly_summary)
     if ascent_discipline in ClimbingRoute.Discipline.values:
         selected_discipline = ascent_discipline
         ascents = [
@@ -425,6 +822,9 @@ def user_climbing_context(
         "total_climb_count": total_climb_count,
         "climb_completion_percentage": percentage(len(all_ascents), total_climb_count),
         "highest_grade": format_grade_index(highest_grade_order),
+        "profile_period": profile_period,
+        "profile_period_ascent_count": len(period_ascents),
+        "profile_period_highest_grade": format_grade_index(_highest_grade_index(period_ascents)),
         "discipline_counts": discipline_counts,
         "total_route_count": total_route_count,
         "route_completion_percentage": percentage(
@@ -444,5 +844,21 @@ def user_climbing_context(
         "project_count": sum(project_counts.values()),
         "wall_distribution": wall_distribution,
         "monthly_summary": monthly_summary,
+        "profile_monthly_summary": profile_monthly_summary,
+        "profile_monthly_ascents": profile_monthly_ascents,
+        "profile_grade_trend": profile_grade_trend,
+        "profile_route_grade_segments": profile_route_grade_segments,
+        "profile_boulder_grade_segments": profile_boulder_grade_segments,
+        "profile_grade_trend_axis": profile_grade_trend_axis,
+        "profile_grade_trend_width": profile_grade_trend_width,
+        "profile_grade_trend_right": profile_grade_trend_right,
+        "profile_grade_trend_has_data": any(
+            point.route_y is not None or point.boulder_y is not None
+            for point in profile_grade_trend
+        ),
+        "maximum_profile_monthly_ascent_count": max(
+            (bucket.count for bucket in profile_monthly_ascents),
+            default=0,
+        ),
         "monthly_summary_as_of": statistics_today,
     }

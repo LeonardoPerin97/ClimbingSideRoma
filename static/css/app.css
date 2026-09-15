@@ -643,6 +643,128 @@ input {
   width: min(10rem, 100%);
 }
 
+.statistics-section {
+  margin-top: 0.5rem;
+}
+
+.statistics-section .section-heading {
+  margin-bottom: 0.25rem;
+}
+
+.statistics-section .section-heading p,
+.statistics-card-note {
+  margin: 0.35rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.recent-summary-grid {
+  margin-top: 1rem;
+}
+
+.summary-value-text {
+  overflow-wrap: anywhere;
+  font-size: 1.35rem !important;
+  line-height: 1.1;
+}
+
+.statistics-period-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: end;
+  margin: 0.9rem 0 1rem;
+}
+
+.statistics-period-filter label {
+  display: block;
+  width: 100%;
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.statistics-period-filter select {
+  min-height: 2.35rem;
+  padding: 0.35rem 0.55rem;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+}
+
+.statistics-period-filter .button {
+  min-height: 2.35rem;
+  padding: 0.35rem 0.7rem;
+}
+
+.monthly-ascent-chart-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1.25rem 0 0.5rem;
+}
+
+.monthly-ascent-chart {
+  display: flex;
+  min-width: 34rem;
+  height: 17rem;
+  gap: 0.45rem;
+  align-items: stretch;
+  border-bottom: 1px solid #999994;
+}
+
+.monthly-ascent-column {
+  position: relative;
+  display: grid;
+  min-width: 2.2rem;
+  flex: 1 1 0;
+  grid-template-rows: 1.4rem 1fr 1.5rem;
+  justify-items: center;
+  cursor: pointer;
+}
+
+.monthly-ascent-column:focus-visible {
+  outline: 2px solid var(--color-chart-dark);
+  outline-offset: 2px;
+}
+
+.monthly-ascent-value {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.monthly-ascent-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: end;
+  justify-content: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.monthly-ascent-bar {
+  width: min(2rem, 68%);
+  height: max(0.35rem, var(--monthly-bar-height));
+  background: var(--color-chart);
+  border: 1px solid var(--color-chart-dark);
+  border-bottom: 0;
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.monthly-ascent-bar.is-zero {
+  height: 0;
+  border: 0;
+}
+
+.monthly-ascent-label {
+  align-self: end;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 meter::-webkit-meter-optimum-value {
   background: #4e8ad8;
 }
@@ -2349,6 +2471,142 @@ meter::-webkit-meter-optimum-value {
   margin-top: 0;
 }
 
+.profile-activity-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.profile-activity-header h2,
+.profile-monthly-summary h3 {
+  margin-top: 0;
+}
+
+.profile-activity-header p {
+  margin-bottom: 0;
+}
+
+.profile-period-filter {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.profile-period-summary {
+  margin: 1.25rem 0 1.5rem;
+}
+
+.profile-period-summary > div {
+  padding: 0.75rem;
+}
+
+.profile-period-summary dd {
+  font-size: 1.4rem;
+}
+
+.profile-monthly-summary .monthly-ascent-chart-scroll {
+  padding-top: 0.75rem;
+}
+
+.profile-grade-trend {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.profile-grade-trend h3 {
+  margin-bottom: 0;
+}
+
+.grade-trend-chart-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1rem 0 0.25rem;
+}
+
+.grade-trend-chart {
+  display: block;
+  width: max(100%, var(--grade-trend-width, 45rem));
+  min-width: 42rem;
+  height: auto;
+}
+
+.grade-trend-grid line {
+  stroke: var(--color-border);
+  stroke-width: 1;
+}
+
+.grade-trend-grid line:first-child {
+  stroke: #999994;
+}
+
+.grade-trend-grid text,
+.grade-trend-month-label {
+  fill: var(--color-muted);
+  font-family: Barlow, "Segoe UI", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.grade-trend-series line {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.grade-trend-series-route line {
+  stroke: var(--color-chart-dark);
+}
+
+.grade-trend-series-boulder line {
+  stroke: var(--color-boulder-ink);
+}
+
+.grade-trend-point {
+  fill: var(--color-surface);
+  stroke-width: 3;
+}
+
+.grade-trend-point-route {
+  stroke: var(--color-chart-dark);
+}
+
+.grade-trend-point-boulder {
+  stroke: var(--color-boulder-ink);
+}
+
+.grade-trend-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.grade-trend-legend span {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.grade-trend-legend-swatch {
+  display: inline-block;
+  width: 1.25rem;
+  height: 0.2rem;
+  border-radius: var(--radius-pill);
+}
+
+.grade-trend-legend-route {
+  background: var(--color-chart-dark);
+}
+
+.grade-trend-legend-boulder {
+  background: var(--color-boulder-ink);
+}
+
 .monthly-summary-scroll:focus-visible {
   outline: 2px solid var(--color-ink);
   outline-offset: 3px;
@@ -2716,6 +2974,14 @@ meter::-webkit-meter-optimum-value {
 }
 
 @media (max-width: 760px) {
+  .profile-activity-header {
+    flex-direction: column;
+  }
+
+  .profile-period-filter {
+    width: 100%;
+  }
+
   .histogram-scroll {
     overflow-x: hidden;
   }

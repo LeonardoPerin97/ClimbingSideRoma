@@ -200,6 +200,10 @@ def public_profile(request: HttpRequest, username: str) -> HttpResponse:
         profile_user,
         ascent_sort=request.GET.get("sort", "date_desc"),
         ascent_discipline=request.GET.get("discipline", ""),
+        profile_period=request.GET.get(
+            "profile_period",
+            request.GET.get("period", "12m"),
+        ),
     )
     _add_ascent_page(context, request)
     context.update(

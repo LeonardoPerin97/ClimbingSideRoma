@@ -437,7 +437,7 @@ def test_user_list_can_sort_by_ascents_and_highest_official_grade(
     assert " ripetizioni</span>" in italian_content
     assert " grado più alto</span>" in italian_content
     assert "The gym's climbers, their ascents and highest grades." in english_content
-    assert "I climber della palestra, le loro ripetizioni e i gradi più alti." in italian_content
+    assert "I climbers della palestra, le loro ripetizioni e i gradi più alti." in italian_content
 
 
 @pytest.mark.django_db

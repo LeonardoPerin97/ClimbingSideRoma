@@ -1,7 +1,9 @@
+from typing import Any
+
 from django.db import migrations, models
 
 
-def copy_route_setters_to_text(apps, schema_editor) -> None:
+def copy_route_setters_to_text(apps: Any, schema_editor: Any) -> None:
     del schema_editor
     ClimbingRoute = apps.get_model("climbs", "ClimbingRoute")
     for climbing_route in ClimbingRoute.objects.all().iterator():

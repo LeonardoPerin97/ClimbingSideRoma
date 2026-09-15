@@ -189,7 +189,7 @@ def test_monthly_summary_changes_after_ascent_edit_delete_and_route_grade_change
 @pytest.mark.django_db
 @pytest.mark.parametrize("profile_kind", ["personal", "public"])
 @pytest.mark.parametrize("language", ["it", "en"])
-def test_monthly_summary_is_translated_on_both_profiles_and_keeps_account_info_last(
+def test_profile_activity_is_translated_on_both_profiles_and_keeps_account_info_last(
     client: Client,
     monkeypatch: pytest.MonkeyPatch,
     user_factory: Callable[..., User],
@@ -234,19 +234,33 @@ def test_monthly_summary_is_translated_on_both_profiles_and_keeps_account_info_l
     assert content.index('id="monthly-summary-heading"') < content.index(f'id="{footer_heading}"')
     assert 'role="region"' in content
     assert 'tabindex="0"' in content
-    assert 'scope="colgroup"' in content
     assert 'datetime="2026-03"' in content
-    assert 'class="monthly-summary-empty"' in content
+    assert content.index('datetime="2025-04"') < content.index('datetime="2026-03"')
+    assert content.count("monthly-summary-empty") == 11
+    assert 'id="highest-grade-trend-heading"' in content
+    assert 'onchange="this.form.submit()"' in content
+    assert 'id="profile-activity"' in content
+    assert 'action="#profile-activity"' in content
+    assert 'class="grade-trend-series grade-trend-series-route"' in content
+    assert 'class="grade-trend-series grade-trend-series-boulder"' in content
+    assert response.context["profile_grade_trend"][0].month == date(2025, 4, 1)
+    assert response.context["profile_grade_trend"][-1].month == date(2026, 3, 1)
+    assert response.context["profile_grade_trend"][-1].route_grade == "5c"
+    assert response.context["profile_grade_trend"][-1].boulder_grade == "6a+"
     if language == "it":
-        assert "Andamento mensile" in content
-        assert "Marzo 2026" in content
+        assert "Attività del profilo" in content
+        assert "Ripetizioni mensili negli ultimi 12 mesi." in content
+        assert "Grado più alto negli ultimi 12 mesi" in content
+        assert "Grado più alto per mese" in content
         assert "Aggiornato al 15/03/2026" in content
-        assert "Ultimi 12 mesi." in content
+        assert "Prima il mese più vecchio, poi quello corrente." not in content
         assert "Last 12 months" not in content
     else:
-        assert "Monthly activity" in content
-        assert "March 2026" in content
-        assert "Last 12 months." in content
+        assert "Profile activity" in content
+        assert "Monthly ascents during the last 12 months." in content
+        assert "Highest grade in the last 12 months" in content
+        assert "Highest grade by month" in content
+        assert "Oldest month first, then the current month." not in content
     if profile_kind == "public":
         assert owner.email not in content
 
@@ -279,4 +293,52 @@ def test_public_profile_without_ascents_still_renders_twelve_empty_months(
     assert response.status_code == 200
     assert len(response.context["monthly_summary"]) == 12
     assert all(month.total == 0 for month in response.context["monthly_summary"])
-    assert response.content.decode().count('class="monthly-summary-empty"') == 12
+    assert response.content.decode().count("monthly-summary-empty") == 12
+
+
+@pytest.mark.django_db
+def test_profile_period_switch_changes_count_and_highest_grade(
+    client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+    user_factory: Callable[..., User],
+    route_factory: Callable[..., ClimbingRoute],
+    ascent_factory: Callable[..., Ascent],
+) -> None:
+    today = date(2026, 3, 15)
+    monkeypatch.setattr("apps.climbs.statistics.timezone.localdate", lambda: today)
+    owner = user_factory()
+    recent_route = route_factory(name="Recent", official_grade="6a")
+    older_route = route_factory(name="Older", official_grade="8a")
+    ascent_factory(user=owner, climbing_route=recent_route, date=date(2026, 3, 5))
+    ascent_factory(user=owner, climbing_route=older_route, date=date(2024, 1, 5))
+
+    url = reverse("accounts:public_profile", args=[owner.username])
+    response = client.get(url, {"profile_period": "12m"})
+    all_time_response = client.get(url, {"profile_period": "all"})
+
+    assert response.context["profile_period"] == "12m"
+    assert response.context["profile_period_ascent_count"] == 1
+    assert response.context["profile_period_highest_grade"] == "6a"
+    assert all_time_response.context["profile_period"] == "all"
+    assert all_time_response.context["profile_period_ascent_count"] == 2
+    assert all_time_response.context["profile_period_highest_grade"] == "8a"
+    assert sum(bucket.count for bucket in response.context["profile_monthly_ascents"]) == 1
+    assert sum(bucket.count for bucket in all_time_response.context["profile_monthly_ascents"]) == 2
+    assert response.context["profile_monthly_summary"][-1].month == date(2025, 4, 1)
+    assert all_time_response.context["profile_monthly_summary"][-1].month == date(2024, 1, 1)
+    all_time_trend = all_time_response.context["profile_grade_trend"]
+    assert all_time_trend[0].month == date(2024, 1, 1)
+    assert all_time_trend[-1].month == date(2026, 3, 1)
+    assert len(all_time_response.context["profile_route_grade_segments"]) == 1
+    segment = all_time_response.context["profile_route_grade_segments"][0]
+    assert segment.x1 < segment.x2
+    assert len(all_time_response.context["profile_grade_trend_axis"]) <= 5
+    assert all_time_response.context["profile_grade_trend_axis"][0].label == "6a"
+    assert all_time_response.context["profile_grade_trend_axis"][-1].label == "8a"
+    all_time_content = all_time_response.content.decode()
+    assert (
+        f'viewBox="0 0 {all_time_response.context["profile_grade_trend_width"]} 320"'
+        in all_time_content
+    )
+    assert "Ripetizioni di sempre" in all_time_content
+    assert '<option value="all" selected' in all_time_response.content.decode()

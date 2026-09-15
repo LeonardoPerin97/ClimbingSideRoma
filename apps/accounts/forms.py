@@ -67,7 +67,7 @@ class ProfileUpdateForm(StyledFormMixin, forms.ModelForm):
         self.apply_control_classes()
 
     def _get_validation_exclusions(self) -> set[str]:
-        exclude = super()._get_validation_exclusions()
+        exclude = super()._get_validation_exclusions()  # type: ignore[misc]
         if self.is_bound and "profile_image" not in self.files:
             exclude.add("profile_image")
         return exclude

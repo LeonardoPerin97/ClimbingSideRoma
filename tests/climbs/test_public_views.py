@@ -58,6 +58,8 @@ def test_route_list_hides_archived_routes_by_default(
     content = response.content.decode()
 
     assert names == {"Visible Route"}
+    assert "Bellezza più alta" in content
+    assert "Valutazione più alta" not in content
     assert ">Tipo</label>" in content
     assert ">Tutti i tipi</option>" in content
     assert "Disciplina" not in content
@@ -337,6 +339,10 @@ def test_wall_detail_exposes_disciplines_and_grade_distribution(
     assert response.context["maximum_grade_count"] == 1
     assert response.context["project_count"] == 1
     content = response.content.decode()
+    assert "Bellezza più alta" in content
+    assert "Bellezza più bassa" in content
+    assert "Valutazione più alta" not in content
+    assert "Valutazione più bassa" not in content
     assert "data-discipline-histogram" in content
     assert 'data-histogram-filter="all"' in content
     assert 'data-histogram-filter="route"' in content

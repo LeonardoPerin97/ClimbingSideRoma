@@ -1,45 +1,130 @@
 {% load i18n %}
-<!--
-<article class="profile-card profile-monthly-summary" aria-labelledby="monthly-summary-heading">
-    <h3 id="monthly-summary-heading">{% translate "Monthly activity" %}</h3>
-    <p class="muted-text" id="monthly-summary-description">
-        {% translate "Last 12 months." %}
-        {% blocktranslate with date=monthly_summary_as_of|date:"d/m/Y" %}Updated through {{ date }}.{% endblocktranslate %}
-    </p>
-    <div class="table-scroll monthly-summary-scroll" role="region" aria-labelledby="monthly-summary-heading" aria-describedby="monthly-summary-description monthly-summary-scroll-hint monthly-summary-note" tabindex="0">
-        <table class="monthly-summary-table">
-            <caption class="sr-only">{% translate "Monthly ascent counts and highest official grades, split into routes and boulders." %}</caption>
-            <colgroup span="1"></colgroup>
-            <colgroup span="1"></colgroup>
-            <colgroup span="2"></colgroup>
-            <colgroup span="2"></colgroup>
-            <thead>
-                <tr>
-                    <th rowspan="2" scope="col">{% translate "Month" %}</th>
-                    <th rowspan="2" scope="col">{% translate "Total ascents" %}</th>
-                    <th colspan="2" scope="colgroup">{% translate "Routes" %}</th>
-                    <th colspan="2" scope="colgroup">{% translate "Boulder" %}</th>
-                </tr>
-                <tr>
-                    <th scope="col">{% translate "Ascents" %}</th>
-                    <th scope="col">{% translate "Highest grade" %}</th>
-                    <th scope="col">{% translate "Ascents" %}</th>
-                    <th scope="col">{% translate "Highest grade" %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for month in monthly_summary %}
-                    <tr{% if not month.total %} class="monthly-summary-empty"{% endif %}>
-                        <th scope="row"><time datetime="{{ month.month|date:'Y-m' }}">{{ month.month|date:"F Y" }}</time></th>
-                        <td><strong>{{ month.total }}</strong></td>
-                        <td>{{ month.route_count }}</td>
-                        <td>{{ month.route_max_grade }}</td>
-                        <td>{{ month.boulder_count }}</td>
-                        <td>{{ month.boulder_max_grade }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+<article id="profile-activity" class="profile-card profile-monthly-summary" aria-labelledby="profile-activity-heading">
+    <div class="profile-activity-header">
+        <div>
+            <h2 id="profile-activity-heading">{% translate "Profile activity" %}</h2>
+            <p class="muted-text" id="profile-activity-description">
+                {% if profile_period == "12m" %}
+                    {% translate "Monthly ascents during the last 12 months." %}
+                {% else %}
+                    {% translate "Monthly ascents all time." %}
+                {% endif %}
+                {% blocktranslate with date=monthly_summary_as_of|date:"d/m/Y" %}Updated through {{ date }}.{% endblocktranslate %}
+            </p>
+        </div>
+        <form class="statistics-period-filter profile-period-filter" method="get" action="#profile-activity">
+            <div>
+                <label for="profile-period">{% translate "Period" %}</label>
+                <select id="profile-period" name="profile_period" onchange="this.form.submit()">
+                    <option value="12m"{% if profile_period == "12m" %} selected{% endif %}>{% translate "Last 12 months" %}</option>
+                    <option value="all"{% if profile_period == "all" %} selected{% endif %}>{% translate "All time" %}</option>
+                </select>
+            </div>
+            <input type="hidden" name="discipline" value="{{ selected_discipline }}">
+            <input type="hidden" name="sort" value="{{ ascent_sort }}">
+        </form>
     </div>
+
+    <dl class="summary-grid profile-period-summary" aria-label="{% translate 'Profile activity' %}">
+        <div>
+            <dt>
+                {% if profile_period == "12m" %}
+                    {% translate "Ascents in the last 12 months" %}
+                {% else %}
+                    {% translate "All-time ascents" %}
+                {% endif %}
+            </dt>
+            <dd>{{ profile_period_ascent_count }}</dd>
+        </div>
+        <div>
+            <dt>
+                {% if profile_period == "12m" %}
+                    {% translate "Highest grade in the last 12 months" %}
+                {% else %}
+                    {% translate "All-time highest grade" %}
+                {% endif %}
+            </dt>
+            <dd>{{ profile_period_highest_grade }}</dd>
+        </div>
+    </dl>
+
+    <h3 id="monthly-summary-heading">
+        {% if profile_period == "12m" %}
+            {% translate "Ascents in the last 12 months" %}
+        {% else %}
+            {% translate "All-time ascents" %}
+        {% endif %}
+    </h3>
+    <div class="monthly-ascent-chart-scroll" role="region" aria-labelledby="monthly-summary-heading" tabindex="0">
+        <div class="monthly-ascent-chart" role="list" aria-label="{% translate 'Monthly ascents chart' %}">
+            {% for bucket in profile_monthly_ascents reversed %}
+                <div
+                    class="monthly-ascent-column{% if not bucket.count %} monthly-summary-empty{% endif %}"
+                    role="listitem"
+                    tabindex="0"
+                    title="{{ bucket.month|date:'F Y' }}: {{ bucket.count }} {% translate 'ascents' %}"
+                    aria-label="{{ bucket.month|date:'F Y' }}: {{ bucket.count }} {% translate 'ascents' %}"
+                >
+                    <span class="monthly-ascent-value">{{ bucket.count }}</span>
+                    <span class="monthly-ascent-track" aria-hidden="true">
+                        <span class="monthly-ascent-bar{% if not bucket.count %} is-zero{% endif %}" style="--monthly-bar-height: {{ bucket.bar_height }}%;"></span>
+                    </span>
+                    <time class="monthly-ascent-label" datetime="{{ bucket.month|date:'Y-m' }}">{{ bucket.month|date:"M" }}</time>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <section class="profile-grade-trend" aria-labelledby="highest-grade-trend-heading">
+        <h3 id="highest-grade-trend-heading">{% translate "Highest grade by month" %}</h3>
+        {% if profile_grade_trend_has_data %}
+            <div class="grade-trend-chart-scroll" role="region" aria-labelledby="highest-grade-trend-heading" tabindex="0">
+                <svg class="grade-trend-chart" style="--grade-trend-width: {{ profile_grade_trend_width }}px;" viewBox="0 0 {{ profile_grade_trend_width }} 320" role="img" aria-labelledby="grade-trend-chart-title grade-trend-chart-description">
+                    <title id="grade-trend-chart-title">{% translate "Grade trend chart" %}</title>
+                    <desc id="grade-trend-chart-description">{% translate "Monthly highest official grades for routes and boulders." %}</desc>
+                    <g class="grade-trend-grid" aria-hidden="true">
+                        <line x1="56" y1="20" x2="56" y2="270"></line>
+                        {% for tick in profile_grade_trend_axis %}
+                            <line x1="56" y1="{{ tick.y }}" x2="{{ profile_grade_trend_right }}" y2="{{ tick.y }}"></line>
+                            <text x="46" y="{{ tick.y }}" text-anchor="end" dominant-baseline="middle">{{ tick.label }}</text>
+                        {% endfor %}
+                    </g>
+                    <g class="grade-trend-series grade-trend-series-route" aria-hidden="true">
+                        {% for segment in profile_route_grade_segments %}
+                            <line x1="{{ segment.x1 }}" y1="{{ segment.y1 }}" x2="{{ segment.x2 }}" y2="{{ segment.y2 }}"></line>
+                        {% endfor %}
+                    </g>
+                    <g class="grade-trend-series grade-trend-series-boulder" aria-hidden="true">
+                        {% for segment in profile_boulder_grade_segments %}
+                            <line x1="{{ segment.x1 }}" y1="{{ segment.y1 }}" x2="{{ segment.x2 }}" y2="{{ segment.y2 }}"></line>
+                        {% endfor %}
+                    </g>
+                    {% for point in profile_grade_trend %}
+                        {% if point.route_y %}
+                            <circle class="grade-trend-point grade-trend-point-route" cx="{{ point.x }}" cy="{{ point.route_y }}" r="4">
+                                <title>{{ point.month|date:"F Y" }} — {% translate "Routes" %}: {{ point.route_grade }}</title>
+                            </circle>
+                        {% endif %}
+                        {% if point.boulder_y %}
+                            <circle class="grade-trend-point grade-trend-point-boulder" cx="{{ point.x }}" cy="{{ point.boulder_y }}" r="4">
+                                <title>{{ point.month|date:"F Y" }} — {% translate "Boulders" %}: {{ point.boulder_grade }}</title>
+                            </circle>
+                        {% endif %}
+                        <text class="grade-trend-month-label" x="{{ point.x }}" y="306" text-anchor="middle" aria-hidden="true">{{ point.month|date:"M" }}</text>
+                    {% endfor %}
+                </svg>
+            </div>
+            <div class="grade-trend-legend" aria-label="{% translate 'Histogram legend' %}">
+                <span><i class="grade-trend-legend-swatch grade-trend-legend-route" aria-hidden="true"></i>{% translate "Routes" %}</span>
+                <span><i class="grade-trend-legend-swatch grade-trend-legend-boulder" aria-hidden="true"></i>{% translate "Boulders" %}</span>
+            </div>
+        {% else %}
+            {% if profile_period == "12m" %}
+                <p class="muted-text">{% translate "No graded ascents are available in the last 12 months yet." %}</p>
+            {% else %}
+                <p class="muted-text">{% translate "No graded ascents are available for this profile yet." %}</p>
+            {% endif %}
+        {% endif %}
+    </section>
 </article>
--->

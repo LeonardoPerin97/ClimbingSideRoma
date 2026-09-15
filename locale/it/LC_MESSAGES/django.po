@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ClimbingSide 0.9.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-13 22:19+0200\n"
+"POT-Creation-Date: 2026-09-15 12:27+0200\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -10,8 +10,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: apps/accounts/admin.py:21 apps/accounts/admin.py:34
-#: apps/accounts/admin.py:102 templates/accounts/public_profile.html:50
-#: templates/accounts/public_profile.html:62
+#: apps/accounts/admin.py:102 templates/accounts/public_profile.html:63
+#: templates/accounts/public_profile.html:76
 msgid "Role"
 msgstr "Ruolo"
 
@@ -35,7 +35,7 @@ msgstr "Account"
 msgid "We will send a verification link to this address."
 msgstr "Invieremo un link di verifica a questo indirizzo."
 
-#: apps/accounts/forms.py:27 apps/accounts/forms.py:73
+#: apps/accounts/forms.py:27 apps/accounts/forms.py:79
 msgid "An account with this username already exists."
 msgstr "Esiste già un account con questo username."
 
@@ -43,12 +43,16 @@ msgstr "Esiste già un account con questo username."
 msgid "An account with this email already exists."
 msgstr "Esiste già un account con questa email."
 
-#: apps/accounts/forms.py:62
+#: apps/accounts/forms.py:62 apps/accounts/forms.py:93
 msgid "JPEG, PNG or WebP. Maximum 4 MB."
 msgstr "JPEG, PNG o WebP. Massimo 4 MB."
 
-#: apps/accounts/forms.py:78 templates/accounts/profile_edit.html:12
-#: templates/accounts/public_profile.html:39
+#: apps/accounts/forms.py:101 apps/accounts/forms.py:106
+msgid "Select an image before continuing."
+msgstr "Seleziona un'immagine prima di continuare."
+
+#: apps/accounts/forms.py:111 templates/accounts/profile_edit.html:12
+#: templates/accounts/public_profile.html:52
 msgid "Email"
 msgstr "Email"
 
@@ -113,7 +117,7 @@ msgstr "immagine del profilo"
 msgid "email verified at"
 msgstr "email verificata il"
 
-#: apps/accounts/models.py:95 apps/climbs/models.py:118
+#: apps/accounts/models.py:95 apps/climbs/models.py:112
 msgid "user"
 msgstr "utente"
 
@@ -144,7 +148,7 @@ msgstr "Route setter"
 msgid "Administrator"
 msgstr "Amministratore"
 
-#: apps/accounts/views.py:62
+#: apps/accounts/views.py:67
 msgid ""
 "Account created. You can log in now; email verification is temporarily "
 "disabled."
@@ -152,36 +156,36 @@ msgstr ""
 "Account creato. Ora puoi accedere; la verifica email è temporaneamente "
 "disabilitata."
 
-#: apps/accounts/views.py:91
+#: apps/accounts/views.py:96
 msgid "Email verification is temporarily disabled. You can log in directly."
 msgstr ""
 "La verifica email è temporaneamente disabilitata. Puoi accedere direttamente."
 
-#: apps/accounts/views.py:107
+#: apps/accounts/views.py:112
 msgid ""
 "If an unverified account exists, a new verification email has been sent."
 msgstr ""
 "Se esiste un account non verificato, è stata inviata una nuova email di "
 "verifica."
 
-#: apps/accounts/views.py:235
+#: apps/accounts/views.py:247
 msgid "Profile updated successfully."
 msgstr "Profilo aggiornato correttamente."
 
-#: apps/accounts/views.py
+#: apps/accounts/views.py:274
 msgid "Profile image updated successfully."
 msgstr "Immagine del profilo aggiornata correttamente."
 
-#: apps/accounts/views.py:256
-msgid "Profile image deleted."
-msgstr "Immagine del profilo eliminata."
-
-#: apps/accounts/views.py:258
+#: apps/accounts/views.py:299 apps/accounts/views.py:332
 #: templates/accounts/profile_image_delete_confirm.html:21
 msgid "This profile has no image to delete."
 msgstr "Questo profilo non ha un'immagine da eliminare."
 
-#: apps/accounts/views.py:294
+#: apps/accounts/views.py:330
+msgid "Profile image deleted."
+msgstr "Immagine del profilo eliminata."
+
+#: apps/accounts/views.py:368
 msgid ""
 "Password recovery by email is temporarily unavailable. Contact an "
 "administrator if you cannot log in."
@@ -297,46 +301,43 @@ msgstr "Esiste già una parete con questo nome."
 #: templates/components/ascent_table.html:45
 #: templates/components/ascent_table.html:56
 #: templates/components/route_table.html:15
-#: templates/components/route_table.html:25 templates/core/home.html:64
-#: templates/core/home.html:108 templates/core/statistics_dashboard.html:34
+#: templates/components/route_table.html:25 templates/core/home.html:65
+#: templates/core/home.html:109 templates/core/statistics_dashboard.html:83
+#: templates/core/statistics_dashboard.html:198
 msgid "Grade"
 msgstr "Grado"
 
-#: apps/climbs/forms.py:86
-msgid "Optional. You may select one or more route setters."
-msgstr "Facoltativo. Puoi selezionare uno o più route setter."
-
-#: apps/climbs/forms.py:111
+#: apps/climbs/forms.py:98
 msgid "A climbing route with this name already exists."
 msgstr "Esiste già una via con questo nome."
 
-#: apps/climbs/forms.py:122
+#: apps/climbs/forms.py:109
 msgid "Choose a grade or mark the route as Project."
 msgstr "Scegli un grado oppure contrassegna la via come Project."
 
-#: apps/climbs/forms.py:128
+#: apps/climbs/forms.py:115
 msgid "Type the name to confirm"
 msgstr "Digita il nome per confermare"
 
-#: apps/climbs/forms.py:138
+#: apps/climbs/forms.py:125
 msgid "The entered name does not match."
 msgstr "Il nome inserito non corrisponde."
 
-#: apps/climbs/forms.py:157 apps/climbs/images.py:79
+#: apps/climbs/forms.py:144 apps/climbs/images.py:79
 #, python-format
 msgid "You can upload at most %(limit)s images at once."
 msgstr "Puoi caricare al massimo %(limit)s immagini alla volta."
 
-#: apps/climbs/forms.py:166
+#: apps/climbs/forms.py:153
 msgid "Images to combine"
 msgstr "Immagini da unire"
 
-#: apps/climbs/forms.py:174
+#: apps/climbs/forms.py:161
 msgid "Select up to 4 JPEG, PNG or WebP images. Maximum 8 MB per image."
 msgstr ""
 "Seleziona fino a 4 immagini JPEG, PNG o WebP. Massimo 8 MB per immagine."
 
-#: apps/climbs/forms.py:218 templates/climbs/route_detail.html:56
+#: apps/climbs/forms.py:205 templates/climbs/route_detail.html:56
 #: templates/climbs/route_detail.html:77
 #: templates/components/ascent_card.html:25
 #: templates/components/ascent_card.html:61
@@ -344,15 +345,15 @@ msgstr ""
 msgid "Proposed grade"
 msgstr "Grado proposto"
 
-#: apps/climbs/forms.py:219 templates/climbs/route_list.html:71
+#: apps/climbs/forms.py:206 templates/climbs/route_list.html:71
 msgid "Choose a grade"
 msgstr "Scegli un grado"
 
-#: apps/climbs/forms.py:222
+#: apps/climbs/forms.py:209
 msgid "Decimal"
 msgstr "Decimale"
 
-#: apps/climbs/forms.py:255 templates/climbs/route_detail.html:60
+#: apps/climbs/forms.py:242 templates/climbs/route_detail.html:60
 #: templates/climbs/route_detail.html:78
 #: templates/components/ascent_table.html:24
 #: templates/components/ascent_table.html:50
@@ -360,22 +361,22 @@ msgstr "Decimale"
 msgid "Beauty"
 msgstr "Bellezza"
 
-#: apps/climbs/forms.py:256 templates/components/ascent_table.html:23
+#: apps/climbs/forms.py:243 templates/components/ascent_table.html:23
 #: templates/components/ascent_table.html:31
 #: templates/components/ascent_table.html:49
 msgctxt "ascent form field"
 msgid "Attempts"
 msgstr "Tentativi"
 
-#: apps/climbs/forms.py:287 apps/climbs/models.py:193
+#: apps/climbs/forms.py:274 apps/climbs/models.py:187
 msgid "The ascent date cannot be in the future."
 msgstr "La data della ripetizione non può essere futura."
 
-#: apps/climbs/forms.py:301 apps/climbs/views.py:926 apps/climbs/views.py:961
+#: apps/climbs/forms.py:288 apps/climbs/views.py:924 apps/climbs/views.py:959
 msgid "You have already recorded an ascent for this route."
 msgstr "Hai già registrato una ripetizione per questa via."
 
-#: apps/climbs/forms.py:310 apps/climbs/models.py:196
+#: apps/climbs/forms.py:297 apps/climbs/models.py:190
 msgid "Enter a positive number of attempts."
 msgstr "Inserisci un numero di giri positivo."
 
@@ -405,11 +406,11 @@ msgstr ""
 msgid "name"
 msgstr "nome"
 
-#: apps/climbs/models.py:18 apps/climbs/models.py:67
+#: apps/climbs/models.py:18 apps/climbs/models.py:61
 msgid "archived"
 msgstr "archiviato"
 
-#: apps/climbs/models.py:22 apps/climbs/models.py:45 apps/climbs/views.py:541
+#: apps/climbs/models.py:22 apps/climbs/models.py:45 apps/climbs/views.py:539
 msgid "wall"
 msgstr "parete"
 
@@ -422,15 +423,15 @@ msgstr "pareti"
 #: templates/components/climbing_profile_stats.html:34
 #: templates/components/discipline_grade_histogram.html:7
 #: templates/components/discipline_grade_histogram.html:11
-#: templates/components/monthly_ascent_summary.html:20
-#: templates/core/statistics_dashboard.html:17
-#: templates/core/statistics_dashboard.html:36
-#: templates/core/statistics_dashboard.html:71
+#: templates/components/monthly_ascent_summary.html:106
+#: templates/components/monthly_ascent_summary.html:119
+#: templates/core/statistics_dashboard.html:19
+#: templates/core/statistics_dashboard.html:85
+#: templates/core/statistics_dashboard.html:120
 msgid "Routes"
 msgstr "Vie"
 
 #: apps/climbs/models.py:38 templates/climbs/route_detail.html:30
-#: templates/components/monthly_ascent_summary.html:21
 #: templates/components/route_card.html:16
 msgid "Boulder"
 msgstr "Boulder"
@@ -447,204 +448,210 @@ msgstr "grado ufficiale"
 msgid "project"
 msgstr "project"
 
-#: apps/climbs/models.py:64
+#: apps/climbs/models.py:59
 msgid "route setters"
 msgstr "route setter"
 
-#: apps/climbs/models.py:66 templates/climbs/route_detail.html:177
+#: apps/climbs/models.py:60 templates/climbs/route_detail.html:171
 msgid "Notes"
 msgstr "Note"
 
-#: apps/climbs/models.py:71 apps/climbs/models.py:124 apps/climbs/models.py:224
-#: apps/climbs/views.py:670
+#: apps/climbs/models.py:65 apps/climbs/models.py:118 apps/climbs/models.py:218
+#: apps/climbs/views.py:668
 msgid "climbing route"
 msgstr "via"
 
-#: apps/climbs/models.py:72
+#: apps/climbs/models.py:66
 msgid "climbing routes"
 msgstr "vie"
 
-#: apps/climbs/models.py:96
+#: apps/climbs/models.py:90
 msgid "A non-project route must have an official grade."
 msgstr "Una via non Project deve avere un grado ufficiale."
 
-#: apps/climbs/models.py:101
+#: apps/climbs/models.py:95
 msgid "Project"
 msgstr "Project"
 
-#: apps/climbs/models.py:109
+#: apps/climbs/models.py:103
 msgid "Onsight"
 msgstr "Onsight"
 
-#: apps/climbs/models.py:110
+#: apps/climbs/models.py:104
 msgid "Flash"
 msgstr "Flash"
 
-#: apps/climbs/models.py:111
+#: apps/climbs/models.py:105
 msgid "Number of attempts"
 msgstr "Numero di giri"
 
-#: apps/climbs/models.py:112
+#: apps/climbs/models.py:106
 msgid "N.D."
 msgstr "N.D."
 
-#: apps/climbs/models.py:126
+#: apps/climbs/models.py:120
 msgid "date"
 msgstr "data"
 
-#: apps/climbs/models.py:128
+#: apps/climbs/models.py:122
 msgid "rating"
 msgstr "valutazione"
 
-#: apps/climbs/models.py:132
+#: apps/climbs/models.py:126
 msgid "proposed grade"
 msgstr "grado proposto"
 
-#: apps/climbs/models.py:137
+#: apps/climbs/models.py:131
 msgid "Encoded French grade with a decimal from 0 to 9."
 msgstr "Grado francese codificato con un decimale da 0 a 9."
 
-#: apps/climbs/models.py:140
+#: apps/climbs/models.py:134
 msgid "attempt result"
 msgstr "esito dei tentativi"
 
-#: apps/climbs/models.py:146
+#: apps/climbs/models.py:140
 msgid "attempt count"
 msgstr "numero di giri"
 
-#: apps/climbs/models.py:151 apps/climbs/models.py:245 apps/core/models.py:30
+#: apps/climbs/models.py:145 apps/climbs/models.py:239 apps/core/models.py:30
 msgid "created at"
 msgstr "creato il"
 
-#: apps/climbs/models.py:152 apps/climbs/models.py:246
+#: apps/climbs/models.py:146 apps/climbs/models.py:240
 msgid "updated at"
 msgstr "aggiornato il"
 
-#: apps/climbs/models.py:156
+#: apps/climbs/models.py:150
 msgid "ascent"
 msgstr "ripetizione"
 
-#: apps/climbs/models.py:157 templates/climbs/user_list.html:41
-#: templates/core/home.html:156
+#: apps/climbs/models.py:151 templates/climbs/user_list.html:54
+#: templates/components/monthly_ascent_summary.html:66
+#: templates/components/monthly_ascent_summary.html:67
+#: templates/core/home.html:157 templates/core/statistics_dashboard.html:29
+#: templates/core/statistics_dashboard.html:50
+#: templates/core/statistics_dashboard.html:61
+#: templates/core/statistics_dashboard.html:233
+#: templates/core/statistics_dashboard.html:234
 msgid "ascents"
 msgstr "ripetizioni"
 
-#: apps/climbs/models.py:209
+#: apps/climbs/models.py:203
 #, python-format
 msgid "%(count)s attempt"
 msgid_plural "%(count)s attempts"
 msgstr[0] "%(count)s° giro"
 msgstr[1] "%(count)s° giro"
 
-#: apps/climbs/models.py:227
+#: apps/climbs/models.py:221
 msgid "image"
 msgstr "immagine"
 
-#: apps/climbs/models.py:233
+#: apps/climbs/models.py:227
 msgid "annotations"
 msgstr "annotazioni"
 
-#: apps/climbs/models.py:243
+#: apps/climbs/models.py:237
 msgid "uploaded by"
 msgstr "caricata da"
 
-#: apps/climbs/models.py:250
+#: apps/climbs/models.py:244
 msgid "route image"
 msgstr "immagine della via"
 
-#: apps/climbs/models.py:251
+#: apps/climbs/models.py:245
 msgid "route images"
 msgstr "immagini delle vie"
 
-#: apps/climbs/views.py:450
+#: apps/climbs/views.py:448
 msgid "Wall created successfully."
 msgstr "Parete creata correttamente."
 
-#: apps/climbs/views.py:473
+#: apps/climbs/views.py:471
 msgid "Wall updated successfully."
 msgstr "Parete aggiornata correttamente."
 
-#: apps/climbs/views.py:489
+#: apps/climbs/views.py:487
 msgid "Archive all routes on this wall first."
 msgstr "Prima archivia tutte le vie presenti su questa parete."
 
-#: apps/climbs/views.py:503
+#: apps/climbs/views.py:501
 msgid "Wall status updated."
 msgstr "Stato della parete aggiornato."
 
-#: apps/climbs/views.py:513
+#: apps/climbs/views.py:511
 msgid "Archive the wall before deleting it permanently."
 msgstr "Archivia la parete prima di eliminarla definitivamente."
 
-#: apps/climbs/views.py:528
+#: apps/climbs/views.py:526
 msgid "This wall still contains routes and cannot be deleted."
 msgstr "Questa parete contiene ancora delle vie e non può essere eliminata."
 
-#: apps/climbs/views.py:533
+#: apps/climbs/views.py:531
 msgid "Wall permanently deleted."
 msgstr "Parete eliminata definitivamente."
 
-#: apps/climbs/views.py:570
+#: apps/climbs/views.py:568
 msgid "Climbing route created successfully."
 msgstr "Via creata correttamente."
 
-#: apps/climbs/views.py:595
+#: apps/climbs/views.py:593
 msgid "Climbing route updated successfully."
 msgstr "Via aggiornata correttamente."
 
-#: apps/climbs/views.py:632
+#: apps/climbs/views.py:630
 msgid "Climbing route status updated."
 msgstr "Stato della via aggiornato."
 
-#: apps/climbs/views.py:642
+#: apps/climbs/views.py:640
 msgid "Archive the route before deleting it permanently."
 msgstr "Archivia la via prima di eliminarla definitivamente."
 
-#: apps/climbs/views.py:657
+#: apps/climbs/views.py:655
 msgid "This route has related records and cannot be deleted."
 msgstr "Questa via ha dati collegati e non può essere eliminata."
 
-#: apps/climbs/views.py:662
+#: apps/climbs/views.py:660
 msgid "Climbing route permanently deleted."
 msgstr "Via eliminata definitivamente."
 
-#: apps/climbs/views.py:723
+#: apps/climbs/views.py:721
 msgid "The route image changed while you were editing. Reload and try again."
 msgstr ""
 "L'immagine della via è cambiata durante la modifica. Ricarica e riprova."
 
-#: apps/climbs/views.py:735
+#: apps/climbs/views.py:733
 msgid "Image uploaded. You can now add route markers."
 msgstr "Immagine caricata. Ora puoi aggiungere i marcatori della via."
 
-#: apps/climbs/views.py:739
+#: apps/climbs/views.py:737
 msgid ""
 "Image replaced. Previous markers were cleared because the image changed."
 msgstr ""
 "Immagine sostituita. I marcatori precedenti sono stati rimossi perché "
 "l'immagine è cambiata."
 
-#: apps/climbs/views.py:783
+#: apps/climbs/views.py:781
 msgid "Route annotation saved."
 msgstr "Annotazione della via salvata."
 
-#: apps/climbs/views.py:822
+#: apps/climbs/views.py:820
 msgid "Route image and its annotation were deleted."
 msgstr "L'immagine della via e la relativa annotazione sono state eliminate."
 
-#: apps/climbs/views.py:902
+#: apps/climbs/views.py:900
 msgid "You already recorded this route. You can update it here."
 msgstr "Hai già registrato questa via. Puoi aggiornare la ripetizione qui."
 
-#: apps/climbs/views.py:935
+#: apps/climbs/views.py:933
 msgid "Ascent recorded successfully."
 msgstr "Ripetizione registrata correttamente."
 
-#: apps/climbs/views.py:970
+#: apps/climbs/views.py:968
 msgid "Ascent updated successfully."
 msgstr "Ripetizione aggiornata correttamente."
 
-#: apps/climbs/views.py:999
+#: apps/climbs/views.py:997
 msgid "Ascent deleted successfully."
 msgstr "Ripetizione eliminata correttamente."
 
@@ -822,7 +829,7 @@ msgstr "Registrati"
 
 #: templates/accounts/password_change.html:4
 #: templates/accounts/password_change.html:8
-#: templates/accounts/public_profile.html:55
+#: templates/accounts/public_profile.html:69
 msgid "Change password"
 msgstr "Cambia password"
 
@@ -900,7 +907,7 @@ msgstr "Invia link di reimpostazione"
 
 #: templates/accounts/profile_edit.html:4
 #: templates/accounts/profile_edit.html:10
-#: templates/accounts/public_profile.html:54
+#: templates/accounts/public_profile.html:68
 msgid "Edit profile"
 msgstr "Modifica profilo"
 
@@ -910,37 +917,15 @@ msgstr "L'email verificata non può essere modificata da questo modulo."
 
 #: templates/accounts/profile_edit.html:18
 #: templates/accounts/profile_edit.html:23
-#: templates/accounts/profile_image_form.html
+#: templates/accounts/profile_image_form.html:21
+#: templates/accounts/profile_image_form.html:26
 msgid "Current profile image"
 msgstr "Immagine del profilo attuale"
 
 #: templates/accounts/profile_edit.html:24
-#: templates/accounts/profile_image_form.html
+#: templates/accounts/profile_image_form.html:27
 msgid "Choose another image below to replace it."
 msgstr "Scegli un'altra immagine qui sotto per sostituirla."
-
-#: templates/accounts/profile_image_form.html
-#: templates/accounts/public_profile.html
-msgid "Add profile image"
-msgstr "Aggiungi immagine del profilo"
-
-#: templates/accounts/profile_image_form.html
-#: templates/accounts/public_profile.html
-msgid "Change profile image"
-msgstr "Modifica immagine del profilo"
-
-#: templates/accounts/profile_image_form.html
-#: templates/accounts/public_profile.html
-msgid "Manage profile image"
-msgstr "Gestisci immagine del profilo"
-
-#: templates/accounts/profile_image_form.html
-msgid "Select an image for your climber profile."
-msgstr "Seleziona un'immagine per il tuo profilo climber."
-
-#: apps/accounts/forms.py
-msgid "Select an image before continuing."
-msgstr "Seleziona un'immagine prima di continuare."
 
 #: templates/accounts/profile_edit.html:32
 msgid "Save changes"
@@ -948,6 +933,8 @@ msgstr "Salva modifiche"
 
 #: templates/accounts/profile_edit.html:33
 #: templates/accounts/profile_image_delete_confirm.html:29
+#: templates/accounts/profile_image_form.html:39
+#: templates/accounts/profile_image_form.html:48
 #: templates/climbs/ascent_delete_confirm.html:15
 #: templates/climbs/ascent_form.html:58 templates/climbs/ascent_form.html:60
 #: templates/climbs/delete_confirm.html:16
@@ -960,12 +947,14 @@ msgstr "Annulla"
 
 #: templates/accounts/profile_image_delete_confirm.html:4
 #: templates/accounts/profile_image_delete_confirm.html:10
-#: templates/accounts/public_profile.html:31
+#: templates/accounts/profile_image_form.html:41
+#: templates/accounts/profile_image_form.html:47
 msgid "Delete profile image"
 msgstr "Elimina immagine del profilo"
 
 #: templates/accounts/profile_image_delete_confirm.html:15
-#: templates/accounts/public_profile.html:15
+#: templates/accounts/profile_image_form.html:14
+#: templates/accounts/public_profile.html:23 templates/climbs/user_list.html:41
 #, python-format
 msgid "Profile image of %(username)s"
 msgstr "Immagine del profilo di %(username)s"
@@ -981,37 +970,71 @@ msgstr "Vuoi davvero eliminare l'immagine del profilo di %(username)s?"
 msgid "Delete image"
 msgstr "Elimina immagine"
 
-#: templates/accounts/public_profile.html:23
+#: templates/accounts/profile_image_form.html:4
+#: templates/accounts/profile_image_form.html:10
+msgid "Change profile image"
+msgstr "Modifica immagine del profilo"
+
+#: templates/accounts/profile_image_form.html:4
+#: templates/accounts/profile_image_form.html:10
+#: templates/accounts/public_profile.html:32
+#: templates/accounts/public_profile.html:33
+msgid "Add profile image"
+msgstr "Aggiungi immagine del profilo"
+
+#: templates/accounts/profile_image_form.html:4
+#: templates/accounts/profile_image_form.html:10
+#: templates/accounts/public_profile.html:16
+#: templates/accounts/public_profile.html:17
+msgid "Manage profile image"
+msgstr "Gestisci immagine del profilo"
+
+#: templates/accounts/profile_image_form.html:12
+msgid "Select an image for your climber profile."
+msgstr "Seleziona un'immagine per il tuo profilo climber."
+
+#: templates/accounts/profile_image_form.html:37
+#: templates/climbs/route_detail.html:110
+msgid "Replace image"
+msgstr "Sostituisci immagine"
+
+#: templates/accounts/profile_image_form.html:37
+#: templates/climbs/route_detail.html:116
+msgid "Upload image"
+msgstr "Carica immagine"
+
+#: templates/accounts/public_profile.html:39
 msgid "Climber profile"
 msgstr "Profilo climber"
 
-#: templates/accounts/public_profile.html:37
+#: templates/accounts/public_profile.html:50
 msgid "Account information"
 msgstr "Informazioni sull'account"
 
-#: templates/accounts/public_profile.html:41
+#: templates/accounts/public_profile.html:54
 msgid "Email status"
 msgstr "Stato email"
 
-#: templates/accounts/public_profile.html:44
+#: templates/accounts/public_profile.html:57
 msgid "Verified"
 msgstr "Verificata"
 
-#: templates/accounts/public_profile.html:46
+#: templates/accounts/public_profile.html:59
 msgid "Not verified"
 msgstr "Non verificata"
 
-#: templates/accounts/public_profile.html:51 templates/base.html:68
+#: templates/accounts/public_profile.html:64 templates/base.html:68
 msgid "Language"
 msgstr "Lingua"
 
-#: templates/accounts/public_profile.html:60
-msgid "Profile information"
-msgstr "Informazioni del profilo"
-
-#: templates/accounts/public_profile.html:63
+#: templates/accounts/public_profile.html:65
+#: templates/accounts/public_profile.html:77
 msgid "Member since"
 msgstr "Iscritto dal"
+
+#: templates/accounts/public_profile.html:74
+msgid "Profile information"
+msgstr "Informazioni del profilo"
 
 #: templates/accounts/register.html:11
 msgid "Create your account"
@@ -1092,7 +1115,7 @@ msgstr "Apri la navigazione"
 
 #: templates/base.html:40 templates/base.html:100
 #: templates/climbs/wall_list.html:4 templates/climbs/wall_list.html:12
-#: templates/core/home.html:33 templates/core/statistics_dashboard.html:20
+#: templates/core/home.html:34 templates/core/statistics_dashboard.html:22
 msgid "Walls"
 msgstr "Pareti"
 
@@ -1103,8 +1126,8 @@ msgid "Climbing routes"
 msgstr "Vie"
 
 #: templates/base.html:42 templates/climbs/user_list.html:4
-#: templates/climbs/user_list.html:11 templates/core/home.html:37
-#: templates/core/statistics_dashboard.html:21
+#: templates/climbs/user_list.html:11 templates/core/home.html:38
+#: templates/core/statistics_dashboard.html:23
 msgid "Climbers"
 msgstr "Climbers"
 
@@ -1114,11 +1137,10 @@ msgstr "Climbers"
 #: templates/climbs/wall_list.html:66
 #: templates/components/climbing_profile_stats.html:24
 #: templates/components/climbing_profile_stats.html:51
-#: templates/components/monthly_ascent_summary.html:24
-#: templates/components/monthly_ascent_summary.html:26
 #: templates/components/route_table.html:20
 #: templates/components/route_table.html:26
-#: templates/core/statistics_dashboard.html:109
+#: templates/core/statistics_dashboard.html:169
+#: templates/core/statistics_dashboard.html:199
 msgid "Ascents"
 msgstr "Ripetizioni"
 
@@ -1146,7 +1168,7 @@ msgstr "Vuoi davvero uscire?"
 msgid "Log out"
 msgstr "Esci"
 
-#: templates/base.html:78
+#: templates/base.html:78 templates/core/statistics_dashboard.html:161
 msgid "Apply"
 msgstr "Applica"
 
@@ -1178,7 +1200,7 @@ msgstr "Modifica ripetizione"
 
 #: templates/climbs/ascent_form.html:4 templates/climbs/ascent_form.html:9
 #: templates/climbs/ascent_list.html:16 templates/climbs/route_detail.html:86
-#: templates/core/home.html:17
+#: templates/core/home.html:18
 msgid "Add ascent"
 msgstr "Aggiungi ripetizione"
 
@@ -1211,7 +1233,7 @@ msgstr "Tutte le ripetizioni"
 
 #: templates/climbs/ascent_list.html:29 templates/climbs/route_detail.html:154
 #: templates/components/climbing_profile_stats.html:83
-#: templates/core/home.html:123
+#: templates/core/home.html:124
 msgid "No ascents recorded"
 msgstr "Nessuna ripetizione registrata"
 
@@ -1420,14 +1442,6 @@ msgstr "Immagine della via"
 msgid "Edit annotation"
 msgstr "Modifica annotazione"
 
-#: templates/climbs/route_detail.html:110
-msgid "Replace image"
-msgstr "Sostituisci immagine"
-
-#: templates/climbs/route_detail.html:116
-msgid "Upload image"
-msgstr "Carica immagine"
-
 #: templates/climbs/route_detail.html:140
 #: templates/climbs/route_detail.html:142
 msgid "No route image"
@@ -1461,7 +1475,7 @@ msgstr "Tipo"
 #: templates/climbs/route_detail.html:165 templates/climbs/route_list.html:38
 #: templates/components/ascent_table.html:16
 #: templates/components/route_table.html:11
-#: templates/core/statistics_dashboard.html:69
+#: templates/core/statistics_dashboard.html:118
 msgid "Wall"
 msgstr "Parete"
 
@@ -1470,7 +1484,7 @@ msgstr "Parete"
 msgid "Route setters"
 msgstr "Route setter"
 
-#: templates/climbs/route_detail.html:172
+#: templates/climbs/route_detail.html:168
 msgid "Not specified"
 msgstr "Non specificato"
 
@@ -1646,8 +1660,8 @@ msgid "Most ascents"
 msgstr "Più ripetizioni"
 
 #: templates/climbs/route_list.html:92 templates/climbs/wall_detail.html:73
-msgid "Highest rating"
-msgstr "Valutazione più alta"
+msgid "Highest beauty"
+msgstr "Bellezza più alta"
 
 #: templates/climbs/route_list.html:93 templates/climbs/wall_detail.html:67
 msgid "Name: A–Z"
@@ -1697,20 +1711,19 @@ msgstr "Nome"
 
 #: templates/climbs/user_list.html:26
 #: templates/components/climbing_profile_stats.html:9
-#: templates/components/monthly_ascent_summary.html:25
-#: templates/components/monthly_ascent_summary.html:27
+#: templates/core/statistics_dashboard.html:170
 msgid "Highest grade"
 msgstr "Grado più alto"
 
-#: templates/climbs/user_list.html:42
+#: templates/climbs/user_list.html:55
 msgid "highest grade"
 msgstr "grado più alto"
 
-#: templates/climbs/user_list.html:50
+#: templates/climbs/user_list.html:63
 msgid "No climbers found"
 msgstr "Nessun climber trovato"
 
-#: templates/climbs/user_list.html:51
+#: templates/climbs/user_list.html:64
 msgid "Try changing the search."
 msgstr "Prova a modificare la ricerca."
 
@@ -1723,14 +1736,15 @@ msgstr "Totale vie"
 #: templates/components/climbing_profile_stats.html:36
 #: templates/components/discipline_grade_histogram.html:8
 #: templates/components/discipline_grade_histogram.html:12
-#: templates/core/statistics_dashboard.html:18
-#: templates/core/statistics_dashboard.html:37
-#: templates/core/statistics_dashboard.html:72
+#: templates/components/monthly_ascent_summary.html:111
+#: templates/components/monthly_ascent_summary.html:120
+#: templates/core/statistics_dashboard.html:20
+#: templates/core/statistics_dashboard.html:86
+#: templates/core/statistics_dashboard.html:121
 msgid "Boulders"
 msgstr "Boulder"
 
 #: templates/climbs/wall_detail.html:43
-#: templates/components/monthly_ascent_summary.html:19
 msgid "Total ascents"
 msgstr "Ripetizioni totali"
 
@@ -1739,8 +1753,8 @@ msgid "Fewest ascents"
 msgstr "Meno ripetizioni"
 
 #: templates/climbs/wall_detail.html:74
-msgid "Lowest rating"
-msgstr "Valutazione più bassa"
+msgid "Lowest beauty"
+msgstr "Bellezza più bassa"
 
 #: templates/climbs/wall_detail.html:82
 msgid "Hide archived routes"
@@ -1820,7 +1834,7 @@ msgid "Try changing the search or filters."
 msgstr "Prova a modificare la ricerca o i filtri."
 
 #: templates/components/ascent_card.html:10
-#: templates/components/ascent_card.html:53 templates/core/home.html:85
+#: templates/components/ascent_card.html:53 templates/core/home.html:86
 msgid "Former user"
 msgstr "Utente non attivo"
 
@@ -1828,8 +1842,8 @@ msgstr "Utente non attivo"
 #: templates/components/ascent_table.html:29
 #: templates/components/ascent_table.html:38
 #: templates/components/ascent_table.html:55
-#: templates/components/route_table.html:24 templates/core/home.html:63
-#: templates/core/home.html:90
+#: templates/components/route_table.html:24 templates/core/home.html:64
+#: templates/core/home.html:91
 msgid "Climb"
 msgstr "Via"
 
@@ -1862,8 +1876,8 @@ msgid "No grades available yet."
 msgstr "Non sono ancora disponibili gradi."
 
 #: templates/components/climbing_profile_stats.html:32
-#: templates/core/statistics_dashboard.html:35
-#: templates/core/statistics_dashboard.html:70
+#: templates/core/statistics_dashboard.html:84
+#: templates/core/statistics_dashboard.html:119
 msgid "Total"
 msgstr "Totale"
 
@@ -1900,6 +1914,7 @@ msgid "Ascents will appear here."
 msgstr "Le ripetizioni compariranno qui."
 
 #: templates/components/discipline_grade_histogram.html:10
+#: templates/components/monthly_ascent_summary.html:118
 msgid "Histogram legend"
 msgstr "Legenda dell'istogramma"
 
@@ -1915,33 +1930,84 @@ msgstr ""
 msgid "Grade %(grade)s: %(count)s entries"
 msgstr "Grado %(grade)s: %(count)s inserimenti"
 
-#: templates/components/monthly_ascent_summary.html:4
-msgid "Monthly activity"
-msgstr "Andamento mensile"
-
 #: templates/components/monthly_ascent_summary.html:6
-msgid "Last 12 months."
-msgstr "Ultimi 12 mesi."
+#: templates/components/monthly_ascent_summary.html:29
+msgid "Profile activity"
+msgstr "Attività del profilo"
 
-#: templates/components/monthly_ascent_summary.html:7
+#: templates/components/monthly_ascent_summary.html:9
+msgid "Monthly ascents during the last 12 months."
+msgstr "Ripetizioni mensili negli ultimi 12 mesi."
+
+#: templates/components/monthly_ascent_summary.html:11
+msgid "Monthly ascents all time."
+msgstr "Ripetizioni mensili di sempre."
+
+#: templates/components/monthly_ascent_summary.html:13
 #, python-format
 msgid "Updated through %(date)s."
 msgstr "Aggiornato al %(date)s."
 
-# msgid "On small screens, scroll horizontally to see every column."
-# msgstr "Su schermi piccoli, scorri in orizzontale per vedere tutte le colonne."
-#: templates/components/monthly_ascent_summary.html:11
-msgid ""
-"Monthly ascent counts and highest official grades, split into routes and "
-"boulders."
-msgstr ""
-"Numero di ripetizioni e gradi ufficiali più alti per mese, distinti tra vie "
-"e boulder."
-
 #: templates/components/monthly_ascent_summary.html:18
-#: templates/core/statistics_dashboard.html:108
-msgid "Month"
-msgstr "Mese"
+#: templates/core/statistics_dashboard.html:155
+msgid "Period"
+msgstr "Periodo"
+
+#: templates/components/monthly_ascent_summary.html:20
+#: templates/core/statistics_dashboard.html:158
+msgid "Last 12 months"
+msgstr "Ultimi 12 mesi"
+
+#: templates/components/monthly_ascent_summary.html:21
+#: templates/core/statistics_dashboard.html:159
+msgid "All time"
+msgstr "Sempre"
+
+#: templates/components/monthly_ascent_summary.html:33
+#: templates/components/monthly_ascent_summary.html:54
+#: templates/core/statistics_dashboard.html:224
+msgid "Ascents in the last 12 months"
+msgstr "Ripetizioni negli ultimi 12 mesi"
+
+#: templates/components/monthly_ascent_summary.html:35
+#: templates/components/monthly_ascent_summary.html:56
+msgid "All-time ascents"
+msgstr "Ripetizioni di sempre"
+
+#: templates/components/monthly_ascent_summary.html:43
+msgid "Highest grade in the last 12 months"
+msgstr "Grado più alto negli ultimi 12 mesi"
+
+#: templates/components/monthly_ascent_summary.html:45
+msgid "All-time highest grade"
+msgstr "Grado più alto di sempre"
+
+#: templates/components/monthly_ascent_summary.html:60
+#: templates/core/statistics_dashboard.html:227
+msgid "Monthly ascents chart"
+msgstr "Grafico delle ripetizioni mensili"
+
+#: templates/components/monthly_ascent_summary.html:80
+msgid "Highest grade by month"
+msgstr "Grado più alto per mese"
+
+#: templates/components/monthly_ascent_summary.html:84
+msgid "Grade trend chart"
+msgstr "Grafico dell'andamento dei gradi"
+
+#: templates/components/monthly_ascent_summary.html:85
+msgid "Monthly highest official grades for routes and boulders."
+msgstr "Gradi ufficiali massimi mensili per vie e boulder."
+
+#: templates/components/monthly_ascent_summary.html:124
+msgid "No graded ascents are available in the last 12 months yet."
+msgstr ""
+"Non sono ancora disponibili ripetizioni con un grado negli ultimi 12 mesi."
+
+#: templates/components/monthly_ascent_summary.html:126
+msgid "No graded ascents are available for this profile yet."
+msgstr ""
+"Non sono ancora disponibili ripetizioni con un grado per questo profilo."
 
 #: templates/components/pagination.html:4
 msgid "Pagination"
@@ -1994,53 +2060,55 @@ msgstr ""
 msgid "Find your next climb. Log your sends. Track your progress."
 msgstr "Trova la prossima via. Registra le tue salite. Segui i tuoi progressi."
 
-#: templates/core/home.html:15
+#: templates/core/home.html:16
 msgid "Explore climbs"
 msgstr "Esplora le vie"
 
-#: templates/core/home.html:19
+#: templates/core/home.html:20
 msgid "Create an account"
 msgstr "Crea un account"
 
-#: templates/core/home.html:27
+#: templates/core/home.html:28
 msgid "Gym at a glance"
 msgstr "La palestra in breve"
 
-#: templates/core/home.html:29 templates/core/management_dashboard.html:22
-#: templates/core/statistics_dashboard.html:16
+#: templates/core/home.html:30 templates/core/management_dashboard.html:22
+#: templates/core/statistics_dashboard.html:18
 msgid "Active climbs"
 msgstr "Vie attive"
 
-#: templates/core/home.html:41 templates/core/management_dashboard.html:24
-#: templates/core/statistics_dashboard.html:22
+#: templates/core/home.html:42 templates/core/management_dashboard.html:24
+#: templates/core/statistics_dashboard.html:24
+#: templates/core/statistics_dashboard.html:42
 msgid "Recorded ascents"
 msgstr "Ripetizioni registrate"
 
-#: templates/core/home.html:50
+#: templates/core/home.html:51
 msgid "Recent ascents"
 msgstr "Ripetizioni recenti"
 
-#: templates/core/home.html:53 templates/core/home.html:137
+#: templates/core/home.html:54 templates/core/home.html:138
 msgid "View all"
 msgstr "Vedi tutte"
 
-#: templates/core/home.html:62 templates/core/home.html:71
+#: templates/core/home.html:63 templates/core/home.html:72
+#: templates/core/statistics_dashboard.html:168
 msgid "Climber"
 msgstr "Climber"
 
-#: templates/core/home.html:125
+#: templates/core/home.html:126
 msgid "The latest community ascents will appear here."
 msgstr "Le ultime ripetizioni della community compariranno qui."
 
-#: templates/core/home.html:134
+#: templates/core/home.html:135
 msgid "Most climbed"
 msgstr "Vie più salite"
 
-#: templates/core/home.html:168
+#: templates/core/home.html:169
 msgid "No active climbs"
 msgstr "Nessuna via attiva"
 
-#: templates/core/home.html:170
+#: templates/core/home.html:171
 msgid "Climbs will appear here after they are added."
 msgstr "Le vie compariranno qui dopo essere state aggiunte."
 
@@ -2134,46 +2202,111 @@ msgid "No administrative activity has been recorded yet."
 msgstr "Non è stata ancora registrata alcuna attività amministrativa."
 
 #: templates/core/statistics_dashboard.html:4
-#: templates/core/statistics_dashboard.html:11
+#: templates/core/statistics_dashboard.html:12
 msgid "Collective statistics"
 msgstr "Statistiche collettive"
 
-#: templates/core/statistics_dashboard.html:10
+#: templates/core/statistics_dashboard.html:11
 msgid "Gym overview"
 msgstr "Panoramica della palestra"
 
-#: templates/core/statistics_dashboard.html:12
+#: templates/core/statistics_dashboard.html:13
 msgid "A concise view of the active catalogue and the community's ascents."
 msgstr "Una sintesi del catalogo attivo e delle ripetizioni della comunità."
 
-#: templates/core/statistics_dashboard.html:15
+#: templates/core/statistics_dashboard.html:17
 msgid "Summary"
 msgstr "Riepilogo"
 
-#: templates/core/statistics_dashboard.html:19
+#: templates/core/statistics_dashboard.html:21
 msgid "Projects"
 msgstr "Project"
 
-#: templates/core/statistics_dashboard.html:23
+#: templates/core/statistics_dashboard.html:25
 msgid "Highest active grade"
 msgstr "Grado attivo più alto"
 
-#: templates/core/statistics_dashboard.html:28
+#: templates/core/statistics_dashboard.html:27
+msgid "Highest repeated grade"
+msgstr "Grado più alto ripetuto"
+
+#: templates/core/statistics_dashboard.html:36
+#: templates/core/statistics_dashboard.html:40
+msgid "Recent activity"
+msgstr "Attività recente"
+
+#: templates/core/statistics_dashboard.html:37
+msgid "Community activity during the last 30 days."
+msgstr "Attività della comunità negli ultimi 30 giorni."
+
+#: templates/core/statistics_dashboard.html:46
+msgid "Most active climber"
+msgstr "Climber più attivo"
+
+#: templates/core/statistics_dashboard.html:57
+msgid "Most repeated climb"
+msgstr "Via più ripetuta"
+
+#: templates/core/statistics_dashboard.html:68
+msgid "Active climbers"
+msgstr "Climbers attivi"
+
+#: templates/core/statistics_dashboard.html:69
+msgid "of"
+msgstr "su"
+
+#: templates/core/statistics_dashboard.html:70
+msgid "with an ascent in this period"
+msgstr "con una ripetizione nel periodo"
+
+#: templates/core/statistics_dashboard.html:77
 msgid "Active climbs by grade"
 msgstr "Vie attive per grado"
 
-#: templates/core/statistics_dashboard.html:58
+#: templates/core/statistics_dashboard.html:107
 msgid "No graded active climbs are available yet."
 msgstr "Non sono ancora disponibili vie attive con un grado."
 
-#: templates/core/statistics_dashboard.html:63
+#: templates/core/statistics_dashboard.html:112
 msgid "Active climbs by wall"
 msgstr "Vie attive per parete"
 
-#: templates/core/statistics_dashboard.html:97
+#: templates/core/statistics_dashboard.html:146
 msgid "No active walls are available yet."
 msgstr "Non sono ancora disponibili pareti attive."
 
-#: templates/core/statistics_dashboard.html:103
-msgid "Ascents in the last 12 months"
-msgstr "Ripetizioni negli ultimi 12 mesi"
+#: templates/core/statistics_dashboard.html:153
+msgid "Most active climbers"
+msgstr "Climbers più attivi"
+
+#: templates/core/statistics_dashboard.html:157
+msgid "Last 30 days"
+msgstr "Ultimi 30 giorni"
+
+#: templates/core/statistics_dashboard.html:187
+msgid "No ascents are available for this period yet."
+msgstr "Non sono ancora disponibili ripetizioni per questo periodo."
+
+#: templates/core/statistics_dashboard.html:192
+msgid "Most repeated grades"
+msgstr "Gradi più ripetuti"
+
+#: templates/core/statistics_dashboard.html:218
+msgid "No repeated grades are available yet."
+msgstr "Non sono ancora disponibili gradi ripetuti."
+
+#: templates/core/statistics_dashboard.html:225
+msgid "Oldest month first, then the current month."
+msgstr "Prima il mese più vecchio, poi quello corrente."
+
+#~ msgid "Highest official grade per month, split by routes and boulders."
+#~ msgstr "Grado ufficiale più alto per mese, distinto tra vie e boulder."
+
+#~ msgid "Optional. You may select one or more route setters."
+#~ msgstr "Facoltativo. Puoi selezionare uno o più route setter."
+
+#~ msgid "Last 12 months."
+#~ msgstr "Ultimi 12 mesi."
+
+#~ msgid "Month"
+#~ msgstr "Mese"
