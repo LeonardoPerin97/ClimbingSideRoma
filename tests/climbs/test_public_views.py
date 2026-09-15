@@ -6,7 +6,6 @@ from django.test import Client
 from django.urls import reverse
 
 from apps.accounts.models import User
-from apps.accounts.roles import Role, assign_role
 from apps.climbs.models import Ascent, ClimbingRoute, Wall
 
 
@@ -588,26 +587,17 @@ def test_wall_detail_sorts_by_name_and_grade_in_both_directions(
 
 
 @pytest.mark.django_db
-def test_route_detail_lists_setters_without_exposing_email(
+def test_route_detail_shows_free_form_setters(
     client: Client,
-    user_factory: Callable[..., User],
     route_factory: Callable[..., ClimbingRoute],
 ) -> None:
-    first = user_factory(username="anna-setter", email="anna-private@example.com")
-    second = user_factory(username="marco-setter", email="marco-private@example.com")
-    assign_role(first, Role.ROUTE_SETTER)
-    assign_role(second, Role.ROUTE_SETTER)
-    climbing_route = route_factory(route_setters=[first, second])
+    climbing_route = route_factory(route_setters="Anna Rossi, Marco Bianchi")
 
     response = client.get(reverse("climbs:route_detail", args=[climbing_route.pk]))
     content = response.content.decode()
 
     assert response.status_code == 200
-    assert "anna-setter" in content
-    assert "marco-setter" in content
-    assert "anna-private@example.com" not in content
-    assert "marco-private@example.com" not in content
-    assert content.count('class="list-name-link"') == 4
+    assert "Anna Rossi, Marco Bianchi" in content
     assert f'<a class="list-name-link" href="{reverse("climbs:wall_list")}">' in content
     assert "Palestra" in content
 

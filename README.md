@@ -181,7 +181,7 @@ Le regole seguenti definiscono il comportamento centrale dell’applicazione.
 - Il grado ufficiale usa la scala francese da `4a` a `9c`.
 - Un `Project` è una via non ancora liberata o graduata e non possiede un grado
   ufficiale.
-- Una via può non avere route setter oppure averne uno o più.
+- Il route setter viene compilato come testo libero e può contenere uno o più nomi.
 - Non vengono gestite date di apertura o rimozione.
 - Le vie storiche vengono archiviate invece di essere eliminate.
 
@@ -635,7 +635,7 @@ Rappresenta una via o un boulder:
 - tipo;
 - grado ufficiale;
 - flag Project;
-- route setter opzionali;
+- route setter opzionali compilati come testo libero;
 - note facoltative gestite da route setter e amministratori;
 - stato archiviato.
 

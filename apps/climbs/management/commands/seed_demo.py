@@ -127,13 +127,12 @@ class Command(BaseCommand):
             climbing_route.discipline = discipline
             climbing_route.official_grade = grade
             climbing_route.is_project = is_project
+            climbing_route.route_setters = (
+                route_setter.username if assign_setter and route_setter else ""
+            )
             climbing_route.is_archived = False
             climbing_route.full_clean()
             climbing_route.save()
-            if assign_setter and route_setter:
-                climbing_route.route_setters.set((route_setter,))
-            else:
-                climbing_route.route_setters.clear()
             counts.add(created=created)
             routes[short_name] = climbing_route
         return routes

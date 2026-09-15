@@ -377,9 +377,7 @@ def route_list(request: HttpRequest) -> HttpResponse:
 
 def route_detail(request: HttpRequest, pk: int) -> HttpResponse:
     climbing_route = get_object_or_404(
-        ClimbingRoute.objects.select_related("wall", "route_image")
-        .prefetch_related("route_setters")
-        .annotate(
+        ClimbingRoute.objects.select_related("wall", "route_image").annotate(
             ascent_count=Count("ascents"),
             average_rating=Avg("ascents__rating"),
             average_proposed_grade=Avg("ascents__proposed_grade"),

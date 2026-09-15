@@ -165,13 +165,7 @@
                     <div><dt>{% translate "Wall" %}</dt><dd>{{ climbing_route.wall.name }}</dd></div>
                     <div>
                         <dt>{% translate "Route setters" %}</dt>
-                        <dd>
-                            {% for setter in climbing_route.route_setters.all %}
-                                <a class="list-name-link" href="{% url 'accounts:public_profile' setter.username %}">{{ setter.username }}</a>{% if not forloop.last %}, {% endif %}
-                            {% empty %}
-                                {% translate "Not specified" %}
-                            {% endfor %}
-                        </dd>
+                        <dd>{{ climbing_route.route_setters|default:_('Not specified') }}</dd>
                     </div>
                     {% if climbing_route.notes %}
                         <div><dt>{% translate "Notes" %}</dt><dd>{{ climbing_route.notes|linebreaksbr }}</dd></div>

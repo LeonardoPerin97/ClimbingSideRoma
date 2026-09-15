@@ -73,7 +73,7 @@ class ClimbingRouteForm(StyledFormMixin, forms.ModelForm):
         widgets = {
             "is_project": forms.CheckboxInput(attrs={"data-project-toggle": ""}),
             "official_grade": forms.Select(attrs={"data-grade-field": ""}),
-            "route_setters": forms.CheckboxSelectMultiple(),
+            "route_setters": forms.TextInput(),
             "notes": forms.Textarea(attrs={"rows": 4}),
         }
 
@@ -82,9 +82,6 @@ class ClimbingRouteForm(StyledFormMixin, forms.ModelForm):
         self.apply_control_classes()
         self.fields["official_grade"].required = False
         self.fields["route_setters"].required = False
-        self.fields["route_setters"].help_text = _(
-            "Optional. You may select one or more route setters."
-        )
 
         available_walls = Wall.objects.filter(is_archived=False)
         if self.instance.pk and self.instance.wall_id:
@@ -92,17 +89,7 @@ class ClimbingRouteForm(StyledFormMixin, forms.ModelForm):
                 Q(is_archived=False) | Q(pk=self.instance.wall_id)
             )
         wall_field = cast(forms.ModelChoiceField, self.fields["wall"])
-        route_setters_field = cast(
-            forms.ModelMultipleChoiceField,
-            self.fields["route_setters"],
-        )
-        route_setters_field.widget.attrs["class"] = "checkbox-choice-list"
         wall_field.queryset = available_walls.order_by(Lower("name"))
-        route_setters_field.queryset = (
-            User.objects.filter(groups__name="RouteSetter", is_active=True)
-            .distinct()
-            .order_by(Lower("username"))
-        )
 
     def clean_name(self) -> str:
         name = self.cleaned_data["name"].strip()

@@ -5,8 +5,6 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models.deletion import ProtectedError
 
-from apps.accounts.models import User
-from apps.accounts.roles import Role, assign_role
 from apps.climbs.grades import encode_perceived_grade, format_perceived_grade
 from apps.climbs.models import ClimbingRoute, Wall
 
@@ -101,21 +99,17 @@ def test_a_wall_can_contain_both_disciplines(
 
 
 @pytest.mark.django_db
-def test_route_setters_are_optional_and_multiple(
-    user_factory: Callable[..., User],
+def test_route_setters_are_optional_and_free_form(
     route_factory: Callable[..., ClimbingRoute],
 ) -> None:
-    first = user_factory(username="setter-one", email="setter-one@example.com")
-    second = user_factory(username="setter-two", email="setter-two@example.com")
-    assign_role(first, Role.ROUTE_SETTER)
-    assign_role(second, Role.ROUTE_SETTER)
-    climbing_route = route_factory(name="Collaborative Route")
+    route_without_setter = route_factory(name="Route without setter")
+    route_with_setters = route_factory(
+        name="Collaborative Route",
+        route_setters="Anna Rossi, Marco Bianchi",
+    )
 
-    assert not climbing_route.route_setters.exists()
-
-    climbing_route.route_setters.set([first, second])
-
-    assert set(climbing_route.route_setters.all()) == {first, second}
+    assert route_without_setter.route_setters == ""
+    assert route_with_setters.route_setters == "Anna Rossi, Marco Bianchi"
 
 
 @pytest.mark.django_db

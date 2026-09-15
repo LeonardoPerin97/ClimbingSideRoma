@@ -58,8 +58,8 @@ class ClimbingRouteAdmin(admin.ModelAdmin):
         "is_archived",
     )
     list_filter = ("discipline", "is_project", "is_archived", "wall")
-    search_fields = ("name", "wall__name", "route_setters__username", "notes")
-    autocomplete_fields = ("wall", "route_setters")
+    search_fields = ("name", "wall__name", "route_setters", "notes")
+    autocomplete_fields = ("wall",)
     ordering = ("name",)
 
     @admin.display(description="Grade", ordering="official_grade")

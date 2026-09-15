@@ -72,9 +72,10 @@ def test_route_setter_can_create_edit_and_archive_route_without_setter(
     assert ">Tipo</label>" in form_response.content.decode()
     assert ">Grado</label>" in form_response.content.decode()
     assert "Grado ufficiale" not in form_response.content.decode()
+    assert 'name="route_setters"' in form_response.content.decode()
     assert ">Note</label>" in form_response.content.decode()
     assert create_response.status_code == 302
-    assert not climbing_route.route_setters.exists()
+    assert climbing_route.route_setters == ""
     assert climbing_route.notes == "Use the blue holds.\nTechnical finish."
 
     edit_response = client.post(
@@ -101,16 +102,14 @@ def test_route_setter_can_create_edit_and_archive_route_without_setter(
 
 
 @pytest.mark.django_db
-def test_route_form_can_select_multiple_setters_and_deselect_one(
+def test_route_form_accepts_free_form_setter_text(
     client: Client,
     user_factory: Callable[..., User],
     wall_factory: Callable[..., Wall],
 ) -> None:
-    first_setter = user_factory(username="first-setter", email="first-setter@example.com")
-    second_setter = user_factory(username="second-setter", email="second-setter@example.com")
-    assign_role(first_setter, Role.ROUTE_SETTER)
-    assign_role(second_setter, Role.ROUTE_SETTER)
-    client.force_login(first_setter)
+    route_editor = user_factory(username="route-editor", email="route-editor@example.com")
+    assign_role(route_editor, Role.ROUTE_SETTER)
+    client.force_login(route_editor)
     wall = wall_factory(name="Multiple Setters Wall")
 
     form_response = client.get(reverse("climbs:route_create"))
@@ -118,29 +117,30 @@ def test_route_form_can_select_multiple_setters_and_deselect_one(
         reverse("climbs:route_create"),
         route_form_data(
             wall,
-            route_setters=[first_setter.pk, second_setter.pk],
+            route_setters="Anna Rossi, Marco Bianchi",
         ),
     )
     climbing_route = ClimbingRoute.objects.get(name="Created Route")
 
     assert form_response.status_code == 200
     form_content = form_response.content.decode()
-    assert 'class="checkbox-choice-list"' in form_content
-    assert form_content.count('type="checkbox"') >= 2
+    assert 'name="route_setters"' in form_content
+    assert 'class="checkbox-choice-list"' not in form_content
     assert create_response.status_code == 302
-    assert set(climbing_route.route_setters.all()) == {first_setter, second_setter}
+    assert climbing_route.route_setters == "Anna Rossi, Marco Bianchi"
 
     edit_response = client.post(
         reverse("climbs:route_edit", args=[climbing_route.pk]),
         route_form_data(
             wall,
             name="Updated Multiple Setters Route",
-            route_setters=[second_setter.pk],
+            route_setters="Luca Verdi",
         ),
     )
 
     assert edit_response.status_code == 302
-    assert list(climbing_route.route_setters.all()) == [second_setter]
+    climbing_route.refresh_from_db()
+    assert climbing_route.route_setters == "Luca Verdi"
 
 
 @pytest.mark.django_db

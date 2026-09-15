@@ -56,13 +56,7 @@ class ClimbingRoute(models.Model):
         blank=True,
     )
     is_project = models.BooleanField(_("project"), default=False)
-    route_setters = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        related_name="set_climbing_routes",
-        limit_choices_to={"groups__name": "RouteSetter", "is_active": True},
-        verbose_name=_("route setters"),
-    )
+    route_setters = models.TextField(_("route setters"), blank=True)
     notes = models.TextField(_("Notes"), blank=True)
     is_archived = models.BooleanField(_("archived"), default=False)
 

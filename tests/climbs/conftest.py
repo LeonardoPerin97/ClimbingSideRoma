@@ -1,4 +1,4 @@
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from io import BytesIO
 from typing import Any, cast
 
@@ -55,7 +55,7 @@ def route_factory(
     wall_factory: Callable[..., Wall],
 ) -> Callable[..., ClimbingRoute]:
     def create_route(**overrides: object) -> ClimbingRoute:
-        route_setters = cast(Iterable[User], overrides.pop("route_setters", ()))
+        route_setters = cast(str, overrides.pop("route_setters", ""))
         wall = cast(Wall | None, overrides.pop("wall", None)) or wall_factory()
         sequence = ClimbingRoute.objects.count() + 1
         values: dict[str, object] = {
@@ -64,13 +64,13 @@ def route_factory(
             "discipline": ClimbingRoute.Discipline.ROUTE,
             "official_grade": "6a",
             "is_project": False,
+            "route_setters": route_setters,
             "notes": "",
         }
         values.update(overrides)
         climbing_route = ClimbingRoute(**cast(Any, values))
         climbing_route.full_clean()
         climbing_route.save()
-        climbing_route.route_setters.set(route_setters)
         return climbing_route
 
     return create_route
