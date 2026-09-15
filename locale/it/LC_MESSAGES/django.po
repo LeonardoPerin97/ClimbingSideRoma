@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ClimbingSide 0.9.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-15 12:27+0200\n"
+"POT-Creation-Date: 2026-09-15 12:38+0200\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1872,8 +1872,8 @@ msgid "Completed climbs grouped by grade and type"
 msgstr "Vie completate raggruppate per grado e tipo"
 
 #: templates/components/climbing_profile_stats.html:26
-msgid "No grades available yet."
-msgstr "Non sono ancora disponibili gradi."
+msgid "No ascents recorded yet."
+msgstr "Non hai ancora inserito ripetizioni."
 
 #: templates/components/climbing_profile_stats.html:32
 #: templates/core/statistics_dashboard.html:84
@@ -2298,6 +2298,9 @@ msgstr "Non sono ancora disponibili gradi ripetuti."
 #: templates/core/statistics_dashboard.html:225
 msgid "Oldest month first, then the current month."
 msgstr "Prima il mese più vecchio, poi quello corrente."
+
+#~ msgid "No grades available yet."
+#~ msgstr "Non sono ancora disponibili gradi."
 
 #~ msgid "Highest official grade per month, split by routes and boulders."
 #~ msgstr "Grado ufficiale più alto per mese, distinto tra vie e boulder."

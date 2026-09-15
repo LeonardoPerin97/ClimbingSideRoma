@@ -23,7 +23,7 @@
             {% translate "Completed climbs grouped by grade and type" as histogram_content_label %}
             {% translate "Ascents" as histogram_value_label %}
             {% include "components/discipline_grade_histogram.html" with buckets=grade_distribution maximum_count=maximum_grade_count histogram_scroll_label=histogram_scroll_label histogram_content_label=histogram_content_label histogram_value_label=histogram_value_label %}
-        {% else %}<p class="muted-text">{% translate "No grades available yet." %}</p>{% endif %}
+        {% else %}<p class="muted-text">{% translate "No ascents recorded yet." %}</p>{% endif %}
     </article>
 
     <div class="statistics-grid profile-statistics-grid profile-secondary-statistics">
