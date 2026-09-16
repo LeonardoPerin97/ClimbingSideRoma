@@ -16,9 +16,15 @@ if (languageSelect) {
   });
 }
 
+const filterRequestControllers = new WeakMap();
+
 const refreshSectionFromForm = async (form, sectionSelector, selectSelector = "") => {
   const currentSection = document.querySelector(sectionSelector);
   if (!currentSection) return;
+
+  filterRequestControllers.get(form)?.abort();
+  const controller = new AbortController();
+  filterRequestControllers.set(form, controller);
 
   const requestUrl = new URL(window.location.href);
   requestUrl.search = new URLSearchParams(new FormData(form)).toString();
@@ -34,11 +40,21 @@ const refreshSectionFromForm = async (form, sectionSelector, selectSelector = ""
     activeControl instanceof HTMLElement && form.contains(activeControl)
       ? activeControl.id
       : "";
+  const selectionStart =
+    activeControl instanceof HTMLInputElement || activeControl instanceof HTMLTextAreaElement
+      ? activeControl.selectionStart
+      : null;
+  const selectionEnd =
+    activeControl instanceof HTMLInputElement || activeControl instanceof HTMLTextAreaElement
+      ? activeControl.selectionEnd
+      : null;
+  const shouldRestoreFocus = activeControlId && document.activeElement === activeControl;
 
   form.setAttribute("aria-busy", "true");
   try {
     const response = await fetch(`${requestUrl.pathname}${requestUrl.search}`, {
       headers: { Accept: "text/html" },
+      signal: controller.signal,
     });
     if (!response.ok) throw new Error("Unable to refresh filtered results.");
 
@@ -46,6 +62,13 @@ const refreshSectionFromForm = async (form, sectionSelector, selectSelector = ""
     const parsedDocument = new DOMParser().parseFromString(html, "text/html");
     const refreshedSection = parsedDocument.querySelector(sectionSelector);
     if (!refreshedSection) throw new Error("Filtered results section was not found.");
+    if (
+      !form.isConnected ||
+      document.querySelector(sectionSelector) !== currentSection ||
+      new URLSearchParams(new FormData(form)).toString() !== requestUrl.searchParams.toString()
+    ) {
+      return;
+    }
 
     currentSection.replaceWith(refreshedSection);
     window.history.replaceState(null, "", requestUrl.href);
@@ -54,18 +77,35 @@ const refreshSectionFromForm = async (form, sectionSelector, selectSelector = ""
     const refreshedSelect = selectSelector
       ? refreshedSection.querySelector(selectSelector)
       : null;
-    if (refreshedSelect && selectedValue) {
+    if (refreshedSelect && selectedValue && shouldRestoreFocus) {
       refreshedSelect.value = selectedValue;
       refreshedSelect.focus({ preventScroll: true });
-    } else if (activeControlId) {
+    } else if (activeControlId && shouldRestoreFocus) {
       const refreshedActiveControl = refreshedSection.querySelector(`#${activeControlId}`);
-      refreshedActiveControl?.focus({ preventScroll: true });
+      if (refreshedActiveControl) {
+        refreshedActiveControl.focus({ preventScroll: true });
+        if (
+          selectionStart !== null &&
+          selectionEnd !== null &&
+          typeof refreshedActiveControl.setSelectionRange === "function"
+        ) {
+          const valueLength = refreshedActiveControl.value.length;
+          refreshedActiveControl.setSelectionRange(
+            Math.min(selectionStart, valueLength),
+            Math.min(selectionEnd, valueLength),
+          );
+        }
+      }
     }
   } catch (error) {
+    if (error?.name === "AbortError") return;
     console.error(error);
     window.location.assign(requestUrl.href);
   } finally {
-    form.removeAttribute("aria-busy");
+    if (filterRequestControllers.get(form) === controller) {
+      filterRequestControllers.delete(form);
+      form.removeAttribute("aria-busy");
+    }
   }
 };
 
