@@ -1818,6 +1818,26 @@ meter::-webkit-meter-optimum-value {
   font-weight: 700;
 }
 
+.summary-breakdown-value {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.summary-breakdown-value span {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  color: var(--color-ink);
+  font-size: 1.1rem;
+}
+
+.summary-breakdown-value small {
+  min-width: 4.5rem;
+  color: var(--color-muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
 .summary-grid strong {
   display: block;
   margin-top: 0.25rem;

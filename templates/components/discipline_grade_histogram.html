@@ -31,9 +31,11 @@
                         data-route-count="{{ bucket.routes }}"
                         data-boulder-count="{{ bucket.boulders }}"
                         aria-label="{% blocktranslate with grade=bucket.label total=bucket.total routes=bucket.routes boulders=bucket.boulders %}Grade {{ grade }}: {{ total }} total, {{ routes }} routes, {{ boulders }} boulders{% endblocktranslate %}"
+                        data-default-aria-label="{% blocktranslate with grade=bucket.label total=bucket.total routes=bucket.routes boulders=bucket.boulders %}Grade {{ grade }}: {{ total }} total, {{ routes }} routes, {{ boulders }} boulders{% endblocktranslate %}"
+                        data-boulder-aria-label="{% blocktranslate with grade=bucket.label|upper total=bucket.total routes=bucket.routes boulders=bucket.boulders %}Grade {{ grade }}: {{ total }} total, {{ routes }} routes, {{ boulders }} boulders{% endblocktranslate %}"
                     >
                         <span class="histogram-tooltip" aria-hidden="true">
-                            {{ bucket.label }} · {{ histogram_value_label }}: <span data-histogram-value>{{ bucket.total }}</span>
+                            <span data-histogram-grade data-grade="{{ bucket.label }}" data-boulder-grade="{{ bucket.label|upper }}">{{ bucket.label }}</span> · {{ histogram_value_label }}: <span data-histogram-value>{{ bucket.total }}</span>
                         </span>
                         <span class="histogram-track" aria-hidden="true">
                             <span
@@ -45,7 +47,7 @@
                                 <span class="histogram-segment is-route" data-histogram-segment="route" style="--segment-count: {{ bucket.routes }};"></span>
                             </span>
                         </span>
-                        <span class="histogram-label" aria-hidden="true">{{ bucket.label }}</span>
+                        <span class="histogram-label" aria-hidden="true" data-histogram-grade data-grade="{{ bucket.label }}" data-boulder-grade="{{ bucket.label|upper }}">{{ bucket.label }}</span>
                     </div>
                 {% endfor %}
             </div>

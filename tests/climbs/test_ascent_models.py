@@ -128,6 +128,24 @@ def test_ascent_displays_decimal_perceived_grade(
 
 
 @pytest.mark.django_db
+def test_boulder_grades_are_displayed_uppercase(
+    ascent_factory: Callable[..., Ascent],
+    route_factory: Callable[..., ClimbingRoute],
+) -> None:
+    boulder = route_factory(
+        discipline=ClimbingRoute.Discipline.BOULDER,
+        official_grade="6b+",
+    )
+    ascent = ascent_factory(
+        climbing_route=boulder,
+        proposed_grade=encode_perceived_grade("6b+", 7),
+    )
+
+    assert boulder.display_grade == "6B+"
+    assert ascent.display_proposed_grade == "6B+.7"
+
+
+@pytest.mark.django_db
 def test_ascent_protects_user_and_route_from_accidental_deletion(
     ascent_factory: Callable[..., Ascent],
 ) -> None:

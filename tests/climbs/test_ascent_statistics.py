@@ -504,6 +504,8 @@ def test_profile_context_contains_histogram_distributions_without_progression(
     assert response.context["total_climb_count"] == 5
     assert response.context["climb_completion_percentage"] == 60.0
     assert response.context["highest_grade"] == "6a"
+    assert response.context["highest_route_grade"] == "5a"
+    assert response.context["highest_boulder_grade"] == "6a"
     assert response.context["discipline_counts"] == {"route": 1, "boulder": 2}
     assert response.context["total_route_count"] == 2
     assert response.context["route_completion_percentage"] == 50.0
@@ -563,6 +565,7 @@ def test_profile_context_contains_histogram_distributions_without_progression(
     assert 'class="histogram-tooltip"' in content
     assert 'class="histogram-value"' not in content
     assert "5a · Ripetizioni:" in content
+    assert ">6a</strong>" in content
     assert "non è incluso nell'istogramma" not in content
     assert "progression-list" not in content
     assert "Easy Step" in content and "Harder Step" in content and "Boulder Project" in content

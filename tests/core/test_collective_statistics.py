@@ -26,7 +26,7 @@ def test_collective_statistics_split_disciplines_and_exclude_archived_grades(
         discipline=ClimbingRoute.Discipline.BOULDER,
         official_grade="7a",
     )
-    route_factory(
+    archived_route = route_factory(
         name="Archived hard route",
         official_grade="9c",
         is_archived=True,
@@ -44,17 +44,37 @@ def test_collective_statistics_split_disciplines_and_exclude_archived_grades(
         climbing_route=boulder,
         date=timezone.localdate() - timedelta(days=40),
     )
+    ascent_factory(
+        user=first_user,
+        climbing_route=archived_route,
+        date=timezone.localdate() - timedelta(days=40),
+    )
 
     response = client.get(reverse("core:statistics"), HTTP_ACCEPT_LANGUAGE="en")
 
     assert response.status_code == 200
     assert response.context["active_route_count"] == 3
+    assert response.context["total_climb_count"] == 4
+    assert response.context["ascent_count"] == 3
+    assert response.context["route_ascent_count"] == 2
+    assert response.context["boulder_ascent_count"] == 1
     assert response.context["route_count"] == 2
     assert response.context["boulder_count"] == 1
     assert response.context["project_count"] == 1
     assert response.context["highest_grade"] == "7a"
+    assert response.context["highest_route_grade"] == "6a"
+    assert response.context["highest_boulder_grade"] == "7a"
+    assert response.context["highest_repeated_route"].label == "9c"
+    assert response.context["highest_repeated_route_count"] == 1
+    assert response.context["highest_repeated_boulder"].label == "7a"
+    assert response.context["highest_repeated_boulder_count"] == 1
+    assert response.context["routes_by_wall"][0].ascent_count == 2
     assert len(response.context["monthly_ascents"]) == 12
-    assert sum(bucket.count for bucket in response.context["monthly_ascents"]) == 2
+    assert sum(bucket.count for bucket in response.context["monthly_ascents"]) == 3
+    assert [
+        (bucket.label, bucket.count, bucket.routes, bucket.boulders)
+        for bucket in response.context["repeated_grade_distribution"]
+    ] == [("6a", 1, 1, 0), ("7a", 1, 0, 1), ("9c", 1, 1, 0)]
     monthly_months = [bucket.month for bucket in response.context["monthly_ascents"]]
     assert monthly_months == sorted(monthly_months, reverse=True)
     assert monthly_months[0] == timezone.localdate().replace(day=1)
@@ -126,8 +146,9 @@ def test_collective_statistics_recent_activity_and_community_ranking(
     assert response.context["highest_repeated_grade"] == "8a"
     assert response.context["highest_repeated_grade_count"] == 1
     assert [
-        (bucket.label, bucket.count) for bucket in response.context["repeated_grade_distribution"]
-    ] == [("6a", 1), ("7a", 2), ("8a", 1)]
+        (bucket.label, bucket.count, bucket.routes, bucket.boulders)
+        for bucket in response.context["repeated_grade_distribution"]
+    ] == [("6a", 1, 1, 0), ("7a", 2, 2, 0), ("8a", 1, 1, 0)]
     assert [climber.username for climber in response.context["community_climbers"]] == [
         "first",
         "second",
@@ -152,7 +173,10 @@ def test_collective_statistics_recent_activity_and_community_ranking(
     italian_content = italian_response.content.decode()
     assert "Attività recente" in italian_content
     assert "Climber più attivo" in italian_content
-    assert "Gradi più ripetuti" in italian_content
+    assert "Vie totali (attive + archiviate)" in italian_content
+    assert "Ripetizioni vie" in italian_content
+    assert "Ripetizioni boulder" in italian_content
+    assert "Ripetizioni per grado" in italian_content
     assert "Grafico delle ripetizioni mensili" in italian_content
 
 
@@ -162,8 +186,16 @@ def test_collective_statistics_has_useful_empty_state(client: Client) -> None:
 
     assert response.status_code == 200
     assert response.context["highest_grade"] == "—"
+    assert response.context["total_climb_count"] == 0
+    assert response.context["ascent_count"] == 0
+    assert response.context["route_ascent_count"] == 0
+    assert response.context["boulder_ascent_count"] == 0
+    assert response.context["highest_route_grade"] == "—"
+    assert response.context["highest_boulder_grade"] == "—"
     assert response.context["highest_repeated_grade"] == "—"
     assert response.context["highest_repeated_grade_count"] == 0
+    assert response.context["highest_repeated_route"] is None
+    assert response.context["highest_repeated_boulder"] is None
     assert response.context["recent_ascent_count"] == 0
     assert response.context["recent_active_climber_count"] == 0
     assert response.context["recent_top_climber"] is None

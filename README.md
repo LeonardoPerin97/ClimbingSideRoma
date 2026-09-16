@@ -136,7 +136,8 @@ Le statistiche personali comprendono:
 
 Le statistiche collettive comprendono:
 
-- numero di pareti, vie, boulder, Project, utenti e ripetizioni;
+- numero di pareti, vie attive e totali, boulder, Project, utenti e ripetizioni;
+- ripetizioni totali suddivise tra vie e boulder, incluse quelle storiche delle vie archiviate;
 - massimo grado ufficiale attivo;
 - massimo grado ripetuto e numero di ripetizioni associate;
 - distribuzione delle vie per grado e tipo;

@@ -6,7 +6,14 @@
             <span>{% translate "Recorded ascents" context "profile statistic" %}</span>
             <strong>{{ ascent_count }}</strong>
         </article>
-        <article><span>{% translate "Highest grade" %}</span><strong>{{ highest_grade }}</strong></article>
+        <article>
+            <span>{% translate "Highest route grade" %}</span>
+            <strong>{{ highest_route_grade }}</strong>
+        </article>
+        <article>
+            <span>{% translate "Highest boulder grade" %}</span>
+            <strong>{{ highest_boulder_grade }}</strong>
+        </article>
         <article>
             <span>{% translate "Routes" %}</span>
             <strong>{{ discipline_counts.route }}</strong>

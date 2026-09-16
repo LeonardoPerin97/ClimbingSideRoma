@@ -65,6 +65,7 @@ class WallDisciplineBucket:
     total: int
     routes: int
     boulders: int
+    ascent_count: int
 
 
 @dataclass(frozen=True)
@@ -86,6 +87,8 @@ class CommunityClimberBucket:
 class RepeatedGradeBucket:
     label: str
     count: int
+    routes: int
+    boulders: int
 
 
 @dataclass(frozen=True)
@@ -415,14 +418,31 @@ def _community_climber_buckets(
 def _repeated_grade_buckets() -> list[RepeatedGradeBucket]:
     rows = (
         Ascent.objects.filter(climbing_route__is_project=False)
-        .values("climbing_route__official_grade")
+        .values("climbing_route__official_grade", "climbing_route__discipline")
         .annotate(count=Count("id"))
     )
-    counts = {row["climbing_route__official_grade"]: row["count"] for row in rows}
+    counts: dict[str, dict[str, int]] = {}
+    for row in rows:
+        grade_counts = counts.setdefault(
+            row["climbing_route__official_grade"],
+            {
+                ClimbingRoute.Discipline.ROUTE: 0,
+                ClimbingRoute.Discipline.BOULDER: 0,
+            },
+        )
+        grade_counts[row["climbing_route__discipline"]] = row["count"]
     return [
-        RepeatedGradeBucket(label=grade, count=counts[grade])
+        RepeatedGradeBucket(
+            label=grade,
+            count=(
+                counts[grade][ClimbingRoute.Discipline.ROUTE]
+                + counts[grade][ClimbingRoute.Discipline.BOULDER]
+            ),
+            routes=counts[grade][ClimbingRoute.Discipline.ROUTE],
+            boulders=counts[grade][ClimbingRoute.Discipline.BOULDER],
+        )
         for grade in FRENCH_GRADE_BASES
-        if counts.get(grade)
+        if grade in counts
     ]
 
 
@@ -488,6 +508,9 @@ def collective_statistics_context(
     active_routes = ClimbingRoute.objects.filter(is_archived=False)
     discipline_rows = active_routes.values("discipline").annotate(count=Count("id"))
     discipline_counts = {row["discipline"]: row["count"] for row in discipline_rows}
+    ascent_rows = Ascent.objects.values("climbing_route__discipline").annotate(count=Count("id"))
+    ascent_counts = {row["climbing_route__discipline"]: row["count"] for row in ascent_rows}
+    ascent_count = sum(ascent_counts.values())
 
     grade_rows = (
         active_routes.filter(is_project=False)
@@ -520,6 +543,7 @@ def collective_statistics_context(
             active_route_count=Count(
                 "climbing_routes",
                 filter=Q(climbing_routes__is_archived=False),
+                distinct=True,
             ),
             route_count=Count(
                 "climbing_routes",
@@ -527,6 +551,7 @@ def collective_statistics_context(
                     climbing_routes__is_archived=False,
                     climbing_routes__discipline=ClimbingRoute.Discipline.ROUTE,
                 ),
+                distinct=True,
             ),
             boulder_count=Count(
                 "climbing_routes",
@@ -534,6 +559,12 @@ def collective_statistics_context(
                     climbing_routes__is_archived=False,
                     climbing_routes__discipline=ClimbingRoute.Discipline.BOULDER,
                 ),
+                distinct=True,
+            ),
+            ascent_count=Count(
+                "climbing_routes__ascents",
+                filter=Q(climbing_routes__is_archived=False),
+                distinct=True,
             ),
         )
         .order_by("name")
@@ -544,6 +575,7 @@ def collective_statistics_context(
             total=wall.active_route_count,
             routes=wall.route_count,
             boulders=wall.boulder_count,
+            ascent_count=wall.ascent_count,
         )
         for wall in walls
     ]
@@ -626,21 +658,52 @@ def collective_statistics_context(
         today=today,
     )
 
+    active_route_count = active_routes.count()
+    total_climb_count = ClimbingRoute.objects.count()
     highest_grade_order = active_routes.filter(is_project=False).aggregate(
         highest=Max(grade_order_expression())
     )["highest"]
+    highest_route_grade = next(
+        (bucket.label for bucket in reversed(grade_distribution) if bucket.routes),
+        "—",
+    )
+    highest_boulder_grade = next(
+        (bucket.label for bucket in reversed(grade_distribution) if bucket.boulders),
+        "—",
+    )
+    highest_repeated_route = next(
+        (bucket for bucket in reversed(repeated_grade_distribution) if bucket.routes),
+        None,
+    )
+    highest_repeated_boulder = next(
+        (bucket for bucket in reversed(repeated_grade_distribution) if bucket.boulders),
+        None,
+    )
     return {
-        "active_route_count": active_routes.count(),
+        "active_route_count": active_route_count,
+        "total_climb_count": total_climb_count,
         "route_count": discipline_counts.get(ClimbingRoute.Discipline.ROUTE, 0),
         "boulder_count": discipline_counts.get(ClimbingRoute.Discipline.BOULDER, 0),
         "active_wall_count": len(routes_by_wall),
         "active_user_count": User.objects.filter(is_active=True).count(),
-        "ascent_count": Ascent.objects.count(),
+        "ascent_count": ascent_count,
+        "route_ascent_count": ascent_counts.get(ClimbingRoute.Discipline.ROUTE, 0),
+        "boulder_ascent_count": ascent_counts.get(ClimbingRoute.Discipline.BOULDER, 0),
         "project_count": active_routes.filter(is_project=True).count(),
         "highest_grade": format_grade_index(highest_grade_order),
+        "highest_route_grade": highest_route_grade,
+        "highest_boulder_grade": highest_boulder_grade,
         "highest_repeated_grade": highest_repeated_grade.label if highest_repeated_grade else "—",
         "highest_repeated_grade_count": highest_repeated_grade.count
         if highest_repeated_grade
+        else 0,
+        "highest_repeated_route": highest_repeated_route,
+        "highest_repeated_route_count": highest_repeated_route.routes
+        if highest_repeated_route
+        else 0,
+        "highest_repeated_boulder": highest_repeated_boulder,
+        "highest_repeated_boulder_count": highest_repeated_boulder.boulders
+        if highest_repeated_boulder
         else 0,
         "grade_distribution": grade_distribution,
         "repeated_grade_distribution": repeated_grade_distribution,
@@ -788,6 +851,17 @@ def user_climbing_context(
         official_grade_counts,
         project_counts=project_counts,
     )
+    graded_distribution = [
+        bucket for bucket in grade_distribution if bucket.label in FRENCH_GRADE_INDEX
+    ]
+    highest_route_grade = next(
+        (bucket.label for bucket in reversed(graded_distribution) if bucket.routes),
+        "—",
+    )
+    highest_boulder_grade = next(
+        (bucket.label for bucket in reversed(graded_distribution) if bucket.boulders),
+        "—",
+    )
     catalogue_counts = {
         row["discipline"]: row["count"]
         for row in ClimbingRoute.objects.order_by().values("discipline").annotate(count=Count("id"))
@@ -822,6 +896,8 @@ def user_climbing_context(
         "total_climb_count": total_climb_count,
         "climb_completion_percentage": percentage(len(all_ascents), total_climb_count),
         "highest_grade": format_grade_index(highest_grade_order),
+        "highest_route_grade": highest_route_grade,
+        "highest_boulder_grade": highest_boulder_grade,
         "profile_period": profile_period,
         "profile_period_ascent_count": len(period_ascents),
         "profile_period_highest_grade": format_grade_index(_highest_grade_index(period_ascents)),

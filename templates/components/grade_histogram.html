@@ -16,15 +16,15 @@
                     role="listitem"
                     tabindex="0"
                     data-histogram-column
-                    aria-label="{% blocktranslate with grade=bucket.label count=bucket.count %}Grade {{ grade }}: {{ count }} entries{% endblocktranslate %}"
+                    aria-label="{% if grade_uppercase %}{% blocktranslate with grade=bucket.label|upper count=bucket.count %}Grade {{ grade }}: {{ count }} entries{% endblocktranslate %}{% else %}{% blocktranslate with grade=bucket.label count=bucket.count %}Grade {{ grade }}: {{ count }} entries{% endblocktranslate %}{% endif %}"
                 >
                     <span class="histogram-tooltip" aria-hidden="true">
-                        {{ bucket.label }} · {{ histogram_value_label }}: {{ bucket.count }}
+                        {% if grade_uppercase %}{{ bucket.label|upper }}{% else %}{{ bucket.label }}{% endif %} · {{ histogram_value_label }}: {{ bucket.count }}
                     </span>
                     <span class="histogram-track" aria-hidden="true">
                         <span class="histogram-bar{% if not bucket.count %} is-zero{% endif %}" style="--histogram-height: {% widthratio bucket.count maximum_count 100 %}%;"></span>
                     </span>
-                    <span class="histogram-label" aria-hidden="true">{{ bucket.label }}</span>
+                    <span class="histogram-label" aria-hidden="true">{% if grade_uppercase %}{{ bucket.label|upper }}{% else %}{{ bucket.label }}{% endif %}</span>
                 </div>
             {% endfor %}
         </div>

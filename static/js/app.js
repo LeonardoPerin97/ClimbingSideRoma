@@ -96,8 +96,18 @@ document.querySelectorAll("[data-discipline-histogram]").forEach((histogram) => 
       const count = counts[index];
       const bar = column.querySelector("[data-histogram-bar]");
       const value = column.querySelector("[data-histogram-value]");
+      const gradeLabels = column.querySelectorAll("[data-histogram-grade]");
 
       if (value) value.textContent = String(count);
+      gradeLabels.forEach((label) => {
+        label.textContent = mode === "boulder" ? label.dataset.boulderGrade : label.dataset.grade;
+      });
+      column.setAttribute(
+        "aria-label",
+        mode === "boulder"
+          ? column.dataset.boulderAriaLabel || column.dataset.defaultAriaLabel || ""
+          : column.dataset.defaultAriaLabel || "",
+      );
       if (bar) {
         bar.style.setProperty(
           "--histogram-height",
