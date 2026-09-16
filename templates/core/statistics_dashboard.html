@@ -90,16 +90,18 @@
         </section>
 
         <div class="dashboard-grid">
-            <section class="data-card" aria-labelledby="community-ranking-heading">
+            <section id="community-ranking" class="data-card" aria-labelledby="community-ranking-heading">
                 <h2 id="community-ranking-heading">{% translate "Most active climbers" %}</h2>
-                <form class="statistics-period-filter" method="get">
-                    <label for="community-period">{% translate "Period" %}</label>
-                    <select id="community-period" name="community_period">
-                        <option value="30d"{% if community_period == "30d" %} selected{% endif %}>{% translate "Last 30 days" %}</option>
-                        <option value="12m"{% if community_period == "12m" %} selected{% endif %}>{% translate "Last 12 months" %}</option>
-                        <option value="all"{% if community_period == "all" %} selected{% endif %}>{% translate "All time" %}</option>
-                    </select>
-                    <button class="button button-secondary" type="submit">{% translate "Apply" %}</button>
+                <form class="community-period-filter" method="get" action="#community-ranking" data-community-period-form>
+                    <div>
+                        <label for="community-period">{% translate "Period" %}</label>
+                        <select id="community-period" name="community_period" data-community-period>
+                            <option value="30d"{% if community_period == "30d" %} selected{% endif %}>{% translate "Last 30 days" %}</option>
+                            <option value="12m"{% if community_period == "12m" %} selected{% endif %}>{% translate "Last 12 months" %}</option>
+                            <option value="all"{% if community_period == "all" %} selected{% endif %}>{% translate "All time" %}</option>
+                        </select>
+                    </div>
+                    <noscript><button class="community-period-submit" type="submit">{% translate "Apply" %}</button></noscript>
                 </form>
                 {% if community_climbers %}
                     <div class="table-scroll">
@@ -245,7 +247,7 @@
 
         <section class="data-card" aria-labelledby="ascent-trend-heading">
             <h2 id="ascent-trend-heading">{% translate "Ascents in the last 12 months" %}</h2>
-            <p class="statistics-card-note">{% translate "Oldest month first, then the current month." %}</p>
+            <p class="statistics-card-note">{% blocktranslate with date=statistics_as_of|date:"d/m/Y" %}Updated through {{ date }}.{% endblocktranslate %}</p>
             <div class="monthly-ascent-chart-scroll">
                 <div class="monthly-ascent-chart" role="list" aria-label="{% translate 'Monthly ascents chart' %}">
                     {% for bucket in monthly_ascents reversed %}

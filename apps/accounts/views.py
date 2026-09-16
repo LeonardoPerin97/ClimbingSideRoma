@@ -204,6 +204,7 @@ def public_profile(request: HttpRequest, username: str) -> HttpResponse:
             "profile_period",
             request.GET.get("period", "12m"),
         ),
+        catalogue_scope=request.GET.get("catalogue_scope", "all"),
     )
     _add_ascent_page(context, request)
     context.update(

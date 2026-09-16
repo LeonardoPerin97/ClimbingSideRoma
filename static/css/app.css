@@ -697,6 +697,47 @@ input {
   padding: 0.35rem 0.7rem;
 }
 
+.community-period-filter {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin: 0.75rem 0 1rem;
+  color: var(--color-muted);
+}
+
+.community-period-filter > div {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.community-period-filter label {
+  width: auto;
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.community-period-filter select,
+.community-period-submit {
+  min-height: 2rem;
+  padding: 0.25rem 0.45rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+}
+
+.community-period-filter select {
+  width: auto;
+  color: var(--color-ink);
+  background: var(--color-surface-soft);
+}
+
+.community-period-submit {
+  color: var(--color-muted);
+  background: var(--color-surface-soft);
+}
+
 .monthly-ascent-chart-scroll {
   max-width: 100%;
   overflow-x: auto;
@@ -1281,6 +1322,24 @@ meter::-webkit-meter-optimum-value {
   background: white;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
+}
+
+[data-ajax-filter-form].filter-bar {
+  gap: 0.65rem;
+  margin-bottom: 1.5rem;
+  padding: 0.8rem;
+}
+
+[data-ajax-filter-form].filter-bar label {
+  margin-bottom: 0.22rem;
+  font-size: 0.78rem;
+}
+
+[data-ajax-filter-form].filter-bar input,
+[data-ajax-filter-form].filter-bar select {
+  min-height: 2.5rem;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.92rem;
 }
 
 .wall-list {
@@ -2430,6 +2489,54 @@ meter::-webkit-meter-optimum-value {
   gap: 0.9rem;
 }
 
+.profile-progress-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.profile-catalogue-filter {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.profile-catalogue-filter > div {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.profile-catalogue-filter label {
+  width: auto;
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.profile-catalogue-filter select {
+  width: auto;
+  min-height: 2rem;
+  padding: 0.25rem 0.45rem;
+  color: var(--color-ink);
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+}
+
+.profile-catalogue-submit {
+  min-height: 2rem;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
+  background: var(--color-surface-soft);
+  font-size: 0.75rem;
+}
+
 .profile-progress-subheading {
   margin: 1.6rem 0 0.8rem;
   color: var(--color-ink);
@@ -2998,6 +3105,10 @@ meter::-webkit-meter-optimum-value {
     flex-direction: column;
   }
 
+  .profile-catalogue-filter {
+    max-width: 100%;
+  }
+
   .profile-period-filter {
     width: 100%;
   }
@@ -3254,6 +3365,13 @@ meter::-webkit-meter-optimum-value {
 
   .filter-bar input,
   .filter-bar select {
+    padding: 0.28rem 0.4rem;
+    font-size: 0.76rem;
+  }
+
+  [data-ajax-filter-form].filter-bar input,
+  [data-ajax-filter-form].filter-bar select {
+    min-height: 2.15rem;
     padding: 0.28rem 0.4rem;
     font-size: 0.76rem;
   }

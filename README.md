@@ -124,7 +124,8 @@ grigia e riempimento giallo proporzionale.
 Le statistiche personali comprendono:
 
 - numero di ripetizioni;
-- percentuale di climb completate sul catalogo complessivo;
+- percentuale di climb completate con scelta tra catalogo attivo e catalogo complessivo
+  (attivo + archiviato);
 - grado massimo ufficiale;
 - distribuzione delle vie completate per grado;
 - conteggio e percentuale distinti di vie e boulder completati;

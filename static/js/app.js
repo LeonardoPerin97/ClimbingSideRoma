@@ -16,6 +16,129 @@ if (languageSelect) {
   });
 }
 
+const refreshSectionFromForm = async (form, sectionSelector, selectSelector = "") => {
+  const currentSection = document.querySelector(sectionSelector);
+  if (!currentSection) return;
+
+  const requestUrl = new URL(window.location.href);
+  requestUrl.search = new URLSearchParams(new FormData(form)).toString();
+  const action = form.getAttribute("action") || "";
+  const actionHash = action.includes("#") ? action.slice(action.indexOf("#")) : "";
+  requestUrl.hash = actionHash;
+  const scrollLeft = window.scrollX;
+  const scrollTop = window.scrollY;
+  const selectedControl = selectSelector ? form.querySelector(selectSelector) : null;
+  const selectedValue = selectedControl?.value;
+  const activeControl = document.activeElement;
+  const activeControlId =
+    activeControl instanceof HTMLElement && form.contains(activeControl)
+      ? activeControl.id
+      : "";
+
+  form.setAttribute("aria-busy", "true");
+  try {
+    const response = await fetch(`${requestUrl.pathname}${requestUrl.search}`, {
+      headers: { Accept: "text/html" },
+    });
+    if (!response.ok) throw new Error("Unable to refresh filtered results.");
+
+    const html = await response.text();
+    const parsedDocument = new DOMParser().parseFromString(html, "text/html");
+    const refreshedSection = parsedDocument.querySelector(sectionSelector);
+    if (!refreshedSection) throw new Error("Filtered results section was not found.");
+
+    currentSection.replaceWith(refreshedSection);
+    window.history.replaceState(null, "", requestUrl.href);
+    window.scrollTo({ left: scrollLeft, top: scrollTop, behavior: "auto" });
+
+    const refreshedSelect = selectSelector
+      ? refreshedSection.querySelector(selectSelector)
+      : null;
+    if (refreshedSelect && selectedValue) {
+      refreshedSelect.value = selectedValue;
+      refreshedSelect.focus({ preventScroll: true });
+    } else if (activeControlId) {
+      const refreshedActiveControl = refreshedSection.querySelector(`#${activeControlId}`);
+      refreshedActiveControl?.focus({ preventScroll: true });
+    }
+  } catch (error) {
+    console.error(error);
+    window.location.assign(requestUrl.href);
+  } finally {
+    form.removeAttribute("aria-busy");
+  }
+};
+
+const refreshProfileCatalogueProgress = (form) =>
+  refreshSectionFromForm(form, "#profile-progress", "[data-profile-catalogue-scope]");
+
+const refreshCommunityRanking = (form) =>
+  refreshSectionFromForm(form, "#community-ranking", "[data-community-period]");
+
+const filterRefreshTimers = new WeakMap();
+
+const cancelPendingFilterRefresh = (form) => {
+  const pendingTimer = filterRefreshTimers.get(form);
+  if (!pendingTimer) return;
+  window.clearTimeout(pendingTimer);
+  filterRefreshTimers.delete(form);
+};
+
+const refreshAjaxFilter = (form) => {
+  const target = form.dataset.filterTarget;
+  if (!target) return;
+  void refreshSectionFromForm(form, target);
+};
+
+const queueAjaxFilterRefresh = (form, debounce = false) => {
+  cancelPendingFilterRefresh(form);
+
+  if (debounce) {
+    const timer = window.setTimeout(() => {
+      filterRefreshTimers.delete(form);
+      refreshAjaxFilter(form);
+    }, 300);
+    filterRefreshTimers.set(form, timer);
+    return;
+  }
+
+  refreshAjaxFilter(form);
+};
+
+document.addEventListener("change", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLSelectElement) || !target.form) return;
+  if (target.matches("[data-grade-filter-mode]")) {
+    syncGradeFilter(target);
+  }
+  if (target.matches("[data-profile-catalogue-scope]")) {
+    void refreshProfileCatalogueProgress(target.form);
+  } else if (target.matches("[data-community-period]")) {
+    void refreshCommunityRanking(target.form);
+  } else if (target.form.matches("[data-ajax-filter-form]")) {
+    queueAjaxFilterRefresh(target.form);
+  }
+});
+
+document.addEventListener("input", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLInputElement) || !target.form) return;
+  if (
+    target.matches("[data-filter-search]") &&
+    target.form.matches("[data-ajax-filter-form]")
+  ) {
+    queueAjaxFilterRefresh(target.form, true);
+  }
+});
+
+document.addEventListener("submit", (event) => {
+  const form = event.target;
+  if (!(form instanceof HTMLFormElement) || !form.matches("[data-ajax-filter-form]")) return;
+  event.preventDefault();
+  cancelPendingFilterRefresh(form);
+  refreshAjaxFilter(form);
+});
+
 document.querySelectorAll("[data-confirm-logout]").forEach((form) => {
   form.addEventListener("submit", (event) => {
     const message = form.dataset.confirmLogout;
@@ -39,20 +162,18 @@ if (projectToggle && gradeField) {
   syncProjectGrade();
 }
 
-const gradeFilterMode = document.querySelector("[data-grade-filter-mode]");
-const gradeFilterValue = document.querySelector("[data-grade-filter-value]");
+const syncGradeFilter = (gradeFilterMode) => {
+  const gradeFilterValue = gradeFilterMode.form?.querySelector("[data-grade-filter-value]");
+  if (!gradeFilterValue) return;
 
-if (gradeFilterMode && gradeFilterValue) {
-  const syncGradeFilter = () => {
-    const showsAllGrades = gradeFilterMode.value === "all";
-    gradeFilterValue.disabled = showsAllGrades;
-    if (showsAllGrades) {
-      gradeFilterValue.value = "";
-    }
-  };
-  gradeFilterMode.addEventListener("change", syncGradeFilter);
-  syncGradeFilter();
-}
+  const showsAllGrades = gradeFilterMode.value === "all";
+  gradeFilterValue.disabled = showsAllGrades;
+  if (showsAllGrades) {
+    gradeFilterValue.value = "";
+  }
+};
+
+document.querySelectorAll("[data-grade-filter-mode]").forEach(syncGradeFilter);
 
 const attemptType = document.querySelector("[data-attempt-type]");
 const attemptCount = document.querySelector("[data-attempt-count]");
@@ -96,18 +217,8 @@ document.querySelectorAll("[data-discipline-histogram]").forEach((histogram) => 
       const count = counts[index];
       const bar = column.querySelector("[data-histogram-bar]");
       const value = column.querySelector("[data-histogram-value]");
-      const gradeLabels = column.querySelectorAll("[data-histogram-grade]");
 
       if (value) value.textContent = String(count);
-      gradeLabels.forEach((label) => {
-        label.textContent = mode === "boulder" ? label.dataset.boulderGrade : label.dataset.grade;
-      });
-      column.setAttribute(
-        "aria-label",
-        mode === "boulder"
-          ? column.dataset.boulderAriaLabel || column.dataset.defaultAriaLabel || ""
-          : column.dataset.defaultAriaLabel || "",
-      );
       if (bar) {
         bar.style.setProperty(
           "--histogram-height",

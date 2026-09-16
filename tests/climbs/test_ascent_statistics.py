@@ -600,6 +600,73 @@ def test_profile_context_contains_histogram_distributions_without_progression(
 
 
 @pytest.mark.django_db
+def test_profile_catalogue_scope_changes_completion_percentages(
+    client: Client,
+    user_factory: Callable[..., User],
+    wall_factory: Callable[..., Wall],
+    route_factory: Callable[..., ClimbingRoute],
+    ascent_factory: Callable[..., Ascent],
+) -> None:
+    user = user_factory(username="catalogue-scope")
+    wall = wall_factory(name="Scope Wall")
+    completed_active_route = route_factory(name="Completed active", wall=wall)
+    route_factory(name="Uncompleted active", wall=wall)
+    route_factory(
+        name="Uncompleted active boulder",
+        wall=wall,
+        discipline=ClimbingRoute.Discipline.BOULDER,
+    )
+    completed_archived_route = route_factory(
+        name="Completed archived",
+        wall=wall,
+        is_archived=True,
+    )
+    ascent_factory(user=user, climbing_route=completed_active_route)
+    ascent_factory(user=user, climbing_route=completed_archived_route)
+
+    url = reverse("accounts:public_profile", args=[user.username])
+    all_catalogue_response = client.get(url)
+    active_catalogue_response = client.get(
+        url,
+        {"catalogue_scope": "active"},
+        HTTP_ACCEPT_LANGUAGE="en",
+    )
+
+    assert all_catalogue_response.context["catalogue_scope"] == "all"
+    assert all_catalogue_response.context["ascent_count"] == 2
+    assert all_catalogue_response.context["catalogue_ascent_count"] == 2
+    assert all_catalogue_response.context["total_climb_count"] == 4
+    assert all_catalogue_response.context["climb_completion_percentage"] == 50.0
+    assert all_catalogue_response.context["total_route_count"] == 3
+    assert all_catalogue_response.context["route_completion_percentage"] == 66.7
+    assert all_catalogue_response.context["total_boulder_count"] == 1
+    assert all_catalogue_response.context["boulder_completion_percentage"] == 0.0
+    assert all_catalogue_response.context["wall_distribution"][0].completed == 2
+    assert all_catalogue_response.context["wall_distribution"][0].total == 4
+    assert all_catalogue_response.context["wall_distribution"][0].percentage == 50.0
+
+    assert active_catalogue_response.context["catalogue_scope"] == "active"
+    assert active_catalogue_response.context["ascent_count"] == 2
+    assert active_catalogue_response.context["catalogue_ascent_count"] == 1
+    assert active_catalogue_response.context["total_climb_count"] == 3
+    assert active_catalogue_response.context["climb_completion_percentage"] == 33.3
+    assert active_catalogue_response.context["total_route_count"] == 2
+    assert active_catalogue_response.context["route_completion_percentage"] == 50.0
+    assert active_catalogue_response.context["total_boulder_count"] == 1
+    assert active_catalogue_response.context["boulder_completion_percentage"] == 0.0
+    assert active_catalogue_response.context["wall_distribution"][0].completed == 1
+    assert active_catalogue_response.context["wall_distribution"][0].total == 3
+    assert active_catalogue_response.context["wall_distribution"][0].percentage == 33.3
+
+    content = active_catalogue_response.content.decode()
+    assert '<option value="active" selected' in content
+    assert '<option value="all"' in content
+    assert "Catalogue progress" not in content
+    assert "data-profile-catalogue-form" in content
+    assert "data-profile-catalogue-scope" in content
+
+
+@pytest.mark.django_db
 def test_profile_ascents_can_be_sorted_by_date_and_official_grade(
     client: Client,
     user_factory: Callable[..., User],

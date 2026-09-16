@@ -17,6 +17,7 @@
             {% endif %}
         </header>
 
+        <div id="route-list-content">
         <section class="profile-card catalogue-histogram-card" aria-labelledby="catalogue-grade-heading">
             <h2 id="catalogue-grade-heading">{% translate "Total climbs by grade" %}</h2>
             {% if grade_distribution %}
@@ -29,10 +30,15 @@
             {% endif %}
         </section>
 
-        <form class="filter-bar route-filters" method="get">
+        <form
+            class="filter-bar route-filters"
+            method="get"
+            data-ajax-filter-form
+            data-filter-target="#route-list-content"
+        >
             <div>
                 <label for="route-search">{% translate "Search" %}</label>
-                <input id="route-search" name="q" type="search" value="{{ search }}" placeholder="{% translate 'Route name' %}">
+                <input id="route-search" name="q" type="search" value="{{ search }}" placeholder="{% translate 'Route name' %}" data-filter-search>
             </div>
             <div>
                 <label for="route-wall">{% translate "Wall" %}</label>
@@ -94,7 +100,7 @@
                     <option value="name_desc"{% if sort == 'name_desc' %} selected{% endif %}>{% translate "Name: Z–A" %}</option>
                 </select>
             </div>
-            <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
+            <noscript><button class="button button-primary" type="submit">{% translate "Apply filters" %}</button></noscript>
         </form>
 
         {% if page.object_list %}
@@ -110,6 +116,7 @@
                 <p>{% translate "Try changing one or more filters." %}</p>
             </div>
         {% endif %}
+        </div>
     </div>
 </section>
 {% endblock %}

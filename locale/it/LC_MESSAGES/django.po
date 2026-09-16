@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ClimbingSide 0.9.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-16 12:29+0200\n"
+"POT-Creation-Date: 2026-09-16 13:00+0200\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -168,24 +168,24 @@ msgstr ""
 "Se esiste un account non verificato, è stata inviata una nuova email di "
 "verifica."
 
-#: apps/accounts/views.py:247
+#: apps/accounts/views.py:248
 msgid "Profile updated successfully."
 msgstr "Profilo aggiornato correttamente."
 
-#: apps/accounts/views.py:274
+#: apps/accounts/views.py:275
 msgid "Profile image updated successfully."
 msgstr "Immagine del profilo aggiornata correttamente."
 
-#: apps/accounts/views.py:299 apps/accounts/views.py:332
+#: apps/accounts/views.py:300 apps/accounts/views.py:333
 #: templates/accounts/profile_image_delete_confirm.html:21
 msgid "This profile has no image to delete."
 msgstr "Questo profilo non ha un'immagine da eliminare."
 
-#: apps/accounts/views.py:330
+#: apps/accounts/views.py:331
 msgid "Profile image deleted."
 msgstr "Immagine del profilo eliminata."
 
-#: apps/accounts/views.py:368
+#: apps/accounts/views.py:369
 msgid ""
 "Password recovery by email is temporarily unavailable. Contact an "
 "administrator if you cannot log in."
@@ -420,11 +420,11 @@ msgstr "pareti"
 
 #: apps/climbs/models.py:37 templates/climbs/wall_detail.html:41
 #: templates/components/climbing_profile_stats.html:18
-#: templates/components/climbing_profile_stats.html:41
+#: templates/components/climbing_profile_stats.html:55
 #: templates/components/discipline_grade_histogram.html:7
 #: templates/components/discipline_grade_histogram.html:11
-#: templates/components/monthly_ascent_summary.html:106
-#: templates/components/monthly_ascent_summary.html:119
+#: templates/components/monthly_ascent_summary.html:107
+#: templates/components/monthly_ascent_summary.html:120
 #: templates/core/statistics_dashboard.html:20
 #: templates/core/statistics_dashboard.html:31
 #: templates/core/statistics_dashboard.html:39
@@ -529,8 +529,8 @@ msgid "ascent"
 msgstr "ripetizione"
 
 #: apps/climbs/models.py:151 templates/climbs/user_list.html:54
-#: templates/components/monthly_ascent_summary.html:66
 #: templates/components/monthly_ascent_summary.html:67
+#: templates/components/monthly_ascent_summary.html:68
 #: templates/core/home.html:157 templates/core/statistics_dashboard.html:67
 #: templates/core/statistics_dashboard.html:78
 #: templates/core/statistics_dashboard.html:256
@@ -1138,7 +1138,7 @@ msgstr "Climbers"
 #: templates/climbs/route_detail.html:147 templates/climbs/user_list.html:25
 #: templates/climbs/wall_list.html:66
 #: templates/components/climbing_profile_stats.html:31
-#: templates/components/climbing_profile_stats.html:58
+#: templates/components/climbing_profile_stats.html:72
 #: templates/components/route_table.html:20
 #: templates/components/route_table.html:26
 #: templates/core/statistics_dashboard.html:110
@@ -1235,7 +1235,7 @@ msgid "All ascents"
 msgstr "Tutte le ripetizioni"
 
 #: templates/climbs/ascent_list.html:29 templates/climbs/route_detail.html:154
-#: templates/components/climbing_profile_stats.html:90
+#: templates/components/climbing_profile_stats.html:106
 #: templates/core/home.html:124
 msgid "No ascents recorded"
 msgstr "Nessuna ripetizione registrata"
@@ -1469,7 +1469,7 @@ msgstr "Informazioni sulla via"
 #: templates/climbs/route_detail.html:164 templates/climbs/route_list.html:47
 #: templates/climbs/wall_detail.html:56
 #: templates/components/ascent_table.html:39
-#: templates/components/climbing_profile_stats.html:61
+#: templates/components/climbing_profile_stats.html:75
 #: templates/components/discipline_grade_histogram.html:5
 #: templates/components/route_table.html:12
 msgid "Type"
@@ -1612,7 +1612,7 @@ msgid "All walls"
 msgstr "Tutte le pareti"
 
 #: templates/climbs/route_list.html:49 templates/climbs/wall_detail.html:58
-#: templates/components/climbing_profile_stats.html:63
+#: templates/components/climbing_profile_stats.html:77
 msgid "All types"
 msgstr "Tutti i tipi"
 
@@ -1644,17 +1644,17 @@ msgstr "Attivo"
 
 #: templates/climbs/route_list.html:87 templates/climbs/user_list.html:22
 #: templates/climbs/wall_detail.html:65 templates/climbs/wall_list.html:34
-#: templates/components/climbing_profile_stats.html:70
+#: templates/components/climbing_profile_stats.html:84
 msgid "Order by"
 msgstr "Ordina per"
 
 #: templates/climbs/route_list.html:89 templates/climbs/wall_detail.html:69
-#: templates/components/climbing_profile_stats.html:74
+#: templates/components/climbing_profile_stats.html:88
 msgid "Grade: easiest first"
 msgstr "Grado: dal più facile"
 
 #: templates/climbs/route_list.html:90 templates/climbs/wall_detail.html:70
-#: templates/components/climbing_profile_stats.html:75
+#: templates/components/climbing_profile_stats.html:89
 msgid "Grade: hardest first"
 msgstr "Grado: dal più difficile"
 
@@ -1676,7 +1676,7 @@ msgstr "Nome: Z–A"
 
 #: templates/climbs/route_list.html:97 templates/climbs/user_list.html:29
 #: templates/climbs/wall_detail.html:77 templates/climbs/wall_list.html:41
-#: templates/components/climbing_profile_stats.html:78
+#: templates/components/climbing_profile_stats.html:94
 msgid "Apply filters"
 msgstr "Applica filtri"
 
@@ -1735,11 +1735,11 @@ msgstr "Totale vie"
 
 #: templates/climbs/wall_detail.html:42
 #: templates/components/climbing_profile_stats.html:22
-#: templates/components/climbing_profile_stats.html:43
+#: templates/components/climbing_profile_stats.html:57
 #: templates/components/discipline_grade_histogram.html:8
 #: templates/components/discipline_grade_histogram.html:12
-#: templates/components/monthly_ascent_summary.html:111
-#: templates/components/monthly_ascent_summary.html:120
+#: templates/components/monthly_ascent_summary.html:112
+#: templates/components/monthly_ascent_summary.html:121
 #: templates/core/statistics_dashboard.html:21
 #: templates/core/statistics_dashboard.html:32
 #: templates/core/statistics_dashboard.html:43
@@ -1888,46 +1888,59 @@ msgstr "Vie completate raggruppate per grado e tipo"
 msgid "No ascents recorded yet."
 msgstr "Non hai ancora inserito ripetizioni."
 
-#: templates/components/climbing_profile_stats.html:39
+#: templates/components/climbing_profile_stats.html:41
+msgid "Catalogue"
+msgstr "Catalogo"
+
+#: templates/components/climbing_profile_stats.html:43
+msgctxt "profile catalogue scope"
+msgid "Active"
+msgstr "Attive"
+
+#: templates/components/climbing_profile_stats.html:44
+msgid "Active + archived"
+msgstr "Attive + archiviate"
+
+#: templates/components/climbing_profile_stats.html:53
 #: templates/core/statistics_dashboard.html:177
 #: templates/core/statistics_dashboard.html:212
 msgid "Total"
 msgstr "Totale"
 
-#: templates/components/climbing_profile_stats.html:46
+#: templates/components/climbing_profile_stats.html:60
 msgid "By wall:"
 msgstr "Per parete:"
 
-#: templates/components/climbing_profile_stats.html:54
+#: templates/components/climbing_profile_stats.html:68
 msgid "No walls available yet."
 msgstr "Non sono ancora disponibili pareti."
 
-#: templates/components/climbing_profile_stats.html:72
+#: templates/components/climbing_profile_stats.html:86
 msgid "Date: newest first"
 msgstr "Data: dalla più recente"
 
-#: templates/components/climbing_profile_stats.html:73
+#: templates/components/climbing_profile_stats.html:87
 msgid "Date: oldest first"
 msgstr "Data: dalla meno recente"
 
-#: templates/components/climbing_profile_stats.html:81
+#: templates/components/climbing_profile_stats.html:97
 msgid "Climber ascents"
 msgstr "Ripetizioni del climber"
 
-#: templates/components/climbing_profile_stats.html:87
+#: templates/components/climbing_profile_stats.html:103
 msgid "No completed climbs for this type"
 msgstr "Nessuna via completata per questo tipo"
 
-#: templates/components/climbing_profile_stats.html:88
+#: templates/components/climbing_profile_stats.html:104
 msgid "Try selecting all types."
 msgstr "Prova a selezionare tutti i tipi."
 
-#: templates/components/climbing_profile_stats.html:91
+#: templates/components/climbing_profile_stats.html:107
 msgid "Ascents will appear here."
 msgstr "Le ripetizioni compariranno qui."
 
 #: templates/components/discipline_grade_histogram.html:10
-#: templates/components/monthly_ascent_summary.html:118
+#: templates/components/monthly_ascent_summary.html:119
 msgid "Histogram legend"
 msgstr "Legenda dell'istogramma"
 
@@ -1944,7 +1957,7 @@ msgid "Grade %(grade)s: %(count)s entries"
 msgstr "Grado %(grade)s: %(count)s inserimenti"
 
 #: templates/components/monthly_ascent_summary.html:6
-#: templates/components/monthly_ascent_summary.html:29
+#: templates/components/monthly_ascent_summary.html:30
 msgid "Profile activity"
 msgstr "Attività del profilo"
 
@@ -1957,6 +1970,7 @@ msgid "Monthly ascents all time."
 msgstr "Ripetizioni mensili di sempre."
 
 #: templates/components/monthly_ascent_summary.html:13
+#: templates/core/statistics_dashboard.html:248
 #, python-format
 msgid "Updated through %(date)s."
 msgstr "Aggiornato al %(date)s."
@@ -1976,48 +1990,48 @@ msgstr "Ultimi 12 mesi"
 msgid "All time"
 msgstr "Sempre"
 
-#: templates/components/monthly_ascent_summary.html:33
-#: templates/components/monthly_ascent_summary.html:54
+#: templates/components/monthly_ascent_summary.html:34
+#: templates/components/monthly_ascent_summary.html:55
 #: templates/core/statistics_dashboard.html:247
 msgid "Ascents in the last 12 months"
 msgstr "Ripetizioni negli ultimi 12 mesi"
 
-#: templates/components/monthly_ascent_summary.html:35
-#: templates/components/monthly_ascent_summary.html:56
+#: templates/components/monthly_ascent_summary.html:36
+#: templates/components/monthly_ascent_summary.html:57
 msgid "All-time ascents"
 msgstr "Ripetizioni di sempre"
 
-#: templates/components/monthly_ascent_summary.html:43
+#: templates/components/monthly_ascent_summary.html:44
 msgid "Highest grade in the last 12 months"
 msgstr "Grado più alto negli ultimi 12 mesi"
 
-#: templates/components/monthly_ascent_summary.html:45
+#: templates/components/monthly_ascent_summary.html:46
 msgid "All-time highest grade"
 msgstr "Grado più alto di sempre"
 
-#: templates/components/monthly_ascent_summary.html:60
+#: templates/components/monthly_ascent_summary.html:61
 #: templates/core/statistics_dashboard.html:250
 msgid "Monthly ascents chart"
 msgstr "Grafico delle ripetizioni mensili"
 
-#: templates/components/monthly_ascent_summary.html:80
+#: templates/components/monthly_ascent_summary.html:81
 msgid "Highest grade by month"
 msgstr "Grado più alto per mese"
 
-#: templates/components/monthly_ascent_summary.html:84
+#: templates/components/monthly_ascent_summary.html:85
 msgid "Grade trend chart"
 msgstr "Grafico dell'andamento dei gradi"
 
-#: templates/components/monthly_ascent_summary.html:85
+#: templates/components/monthly_ascent_summary.html:86
 msgid "Monthly highest official grades for routes and boulders."
 msgstr "Gradi ufficiali massimi mensili per vie e boulder."
 
-#: templates/components/monthly_ascent_summary.html:124
+#: templates/components/monthly_ascent_summary.html:125
 msgid "No graded ascents are available in the last 12 months yet."
 msgstr ""
 "Non sono ancora disponibili ripetizioni con un grado negli ultimi 12 mesi."
 
-#: templates/components/monthly_ascent_summary.html:126
+#: templates/components/monthly_ascent_summary.html:127
 msgid "No graded ascents are available for this profile yet."
 msgstr ""
 "Non sono ancora disponibili ripetizioni con un grado per questo profilo."
@@ -2322,9 +2336,11 @@ msgstr "Vie attive e ripetizioni per parete"
 msgid "No active walls are available yet."
 msgstr "Non sono ancora disponibili pareti attive."
 
-#: templates/core/statistics_dashboard.html:248
-msgid "Oldest month first, then the current month."
-msgstr "Prima il mese più vecchio, poi quello corrente."
+#~ msgid "Catalogue progress"
+#~ msgstr "Progresso nel catalogo"
+
+#~ msgid "Oldest month first, then the current month."
+#~ msgstr "Prima il mese più vecchio, poi quello corrente."
 
 #~ msgid "All climbs"
 #~ msgstr "Vie totali"

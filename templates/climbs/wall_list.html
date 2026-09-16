@@ -17,10 +17,16 @@
             {% endif %}
         </header>
 
-        <form class="filter-bar" method="get">
+        <div id="wall-list-content">
+        <form
+            class="filter-bar"
+            method="get"
+            data-ajax-filter-form
+            data-filter-target="#wall-list-content"
+        >
             <div>
                 <label for="wall-search">{% translate "Search" %}</label>
-                <input id="wall-search" name="q" type="search" value="{{ search }}" placeholder="{% translate 'Wall name' %}">
+                <input id="wall-search" name="q" type="search" value="{{ search }}" placeholder="{% translate 'Wall name' %}" data-filter-search>
             </div>
             <div>
                 <label for="wall-status">{% translate "Status" %}</label>
@@ -38,7 +44,7 @@
                     <option value="ascents"{% if sort == 'ascents' %} selected{% endif %}>{% translate "Number of ascents" %}</option>
                 </select>
             </div>
-            <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
+            <noscript><button class="button button-primary" type="submit">{% translate "Apply filters" %}</button></noscript>
         </form>
 
         {% if page.object_list %}
@@ -77,6 +83,7 @@
                 <p>{% translate "Try changing the search or filters." %}</p>
             </div>
         {% endif %}
+        </div>
     </div>
 </section>
 {% endblock %}

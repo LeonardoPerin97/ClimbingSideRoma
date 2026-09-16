@@ -83,11 +83,16 @@ def test_collective_statistics_split_disciplines_and_exclude_archived_grades(
     assert "Collective statistics" in content
     assert 'class="monthly-ascent-chart"' in content
     assert "--monthly-bar-height:" in content
+    assert 'id="community-ranking"' in content
+    assert "data-community-period" in content
+    assert "community-period-submit" in content
     oldest_bucket = response.context["monthly_ascents"][-1]
     current_bucket = response.context["monthly_ascents"][0]
     assert content.index(f'title="{oldest_bucket.month.strftime("%B %Y")}') < content.index(
         f'title="{current_bucket.month.strftime("%B %Y")}'
     )
+    assert f"Updated through {timezone.localdate().strftime('%d/%m/%Y')}." in content
+    assert "Oldest month first, then the current month." not in content
     header_start = content.index('<header class="catalog-header">')
     header_end = content.index("</header>", header_start)
     assert "<div>" in content[header_start:header_end]

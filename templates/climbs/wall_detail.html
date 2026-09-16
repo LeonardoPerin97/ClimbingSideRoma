@@ -50,7 +50,13 @@
             {% endif %}
         </div>
 
-        <form class="filter-bar wall-detail-filters" method="get">
+        <div id="wall-detail-content">
+        <form
+            class="filter-bar wall-detail-filters"
+            method="get"
+            data-ajax-filter-form
+            data-filter-target="#wall-detail-content"
+        >
             {% if show_archived %}<input type="hidden" name="status" value="all">{% endif %}
             <div>
                 <label for="wall-route-discipline">{% translate "Type" %}</label>
@@ -74,7 +80,7 @@
                     <option value="rating_asc"{% if sort == 'rating_asc' %} selected{% endif %}>{% translate "Lowest beauty" %}</option>
                 </select>
             </div>
-            <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
+            <noscript><button class="button button-primary" type="submit">{% translate "Apply filters" %}</button></noscript>
         </form>
 
         <div class="wall-catalogue-status">
@@ -94,6 +100,7 @@
                 <p>{% translate "Routes added to this wall will appear here." %}</p>
             </div>
         {% endif %}
+        </div>
 
         <div class="section-heading section-heading-bordered">
             <h2>{% translate "Climbs by grade" %}</h2>

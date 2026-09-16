@@ -13,10 +13,16 @@
         </div>
     </header>
 
-    <form class="filter-bar user-filters" method="get">
+    <div id="user-list-content">
+    <form
+        class="filter-bar user-filters"
+        method="get"
+        data-ajax-filter-form
+        data-filter-target="#user-list-content"
+    >
         <div>
             <label for="user-search">{% translate "Search" %}</label>
-            <input id="user-search" name="q" type="search" value="{{ search }}" placeholder="{% translate 'Username' %}">
+            <input id="user-search" name="q" type="search" value="{{ search }}" placeholder="{% translate 'Username' %}" data-filter-search>
         </div>
         <div>
             <label for="user-sort">{% translate "Order by" %}</label>
@@ -26,7 +32,7 @@
                 <option value="grade"{% if sort == 'grade' %} selected{% endif %}>{% translate "Highest grade" %}</option>
             </select>
         </div>
-        <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
+        <noscript><button class="button button-primary" type="submit">{% translate "Apply filters" %}</button></noscript>
     </form>
 
     {% if page.object_list %}
@@ -64,5 +70,6 @@
             <p>{% translate "Try changing the search." %}</p>
         </div>
     {% endif %}
+    </div>
 </div></section>
 {% endblock %}

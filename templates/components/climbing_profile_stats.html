@@ -34,14 +34,29 @@
     </article>
 
     <div class="statistics-grid profile-statistics-grid profile-secondary-statistics">
-        <article class="profile-card">
+        <article id="profile-progress" class="profile-card">
+            <div class="profile-progress-controls">
+                <form class="profile-catalogue-filter" method="get" action="#profile-progress" data-profile-catalogue-form>
+                    <div>
+                        <label for="catalogue-scope">{% translate "Catalogue" %}</label>
+                        <select id="catalogue-scope" name="catalogue_scope" data-profile-catalogue-scope>
+                            <option value="active"{% if catalogue_scope == "active" %} selected{% endif %}>{% translate "Active" context "profile catalogue scope" %}</option>
+                            <option value="all"{% if catalogue_scope == "all" %} selected{% endif %}>{% translate "Active + archived" %}</option>
+                        </select>
+                    </div>
+                    <input type="hidden" name="profile_period" value="{{ profile_period }}">
+                    <input type="hidden" name="discipline" value="{{ selected_discipline }}">
+                    <input type="hidden" name="sort" value="{{ ascent_sort }}">
+                    <noscript><button class="profile-catalogue-submit" type="submit">{% translate "Apply" %}</button></noscript>
+                </form>
+            </div>
             <div class="profile-progress-list">
                 {% translate "Total" as climbs_label %}
-                {% include "components/profile_progress_item.html" with label=climbs_label completed=ascent_count total=total_climb_count percentage=climb_completion_percentage only %}
+                {% include "components/profile_progress_item.html" with label=climbs_label completed=catalogue_ascent_count total=total_climb_count percentage=climb_completion_percentage only %}
                 {% translate "Routes" as routes_label %}
-                {% include "components/profile_progress_item.html" with label=routes_label completed=discipline_counts.route total=total_route_count percentage=route_completion_percentage only %}
+                {% include "components/profile_progress_item.html" with label=routes_label completed=catalogue_discipline_counts.route total=total_route_count percentage=route_completion_percentage only %}
                 {% translate "Boulders" as boulders_label %}
-                {% include "components/profile_progress_item.html" with label=boulders_label completed=discipline_counts.boulder total=total_boulder_count percentage=boulder_completion_percentage only %}
+                {% include "components/profile_progress_item.html" with label=boulders_label completed=catalogue_discipline_counts.boulder total=total_boulder_count percentage=boulder_completion_percentage only %}
             </div>
             <p class="profile-progress-subheading">{% translate "By wall:" %}</p>
             {% if wall_distribution %}
@@ -75,6 +90,8 @@
                 <option value="grade_desc"{% if ascent_sort == 'grade_desc' %} selected{% endif %}>{% translate "Grade: hardest first" %}</option>
             </select>
         </div>
+        <input type="hidden" name="profile_period" value="{{ profile_period }}">
+        <input type="hidden" name="catalogue_scope" value="{{ catalogue_scope }}">
         <button class="button button-primary" type="submit">{% translate "Apply filters" %}</button>
     </form>
     {% if ascent_page.object_list %}

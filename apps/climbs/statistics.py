@@ -715,6 +715,7 @@ def collective_statistics_context(
         "recent_top_route": recent_top_route,
         "community_period": community_period,
         "community_climbers": community_climbers,
+        "statistics_as_of": today,
         "maximum_grade_count": max(
             (bucket.total for bucket in grade_distribution),
             default=0,
@@ -740,8 +741,12 @@ def user_climbing_context(
     ascent_sort: str = "date_desc",
     ascent_discipline: str = "",
     profile_period: str = "12m",
+    catalogue_scope: str = "all",
     today: date | None = None,
 ) -> dict[str, Any]:
+    if catalogue_scope not in {"active", "all"}:
+        catalogue_scope = "all"
+
     ascents_queryset = (
         Ascent.objects.filter(user=user)
         .select_related("climbing_route", "climbing_route__wall")
@@ -815,11 +820,16 @@ def user_climbing_context(
         selected_discipline = ""
         ascents = all_ascents
 
+    completion_ascents = (
+        [ascent for ascent in all_ascents if not ascent.climbing_route.is_archived]
+        if catalogue_scope == "active"
+        else all_ascents
+    )
+
     discipline_counts: dict[str, int] = {
         ClimbingRoute.Discipline.ROUTE: 0,
         ClimbingRoute.Discipline.BOULDER: 0,
     }
-    wall_counter: Counter[int] = Counter()
     official_grade_counts: dict[str, dict[str, int]] = {}
     project_counts: dict[str, int] = {
         ClimbingRoute.Discipline.ROUTE: 0,
@@ -830,7 +840,6 @@ def user_climbing_context(
     for ascent in all_ascents:
         climbing_route = ascent.climbing_route
         discipline_counts[climbing_route.discipline] += 1
-        wall_counter[climbing_route.wall_id] += 1
         if climbing_route.is_project:
             project_counts[climbing_route.discipline] += 1
             continue
@@ -847,6 +856,16 @@ def user_climbing_context(
             FRENCH_GRADE_INDEX[climbing_route.official_grade],
         )
 
+    completion_discipline_counts: dict[str, int] = {
+        ClimbingRoute.Discipline.ROUTE: 0,
+        ClimbingRoute.Discipline.BOULDER: 0,
+    }
+    completion_wall_counter: Counter[int] = Counter()
+    for ascent in completion_ascents:
+        climbing_route = ascent.climbing_route
+        completion_discipline_counts[climbing_route.discipline] += 1
+        completion_wall_counter[climbing_route.wall_id] += 1
+
     grade_distribution = continuous_discipline_grade_distribution(
         official_grade_counts,
         project_counts=project_counts,
@@ -862,24 +881,32 @@ def user_climbing_context(
         (bucket.label for bucket in reversed(graded_distribution) if bucket.boulders),
         "—",
     )
+    catalogue_routes = ClimbingRoute.objects.all()
+    if catalogue_scope == "active":
+        catalogue_routes = catalogue_routes.filter(is_archived=False)
     catalogue_counts = {
         row["discipline"]: row["count"]
-        for row in ClimbingRoute.objects.order_by().values("discipline").annotate(count=Count("id"))
+        for row in catalogue_routes.order_by().values("discipline").annotate(count=Count("id"))
     }
     total_route_count = catalogue_counts.get(ClimbingRoute.Discipline.ROUTE, 0)
     total_boulder_count = catalogue_counts.get(ClimbingRoute.Discipline.BOULDER, 0)
     total_climb_count = total_route_count + total_boulder_count
 
-    catalogue_walls = (
-        Wall.objects.annotate(total_climbs=Count("climbing_routes"))
-        .filter(total_climbs__gt=0)
-        .order_by(Lower("name"))
-    )
+    if catalogue_scope == "active":
+        catalogue_walls = Wall.objects.annotate(
+            total_climbs=Count(
+                "climbing_routes",
+                filter=Q(climbing_routes__is_archived=False),
+            )
+        )
+    else:
+        catalogue_walls = Wall.objects.annotate(total_climbs=Count("climbing_routes"))
+    catalogue_walls = catalogue_walls.filter(total_climbs__gt=0).order_by(Lower("name"))
     wall_distribution = sorted(
         (
             UserWallProgressBucket(
                 wall=wall,
-                completed=wall_counter[wall.pk],
+                completed=completion_wall_counter[wall.pk],
                 total=int(getattr(wall, "total_climbs", 0)),
             )
             for wall in catalogue_walls
@@ -892,9 +919,14 @@ def user_climbing_context(
         "ascent_sort": ascent_sort,
         "selected_discipline": selected_discipline,
         "disciplines": ClimbingRoute.Discipline.choices,
+        "catalogue_scope": catalogue_scope,
         "ascent_count": len(all_ascents),
+        "catalogue_ascent_count": len(completion_ascents),
         "total_climb_count": total_climb_count,
-        "climb_completion_percentage": percentage(len(all_ascents), total_climb_count),
+        "climb_completion_percentage": percentage(
+            len(completion_ascents),
+            total_climb_count,
+        ),
         "highest_grade": format_grade_index(highest_grade_order),
         "highest_route_grade": highest_route_grade,
         "highest_boulder_grade": highest_boulder_grade,
@@ -902,14 +934,15 @@ def user_climbing_context(
         "profile_period_ascent_count": len(period_ascents),
         "profile_period_highest_grade": format_grade_index(_highest_grade_index(period_ascents)),
         "discipline_counts": discipline_counts,
+        "catalogue_discipline_counts": completion_discipline_counts,
         "total_route_count": total_route_count,
         "route_completion_percentage": percentage(
-            discipline_counts[ClimbingRoute.Discipline.ROUTE],
+            completion_discipline_counts[ClimbingRoute.Discipline.ROUTE],
             total_route_count,
         ),
         "total_boulder_count": total_boulder_count,
         "boulder_completion_percentage": percentage(
-            discipline_counts[ClimbingRoute.Discipline.BOULDER],
+            completion_discipline_counts[ClimbingRoute.Discipline.BOULDER],
             total_boulder_count,
         ),
         "grade_distribution": grade_distribution,
